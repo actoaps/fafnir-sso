@@ -41,3 +41,12 @@ dependencies {
     apt "org.projectlombok:lombok:1.18.0"
     clover 'org.openclover:clover:4.2.1'
 }
+
+
+
+task copyDependencies(type: Copy) {
+    from configurations.compileClasspath
+    into 'build/dependencies'
+}
+
+build.dependsOn(copyDependencies)
