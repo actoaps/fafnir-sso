@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'net.ltgt.apt'  version '0.10'
+    id 'com.bmuschko.clover' version '2.2.1'
+}
+
+test {
+    useTestNG()
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
+
+mainClassName = 'dk.acto.auth.Main'
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.0'
+    implementation 'io.vavr:vavr:0.9.2'
+
+    testImplementation 'org.testng:testng:6.10'
+    implementation'com.sparkjava:spark-core:2.7.2'
+    implementation 'com.github.scribejava:scribejava-apis:5.5.0'
+    implementation 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.5"
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.5'
+    implementation 'org.apache.logging.log4j:log4j-core:2.11.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
+//    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.11.0'
+
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    apt "org.projectlombok:lombok:1.18.0"
+    clover 'org.openclover:clover:4.2.1'
+}
