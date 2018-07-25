@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        def temp = docker.build('actoaps/oauth-sso')
+                        def temp = docker.build('actoaps/oauth-sso'"-f ${dockerfile} ./auth")
                         temp.push('1.0.${BUILD_NUMBER}')
                         temp.push('latest')
                     }
