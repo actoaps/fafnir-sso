@@ -1,5 +1,7 @@
 package dk.acto.auth;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -9,10 +11,9 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.vavr.control.Option;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -61,10 +62,13 @@ public class Main {
             final Response facebookResponse = facebookService.execute(facebookRequest);
             String email = jsonParser.parse(facebookResponse.getBody()).getAsJsonObject().get("email").getAsString();
 
-            String jwt = Jwts.builder()
-                    .setSubject(email)
-                    .signWith(SignatureAlgorithm.HS512, actoConf.getJwtSecret())
-                    .compact();
+            Algorithm algorithm = Algorithm.HMAC512(Base64.decodeBase64(actoConf.getJwtSecret()));
+
+            String jwt = JWT.create()
+                    .withIssuer("acto")
+                    .withSubject(email)
+                    .sign(algorithm);
+
             response.redirect(actoConf.getSuccessUrl() + "#" + jwt);
             return "";
         });

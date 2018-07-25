@@ -34,10 +34,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.5'
     implementation 'org.apache.logging.log4j:log4j-core:2.11.0'
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
-//    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.11.0'
 
-
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'com.auth0:java-jwt:3.4.0'
+    implementation 'commons-codec:commons-codec:1.11'
 
     apt "org.projectlombok:lombok:1.18.0"
     clover 'org.openclover:clover:4.2.1'
