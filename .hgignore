@@ -1,0 +1,15 @@
+syntax: regexp
+
+# Intellij
+^\.idea
+.*\.iml$
+/out/
+
+# Gradle
+^\.gradle
+/\.gradle
+/build/
+gradle.properties
+
+# Webapp
+/node_modules/
