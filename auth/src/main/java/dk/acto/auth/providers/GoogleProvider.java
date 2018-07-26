@@ -47,7 +47,7 @@ public class GoogleProvider {
             return actoConf.getFailureUrl();
         }
 
-        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email");
+        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/plus/v1/people/me?fields=email");
         this.googleService.signRequest(token, facebookRequest);
         String subject = Try.of(() -> this.googleService.execute(facebookRequest).getBody())
                 .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
