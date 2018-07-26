@@ -56,7 +56,7 @@ public class GoogleProvider {
             return actoConf.getFailureUrl();
         }
 
-        String jwt = tokenFactory.generateToken(subject);
+        String jwt = tokenFactory.generateToken(subject, "google");
         return actoConf.getSuccessUrl() + "#" + jwt;
     }
 
