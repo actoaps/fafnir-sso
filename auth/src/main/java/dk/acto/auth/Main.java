@@ -14,7 +14,6 @@ import static spark.Spark.port;
 @Log4j2
 public class Main {
 
-    private static JsonParser jsonParser = new JsonParser();
     private static Gson gson = new Gson();
     private static final TokenFactory TOKEN_FACTORY = new TokenFactory();
     private static FacebookProvider facebook;

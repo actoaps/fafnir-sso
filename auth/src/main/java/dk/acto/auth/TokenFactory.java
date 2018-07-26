@@ -19,7 +19,7 @@ public class TokenFactory {
 
     public TokenFactory() {
         this.keys = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
-                .andThen(x -> x.initialize(512, new SecureRandom()))
+                .andThen(x -> x.initialize(1024, new SecureRandom()))
                 .map(KeyPairGenerator::generateKeyPair)
                 .get();
     }
