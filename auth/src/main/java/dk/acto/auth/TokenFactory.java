@@ -24,10 +24,10 @@ public class TokenFactory {
                 .get();
     }
 
-    public String generateToken(String subject) {
+    public String generateToken(String subject, String idp) {
         return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
                 .map(x -> JWT.create()
-                        .withIssuer("acto")
+                        .withIssuer("acto-amaug-"+idp)
                         .withSubject(subject)
                         .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                         .sign(x))

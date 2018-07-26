@@ -56,7 +56,7 @@ public class FacebookProvider {
             return actoConf.getFailureUrl();
         }
 
-        String jwt = tokenFactory.generateToken(subject);
+        String jwt = tokenFactory.generateToken(subject, "facebook");
         return actoConf.getSuccessUrl() + "#" + jwt;
     }
 }
