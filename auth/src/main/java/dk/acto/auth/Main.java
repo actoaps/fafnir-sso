@@ -1,8 +1,8 @@
 package dk.acto.auth;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import dk.acto.auth.providers.FacebookProvider;
+import dk.acto.auth.providers.GoogleProvider;
 import io.vavr.control.Option;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,6 +17,7 @@ public class Main {
     private static Gson gson = new Gson();
     private static final TokenFactory TOKEN_FACTORY = new TokenFactory();
     private static FacebookProvider facebook;
+    private static GoogleProvider google;
 
     public static void main(String[] args) {
         ActoConf actoConf = Option.of(System.getenv("ACTO_CONF"))
@@ -25,6 +26,7 @@ public class Main {
                 .getOrElseThrow((Supplier<IllegalArgumentException>) IllegalArgumentException::new);
 
         facebook = new FacebookProvider(actoConf, TOKEN_FACTORY);
+        google = new GoogleProvider(actoConf, TOKEN_FACTORY);
 
         port(8080);
 
@@ -38,7 +40,16 @@ public class Main {
             return "";
         });
 
-        get("/public-key", (request, response) -> TOKEN_FACTORY.getPublicKey());
+        get("/google", (request, response) -> {
+            response.redirect(google.authenticate());
+            return "";
+        });
 
+        get("/callback-google", (request, response) -> {
+            response.redirect(google.callback(request.queryParams("code")));
+            return "";
+        });
+
+        get("/public-key", (request, response) -> TOKEN_FACTORY.getPublicKey());
     }
 }

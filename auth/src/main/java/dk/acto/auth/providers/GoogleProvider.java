@@ -1,6 +1,6 @@
 package dk.acto.auth.providers;
 
-import com.github.scribejava.apis.FacebookApi;
+import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -16,31 +16,31 @@ import lombok.extern.log4j.Log4j2;
 import java.util.UUID;
 
 @Log4j2
-public class FacebookProvider {
+public class GoogleProvider {
     private final ActoConf actoConf;
-    private final OAuth20Service facebookService;
+    private final OAuth20Service googleService;
     private final TokenFactory tokenFactory;
     private JsonParser jsonParser = new JsonParser();
 
-    public FacebookProvider(ActoConf actoConf, TokenFactory tokenFactory) {
+    public GoogleProvider(ActoConf actoConf, TokenFactory tokenFactory) {
         this.actoConf = actoConf;
-        this.facebookService = new ServiceBuilder(actoConf.getFacebookAppId())
-                .apiSecret(actoConf.getFacebookSecret())
+        this.googleService = new ServiceBuilder(actoConf.getGoogleAppId())
+                .apiSecret(actoConf.getGoogleSecret())
                 .state(UUID.randomUUID().toString())
-                .callback(actoConf.getMyUrl() + "/callback-facebook")
+                .callback(actoConf.getMyUrl() + "/callback-google")
                 .scope("email")
-                .build(FacebookApi.instance());
+                .build(GoogleApi20.instance());
         this.tokenFactory = tokenFactory;
     }
 
     public String authenticate() {
-        return facebookService.getAuthorizationUrl();
+        return googleService.getAuthorizationUrl();
     }
 
     public String callback(String code) {
         OAuth2AccessToken token = Option.of(code)
                 .toTry()
-                .mapTry(facebookService::getAccessToken)
+                .mapTry(googleService::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
         if (token == null) {
@@ -48,8 +48,8 @@ public class FacebookProvider {
         }
 
         final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email");
-        facebookService.signRequest(token, facebookRequest);
-        String subject = Try.of(() -> facebookService.execute(facebookRequest).getBody())
+        this.googleService.signRequest(token, facebookRequest);
+        String subject = Try.of(() -> this.googleService.execute(facebookRequest).getBody())
                 .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
                 .getOrNull();
         if (subject == null || subject.isEmpty()) {
@@ -59,5 +59,5 @@ public class FacebookProvider {
         String jwt = tokenFactory.generateToken(subject);
         return actoConf.getSuccessUrl() + "#" + jwt;
     }
-}
 
+}
