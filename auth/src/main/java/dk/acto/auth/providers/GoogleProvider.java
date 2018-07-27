@@ -1,6 +1,9 @@
 package dk.acto.auth.providers;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.apis.GoogleApi20;
+import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -28,7 +31,7 @@ public class GoogleProvider {
                 .apiSecret(actoConf.getGoogleSecret())
                 .state(UUID.randomUUID().toString())
                 .callback(actoConf.getMyUrl() + "/callback-google")
-                .scope("https://www.googleapis.com/auth/userinfo.profile")
+                .scope("openid email profile")
                 .build(GoogleApi20.instance());
         this.tokenFactory = tokenFactory;
     }
@@ -47,16 +50,11 @@ public class GoogleProvider {
             return actoConf.getFailureUrl();
         }
 
-        final OAuthRequest googleRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v1/userinfo?alt=json");
-        this.googleService.signRequest(token, googleRequest);
-        String subject = Try.of(() -> this.googleService.execute(googleRequest).getBody())
-                .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
-                .getOrNull();
-        if (subject == null || subject.isEmpty()) {
-            return actoConf.getFailureUrl();
-        }
+        DecodedJWT jwtToken = JWT.decode(OpenIdOAuth2AccessToken.class.cast(token).getOpenIdToken());
+        String subject = jwtToken.getClaims().get("email").asString();
+        String displayName = jwtToken.getClaims().get("name").asString();
 
-        String jwt = tokenFactory.generateToken(subject, "google");
+        String jwt = tokenFactory.generateToken(subject,"google", displayName);
         return actoConf.getSuccessUrl() + "#" + jwt;
     }
 

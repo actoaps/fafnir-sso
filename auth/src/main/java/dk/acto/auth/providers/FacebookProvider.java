@@ -6,6 +6,8 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
@@ -47,16 +49,18 @@ public class FacebookProvider {
             return actoConf.getFailureUrl();
         }
 
-        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email");
+        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name");
         facebookService.signRequest(token, facebookRequest);
-        String subject = Try.of(() -> facebookService.execute(facebookRequest).getBody())
-                .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
+        JsonObject result = Try.of(() -> facebookService.execute(facebookRequest).getBody())
+                .mapTry(x -> jsonParser.parse(x).getAsJsonObject())
                 .getOrNull();
+        String subject = result.get("email").getAsString();
+        String name = result.get("name").getAsString();
         if (subject == null || subject.isEmpty()) {
             return actoConf.getFailureUrl();
         }
 
-        String jwt = tokenFactory.generateToken(subject, "facebook");
+        String jwt = tokenFactory.generateToken(subject, "facebook", name);
         return actoConf.getSuccessUrl() + "#" + jwt;
     }
 }
