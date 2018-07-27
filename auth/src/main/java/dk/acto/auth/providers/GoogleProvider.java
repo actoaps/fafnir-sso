@@ -38,7 +38,7 @@ public class GoogleProvider {
     }
 
     public String callback(String code) {
-        OAuth2AccessToken token = Option.of(code)
+        final OAuth2AccessToken token = Option.of(code)
                 .toTry()
                 .mapTry(googleService::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
@@ -47,9 +47,12 @@ public class GoogleProvider {
             return actoConf.getFailureUrl();
         }
 
-        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/plus/v1/people/me?fields=email");
-        this.googleService.signRequest(token, facebookRequest);
-        String subject = Try.of(() -> this.googleService.execute(facebookRequest).getBody())
+        OAuth2AccessToken newToken = Try.of(() -> googleService.refreshAccessToken(token.getRefreshToken()))
+                .get();
+
+        final OAuthRequest googleRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/plus/v1/people/me?fields=email");
+        this.googleService.signRequest(newToken, googleRequest);
+        String subject = Try.of(() -> this.googleService.execute(googleRequest).getBody())
                 .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
                 .getOrNull();
         if (subject == null || subject.isEmpty()) {
