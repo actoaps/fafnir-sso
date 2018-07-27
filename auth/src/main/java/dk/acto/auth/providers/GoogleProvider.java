@@ -28,7 +28,7 @@ public class GoogleProvider {
                 .apiSecret(actoConf.getGoogleSecret())
                 .state(UUID.randomUUID().toString())
                 .callback(actoConf.getMyUrl() + "/callback-google")
-                .scope("email")
+                .scope("https://www.googleapis.com/auth/userinfo.profile")
                 .build(GoogleApi20.instance());
         this.tokenFactory = tokenFactory;
     }
@@ -47,11 +47,8 @@ public class GoogleProvider {
             return actoConf.getFailureUrl();
         }
 
-        OAuth2AccessToken newToken = Try.of(() -> googleService.refreshAccessToken(token.getRefreshToken()))
-                .get();
-
-        final OAuthRequest googleRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/plus/v1/people/me?fields=email");
-        this.googleService.signRequest(newToken, googleRequest);
+        final OAuthRequest googleRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v1/userinfo?alt=json");
+        this.googleService.signRequest(token, googleRequest);
         String subject = Try.of(() -> this.googleService.execute(googleRequest).getBody())
                 .mapTry(x -> jsonParser.parse(x).getAsJsonObject().get("email").getAsString())
                 .getOrNull();
