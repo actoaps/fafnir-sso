@@ -24,12 +24,13 @@ public class TokenFactory {
                 .get();
     }
 
-    public String generateToken(String subject, String idp) {
+    public String generateToken(String subject, String idp, String name) {
         return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
                 .map(x -> JWT.create()
                         .withIssuer("acto-amaug-"+idp)
                         .withSubject(subject)
                         .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+                        .withClaim("name", name)
                         .sign(x))
                 .get();
     }
