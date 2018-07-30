@@ -16,8 +16,6 @@ public class Main {
 
     private static Gson gson = new Gson();
     private static final TokenFactory TOKEN_FACTORY = new TokenFactory();
-    private static FacebookProvider facebook;
-    private static GoogleProvider google;
 
     public static void main(String[] args) {
         ActoConf actoConf = Option.of(System.getenv("ACTO_CONF"))
@@ -25,8 +23,8 @@ public class Main {
                 .onFailure(x -> log.fatal("ACTO_CONF environment variable not found, please supply ione in JSONsimilar to this: \n" + gson.toJson(ActoConf.DEFAULT), x))
                 .getOrElseThrow((Supplier<IllegalArgumentException>) IllegalArgumentException::new);
 
-        facebook = new FacebookProvider(actoConf, TOKEN_FACTORY);
-        google = new GoogleProvider(actoConf, TOKEN_FACTORY);
+        FacebookProvider facebook = new FacebookProvider(actoConf, TOKEN_FACTORY);
+        GoogleProvider google = new GoogleProvider(actoConf, TOKEN_FACTORY);
 
         port(8080);
 
