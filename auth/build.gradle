@@ -74,9 +74,9 @@ task downloadWSDL(type: Download) {
 
 wsdl2java {
     wsdlsToGenerate = [
-            ['-wsdlLocation', 'classpath:wsdl/wsagruppe-v1.wsdl','src/main/resources/wsdl/wsagruppe-v1.wsdl'],
+            ['-wsdlLocation', 'classpath:wsdl/wsagruppe-v1.wsdl', project.file('src/main/resources/wsdl/wsagruppe-v1.wsdl')]
     ]
-    generatedWsdlDir = new File ('../src/main/java/dk/acto/auth/generated')
+    generatedWsdlDir = project.file('src/main/java/dk/acto/auth/generated')
 }
 
 wsdl2javaExt {
