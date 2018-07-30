@@ -6,14 +6,11 @@ import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.JsonParser;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import io.vavr.control.Option;
-import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.UUID;
