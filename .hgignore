@@ -5,6 +5,10 @@ syntax: regexp
 .*\.iml$
 /out/
 
+#WSDL
+resources/wsdl
+dk/acto/auth/generated
+
 # Gradle
 ^\.gradle
 /\.gradle
