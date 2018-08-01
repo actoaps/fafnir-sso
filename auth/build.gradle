@@ -19,6 +19,8 @@ repositories {
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
 
+compileJava.options.encoding = 'UTF-8'
+
 mainClassName = 'dk.acto.auth.Main'
 
 
@@ -73,6 +75,7 @@ task downloadWSDL(type: Download) {
 }
 
 wsdl2java {
+    encoding = 'utf-8'
     wsdlsToGenerate = [
             ['-wsdlLocation', 'classpath:wsdl/wsagruppe-v1.wsdl', project.file('src/main/resources/wsdl/wsagruppe-v1.wsdl')]
     ]

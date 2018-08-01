@@ -12,7 +12,9 @@ public class ActoConf {
             .googleAppId("0")
             .googleSecret("secret")
             .failureUrl("http://localhost:8080/fail")
-            .successUrl("http://localhost:8080/dashboard")
+            .successUrl("http://localhost:8080/success")
+            .myUrl("http://localhost:8080")
+            .emitTestToken(false)
             .build();
 
     private final String facebookAppId;
@@ -22,4 +24,5 @@ public class ActoConf {
     private final String successUrl;
     private final String failureUrl;
     private final String myUrl;
+    private final boolean emitTestToken;
 }

@@ -26,6 +26,10 @@ public class Main {
         FacebookProvider facebook = new FacebookProvider(actoConf, TOKEN_FACTORY);
         GoogleProvider google = new GoogleProvider(actoConf, TOKEN_FACTORY);
 
+        if (actoConf.isEmitTestToken()) {
+            log.info("Test Token: " + TOKEN_FACTORY.generateToken("test", "test", "Testy McTestface"));
+        }
+
         port(8080);
 
         get("/facebook", (request, response) -> {
