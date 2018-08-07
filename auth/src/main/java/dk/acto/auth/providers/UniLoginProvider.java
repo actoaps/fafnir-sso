@@ -27,7 +27,7 @@ public class UniLoginProvider {
 				.apiSecret(actoConf.getUniLoginSecret())
 				.wsUserName(actoConf.getUniLoginWSUsername())
 				.wsPassword(actoConf.getUniLoginWSPassword())
-				.callbackChooseInstitution(actoConf.getMyUrl() + "/unilogin-choose-organization")
+				.callbackChooseInstitution(actoConf.getMyUrl() + "/callback-unilogin-choose-organization")
 				.callback(actoConf.getMyUrl() + "/callback-unilogin")
 				.build();
 		this.tokenFactory = tokenFactory;
