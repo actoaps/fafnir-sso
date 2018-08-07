@@ -75,7 +75,7 @@ public class Main {
 			return "";
 		});
 
-		get("/unilogin-choose-organization", (request, response) -> {
+		get("/callback-unilogin-choose-organization", (request, response) -> {
 			String auth = request.queryParams("auth");
 			String timestamp = request.queryParams("timestamp");
 			String user = request.queryParams("user");
@@ -89,7 +89,7 @@ public class Main {
 			return new ModelAndView(model, "/thymeleaf/ChooseInstitutionUni-Login.thymeleaf");
 		}, new ThymeleafTemplateEngine());
 
-		post("/unilogin-choose-organization", (request, response) -> {
+		post("/callback-unilogin-choose-organization", (request, response) -> {
 			String auth = request.queryParams("auth");
 			String timestamp = request.queryParams("timestamp");
 			String user = request.queryParams("user");
