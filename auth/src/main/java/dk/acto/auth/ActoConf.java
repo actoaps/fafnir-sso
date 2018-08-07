@@ -11,6 +11,10 @@ public class ActoConf {
             .facebookSecret("secret")
             .googleAppId("0")
             .googleSecret("secret")
+		    .uniLoginAppId("0")
+		    .uniLoginSecret("secret")
+		    .uniLoginWSUsername("username")
+		    .uniLoginWSPassword("password")
             .failureUrl("http://localhost:8080/fail")
             .successUrl("http://localhost:8080/success")
             .myUrl("http://localhost:8080")
@@ -21,6 +25,10 @@ public class ActoConf {
     private final String facebookSecret;
     private final String googleAppId;
     private final String googleSecret;
+    private final String uniLoginAppId;
+    private final String uniLoginSecret;
+    private final String uniLoginWSUsername;
+    private final String uniLoginWSPassword;
     private final String successUrl;
     private final String failureUrl;
     private final String myUrl;
