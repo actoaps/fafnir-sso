@@ -58,13 +58,13 @@ public class UniLoginProvider {
 	}
 
 	public String callbackWithInstitution(String user, String timestamp, String auth, String institutionId) {
-		String displayName = institutionId;
+		String displayName = user;
 
 		// Validate auth;
 		//MD5(timestamp+secret+user)
 		boolean validAccess = uniloginService.isValidAccess(user, timestamp, auth);
 		if (validAccess) {
-			String jwt = tokenFactory.generateToken(user, "unilogin", displayName);
+			String jwt = tokenFactory.generateToken(institutionId, "unilogin", displayName);
 			return actoConf.getSuccessUrl() + "#" + jwt;
 		} else {
 			log.error("Authentication failed", "UniLoginProvider");
