@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <header>
-	<title>Find2Learn Choose Institution - UNI•Login</title>
+	<title>Find2Learn Vælg institution - UNI•Login</title>
 	<link href="/styles/default.css" rel="stylesheet" type="text/css"/>
 	<meta charset="utf-8"/>
 </header>
 <body>
 <div class="row">
 	<div>
-		<p>Choose your institution</p>
+		<p>Vælg din institution</p>
 	</div>
 	<div>
 		<p class="headline-choose-institution"></p>
 		<form action="/callback-unilogin-choose-organization" method="post">
 			<select id="institution" name="institution">
-				<option value="">Select Institution</option>
+				<option value="">Vælg institution</option>
 				<option th:each="institution : ${institutionList}"
 				        th:value="${institution.id}"
 				        th:text="${institution.id}+' : '+${institution.name}"></option>
@@ -24,7 +24,7 @@
 			<input type="hidden" name="user" th:value="${user}">
 			<br/>
 			<button type="submit">
-				<strong>Login using Institution</strong>
+				<strong>Login med institution</strong>
 			</button>
 		</form>
 	</div>
