@@ -10,10 +10,9 @@ import lombok.extern.log4j.Log4j2;
 import spark.ModelAndView;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static spark.Spark.get;
 import static spark.Spark.port;
@@ -67,11 +66,11 @@ public class Main {
 		});
 
 		get("/callback-unilogin", (request, response) -> {
-				response.redirect(unilogin.callback(
-						request.queryParams("user"),
-						request.queryParams("timestamp"),
-						request.queryParams("auth")
-				));
+			response.redirect(unilogin.callback(
+					request.queryParams("user"),
+					request.queryParams("timestamp"),
+					request.queryParams("auth")
+			));
 			return "";
 		});
 
@@ -86,7 +85,9 @@ public class Main {
 			model.put("timestamp", timestamp);
 			model.put("user", user);
 			model.put("institutionList", institutionList);
-			return new ModelAndView(model, "/thymeleaf/ChooseInstitutionUni-Login.thymeleaf");
+
+			String localeStr = getLocaleStr(request.headers("Accept-Language"), "da", "en");
+			return new ModelAndView(model, "/thymeleaf/ChooseInstitutionUni-Login" + localeStr + ".thymeleaf");
 		}, new ThymeleafTemplateEngine());
 
 		post("/callback-unilogin-choose-organization", (request, response) -> {
@@ -99,5 +100,28 @@ public class Main {
 		});
 
 		get("/public-key", (request, response) -> TOKEN_FACTORY.getPublicKey());
+	}
+
+	/**
+	 * @param acceptLanguageHeader
+	 * @param acceptedLocales
+	 * @return default "en" and is empty
+	 */
+	private static String getLocaleStr(String acceptLanguageHeader, String... acceptedLocales) {
+		Locale foundLocale = getSupportedLocale(acceptLanguageHeader, acceptedLocales).orElse(Locale.ENGLISH);
+		return "en".equals(foundLocale.getLanguage()) ? "" : "_" + foundLocale.getLanguage();
+	}
+
+	private static Optional<Locale> getSupportedLocale(String acceptLanguageHeader, String... acceptedLocales) {
+		Optional<Locale> supportedLocale = getSupportedLocale(
+				acceptLanguageHeader,
+				Arrays.stream(acceptedLocales).map(Locale::forLanguageTag).toArray(Locale[]::new)
+		);
+		return supportedLocale;
+	}
+
+	private static Optional<Locale> getSupportedLocale(String acceptLanguageHeader, Locale[] acceptedLocales) {
+		List<Locale.LanguageRange> languages = Locale.LanguageRange.parse(acceptLanguageHeader);
+		return Optional.ofNullable(Locale.lookup(languages, Arrays.asList(acceptedLocales)));
 	}
 }
