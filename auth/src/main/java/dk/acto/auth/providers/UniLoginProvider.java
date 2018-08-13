@@ -12,6 +12,7 @@ import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 
@@ -91,7 +92,7 @@ public class UniLoginProvider {
 					authentificationFault.printStackTrace();
 				}
 				return new Institution(institutionstilknytning.getInstnr(), instName);
-			})).collect(Collectors.toList());
+			})).distinct().collect(Collectors.toList());
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			authentificationFault.printStackTrace();
 		}
