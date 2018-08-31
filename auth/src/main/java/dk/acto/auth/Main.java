@@ -12,11 +12,8 @@ import spark.template.thymeleaf.ThymeleafTemplateEngine;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import static spark.Spark.get;
-import static spark.Spark.port;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 @Log4j2
 public class Main {
