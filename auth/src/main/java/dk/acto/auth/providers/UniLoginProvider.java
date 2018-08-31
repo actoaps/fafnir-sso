@@ -4,7 +4,6 @@ import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.providers.unilogin.Institution;
 import https.uni_login.Institutionstilknytning;
-import https.wsagruppe_uni_login_dk.ws.AuthentificationFault;
 import https.wsibruger_uni_login_dk.ws.WsiBruger;
 import https.wsibruger_uni_login_dk.ws.WsiBrugerPortType;
 import https.wsiinst_uni_login_dk.ws.WsiInst;
@@ -12,7 +11,6 @@ import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 
