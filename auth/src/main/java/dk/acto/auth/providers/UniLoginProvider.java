@@ -45,6 +45,7 @@ public class UniLoginProvider {
 			if(institutionList.size() == 1) {
 				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
 			}else if(institutionList.size() > 1){
+//			if (institutionList.size() >= 1) {
 				return uniloginService.getChooseInstitutionUrl(user, timestamp, auth);
 			} else {
 				log.error("User does not belong to an institution failure", "UniLoginProvider");
@@ -56,14 +57,43 @@ public class UniLoginProvider {
 		}
 	}
 
-	public String callbackWithInstitution(String user, String timestamp, String auth, String institutionId) {
-		String displayName = user;
+	private Institution getInstitutionFromId(String institutionId) {
+		WsiInst wsiInst = new WsiInst();
+		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
+		Institution institution;
+		try {
+			https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginService.getWsUsername(), uniloginService.getWsPassword(), institutionId);
+			institution = new Institution(inst.getInstnr(), inst.getInstnavn());
+		} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
+			authentificationFault.printStackTrace();
+			throw new Error("User have no institution");
+		}
+		return institution;
+	}
+
+	/**
+	 * In this moment the UniLogin does NOT contain any name, like first name or last name.
+	 * See https://viden.stil.dk/pages/viewpage.action?pageId=5638128
+	 * It's only the UniLogin package named myndighedspakken, that can deliver sensitive data
+	 * @param userId, from UniLogin
+	 * @return full name for that userId
+	 */
+	private String getUserFullNameFromId(String userId) {
+		return userId;
+	}
+
+	public String callbackWithInstitution(String userId, String timestamp, String auth, String institutionId) {
+		final String sub = userId; // jwt:sub == UniLogin username
+		final String postfixIss = "unilogin"; // jwt:iss ends as prefix-postfix, example fafnir-unilogin
+		String name = getUserFullNameFromId(userId); //jwt:name, full name of user
+		final String orgId = institutionId; // jwt:org_id, the organisation id of the user
+		final String orgName = getInstitutionFromId(institutionId).getName(); // jwt:org_name, the organisation name of the user
 
 		// Validate auth;
 		//MD5(timestamp+secret+user)
-		boolean validAccess = uniloginService.isValidAccess(user, timestamp, auth);
+		boolean validAccess = uniloginService.isValidAccess(userId, timestamp, auth);
 		if (validAccess) {
-			String jwt = tokenFactory.generateToken(institutionId, "unilogin", displayName);
+			String jwt = tokenFactory.generateToken(sub, postfixIss, name, orgId, orgName);
 			return actoConf.getSuccessUrl() + "#" + jwt;
 		} else {
 			log.error("Authentication failed", "UniLoginProvider");
