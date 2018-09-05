@@ -27,10 +27,22 @@ public class TokenFactory {
     public String generateToken(String subject, String idp, String name) {
         return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
                 .map(x -> JWT.create()
-                        .withIssuer("fafnir-"+idp)
+                        .withIssuer("fafnir-" + idp)
                         .withSubject(subject)
                         .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                         .withClaim("name", name)
+                        .sign(x))
+                .get();
+    }
+    public String generateToken(String subject, String idp, String userFullName, String organisationId, String organisationName) {
+        return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
+                .map(x -> JWT.create()
+                        .withIssuer("fafnir-" + idp)
+                        .withSubject(subject)
+                        .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+                        .withClaim("name", userFullName)
+                        .withClaim("org_id", organisationId)
+                        .withClaim("org_name", organisationName)
                         .sign(x))
                 .get();
     }

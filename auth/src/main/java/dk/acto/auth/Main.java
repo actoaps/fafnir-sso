@@ -91,7 +91,7 @@ public class Main {
 			String auth = request.queryParams("auth");
 			String timestamp = request.queryParams("timestamp");
 			String user = request.queryParams("user");
-			String institutionId = request.queryParams("institutionId");
+			String institutionId = request.queryParams("institution");
 			response.redirect(unilogin.callbackWithInstitution(user, timestamp, auth, institutionId));
 			return "";
 		});
