@@ -1,12 +1,6 @@
 package dk.acto.auth.providers;
 
-import com.github.scribejava.core.builder.api.BaseApi;
-import com.github.scribejava.core.httpclient.HttpClient;
-import com.github.scribejava.core.httpclient.HttpClientConfig;
-import com.github.scribejava.core.oauth.OAuthService;
 import com.github.scribejava.core.utils.Preconditions;
-
-import java.io.OutputStream;
 
 public class UniLoginServiceBuilder {
 	private String callback;

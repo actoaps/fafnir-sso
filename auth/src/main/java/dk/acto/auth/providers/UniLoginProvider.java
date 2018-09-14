@@ -8,6 +8,7 @@ import https.wsibruger_uni_login_dk.ws.WsiBruger;
 import https.wsibruger_uni_login_dk.ws.WsiBrugerPortType;
 import https.wsiinst_uni_login_dk.ws.WsiInst;
 import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
+import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
@@ -22,13 +23,13 @@ public class UniLoginProvider {
 
 	public UniLoginProvider(ActoConf actoConf, TokenFactory tokenFactory) {
 		this.actoConf = actoConf;
-		this.uniloginService = new UniLoginServiceBuilder(actoConf.getUniLoginAppId())
+		this.uniloginService = Try.of(() -> new UniLoginServiceBuilder(actoConf.getUniLoginAppId())
 				.apiSecret(actoConf.getUniLoginSecret())
 				.wsUserName(actoConf.getUniLoginWSUsername())
 				.wsPassword(actoConf.getUniLoginWSPassword())
 				.callbackChooseInstitution(actoConf.getMyUrl() + "/callback-unilogin-choose-organization")
 				.callback(actoConf.getMyUrl() + "/callback-unilogin")
-				.build();
+				.build()).getOrNull();
 		this.tokenFactory = tokenFactory;
 	}
 
