@@ -5,6 +5,9 @@ import dk.acto.auth.providers.FacebookProvider;
 import dk.acto.auth.providers.GoogleProvider;
 import dk.acto.auth.providers.UniLoginProvider;
 import dk.acto.auth.providers.unilogin.Institution;
+import dk.acto.auth.providers.validators.FacebookValidator;
+import dk.acto.auth.providers.validators.GoogleValidator;
+import dk.acto.auth.providers.validators.UniLoginValidator;
 import io.vavr.control.Option;
 import lombok.extern.log4j.Log4j2;
 import spark.ModelAndView;
@@ -40,7 +43,7 @@ public class Main {
 		port(8080);
 
 		get("/facebook", (request, response) -> {
-			if (VALIDATOR.validate(actoConf, FacebookProvider.class).isEmpty()) {
+			if (VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
 			    halt(404);
             }
 
@@ -49,7 +52,7 @@ public class Main {
 		});
 
 		get("/callback-facebook", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, FacebookProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -58,7 +61,7 @@ public class Main {
 		});
 
 		get("/google", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, GoogleProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -67,7 +70,7 @@ public class Main {
 		});
 
 		get("/callback-google", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, GoogleProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -76,7 +79,7 @@ public class Main {
 		});
 
 		get("/unilogin", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -85,7 +88,7 @@ public class Main {
 		});
 
 		get("/callback-unilogin", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -98,7 +101,7 @@ public class Main {
 		});
 
 		get("/callback-unilogin-choose-organization", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -118,7 +121,7 @@ public class Main {
 		}, new ThymeleafTemplateEngine());
 
 		post("/callback-unilogin-choose-organization", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
