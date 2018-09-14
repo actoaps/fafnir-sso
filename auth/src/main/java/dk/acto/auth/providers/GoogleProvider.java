@@ -7,10 +7,10 @@ import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import com.google.gson.JsonParser;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.UUID;
@@ -20,16 +20,15 @@ public class GoogleProvider {
     private final ActoConf actoConf;
     private final OAuth20Service googleService;
     private final TokenFactory tokenFactory;
-    private JsonParser jsonParser = new JsonParser();
 
     public GoogleProvider(ActoConf actoConf, TokenFactory tokenFactory) {
         this.actoConf = actoConf;
-        this.googleService = new ServiceBuilder(actoConf.getGoogleAppId())
+        this.googleService = Try.of (() ->new ServiceBuilder(actoConf.getGoogleAppId())
                 .apiSecret(actoConf.getGoogleSecret())
                 .state(UUID.randomUUID().toString())
                 .callback(actoConf.getMyUrl() + "/callback-google")
                 .scope("openid email profile")
-                .build(GoogleApi20.instance());
+                .build(GoogleApi20.instance())).getOrNull();
         this.tokenFactory = tokenFactory;
     }
 

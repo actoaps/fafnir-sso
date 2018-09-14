@@ -25,12 +25,12 @@ public class FacebookProvider {
 
     public FacebookProvider(ActoConf actoConf, TokenFactory tokenFactory) {
         this.actoConf = actoConf;
-        this.facebookService = new ServiceBuilder(actoConf.getFacebookAppId())
+        this.facebookService = Try.of( () -> new ServiceBuilder(actoConf.getFacebookAppId())
                 .apiSecret(actoConf.getFacebookSecret())
                 .state(UUID.randomUUID().toString())
                 .callback(actoConf.getMyUrl() + "/callback-facebook")
                 .scope("email")
-                .build(FacebookApi.instance());
+                .build(FacebookApi.instance())).getOrNull();
         this.tokenFactory = tokenFactory;
     }
 

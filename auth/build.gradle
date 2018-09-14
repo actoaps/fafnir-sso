@@ -26,6 +26,8 @@ mainClassName = 'dk.acto.auth.Main'
 
 dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.0'
+	implementation 'org.hibernate.validator:hibernate-validator:6.0.11.Final'
+    implementation 'org.glassfish:javax.el:3.0.1-b08'
 	implementation 'io.vavr:vavr:0.9.2'
 	implementation 'com.google.guava:guava:25.1-jre'
 
@@ -34,7 +36,6 @@ dependencies {
 	implementation 'com.github.scribejava:scribejava-apis:5.5.0'
 	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
 	implementation 'org.thymeleaf:thymeleaf:3.0.9.RELEASE'
-//	implementation 'org.thymeleaf:thymeleaf:2.1.6.RELEASE'
 	implementation 'com.sparkjava:spark-template-thymeleaf:2.7.1'
 
 	implementation 'org.apache.httpcomponents:httpclient:4.5.6'

@@ -10,6 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import spark.ModelAndView;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -20,11 +22,11 @@ public class Main {
 
 	private static final TokenFactory TOKEN_FACTORY = new TokenFactory();
 	private static Gson gson = new Gson();
-
+    private static final Validator VALIDATOR =  Validation.buildDefaultValidatorFactory().getValidator();
 	public static void main(String[] args) {
 		ActoConf actoConf = Option.of(System.getenv("ACTO_CONF"))
 				.toTry().map(x -> gson.fromJson(x, ActoConf.class))
-				.onFailure(x -> log.fatal("ACTO_CONF environment variable not found, please supply ione in JSONsimilar to this: \n" + gson.toJson(ActoConf.DEFAULT), x))
+				.onFailure(x -> log.fatal("ACTO_CONF environment variable not found, please supply one in JSON format similar to this: \n" + gson.toJson(ActoConf.DEFAULT), x))
 				.getOrElseThrow((Supplier<IllegalArgumentException>) IllegalArgumentException::new);
 
 		FacebookProvider facebook = new FacebookProvider(actoConf, TOKEN_FACTORY);
@@ -38,31 +40,55 @@ public class Main {
 		port(8080);
 
 		get("/facebook", (request, response) -> {
-			response.redirect(facebook.authenticate());
+			if (VALIDATOR.validate(actoConf, FacebookProvider.class).isEmpty()) {
+			    halt(404);
+            }
+
+    	    response.redirect(facebook.authenticate());
 			return "";
 		});
 
 		get("/callback-facebook", (request, response) -> {
+            if (VALIDATOR.validate(actoConf, FacebookProvider.class).isEmpty()) {
+                halt(404);
+            }
+
 			response.redirect(facebook.callback(request.queryParams("code")));
 			return "";
 		});
 
 		get("/google", (request, response) -> {
+            if (VALIDATOR.validate(actoConf, GoogleProvider.class).isEmpty()) {
+                halt(404);
+            }
+
 			response.redirect(google.authenticate());
 			return "";
 		});
 
 		get("/callback-google", (request, response) -> {
+            if (VALIDATOR.validate(actoConf, GoogleProvider.class).isEmpty()) {
+                halt(404);
+            }
+
 			response.redirect(google.callback(request.queryParams("code")));
 			return "";
 		});
 
 		get("/unilogin", (request, response) -> {
-			response.redirect(unilogin.authenticate());
+            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+                halt(404);
+            }
+
+            response.redirect(unilogin.authenticate());
 			return "";
 		});
 
 		get("/callback-unilogin", (request, response) -> {
+            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+                halt(404);
+            }
+
 			response.redirect(unilogin.callback(
 					request.queryParams("user"),
 					request.queryParams("timestamp"),
@@ -72,7 +98,11 @@ public class Main {
 		});
 
 		get("/callback-unilogin-choose-organization", (request, response) -> {
-			String auth = request.queryParams("auth");
+            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+                halt(404);
+            }
+
+            String auth = request.queryParams("auth");
 			String timestamp = request.queryParams("timestamp");
 			String user = request.queryParams("user");
 			//unilogin.isValid()
@@ -88,6 +118,10 @@ public class Main {
 		}, new ThymeleafTemplateEngine());
 
 		post("/callback-unilogin-choose-organization", (request, response) -> {
+            if (VALIDATOR.validate(actoConf, UniLoginProvider.class).isEmpty()) {
+                halt(404);
+            }
+
 			String auth = request.queryParams("auth");
 			String timestamp = request.queryParams("timestamp");
 			String user = request.queryParams("user");
@@ -110,11 +144,10 @@ public class Main {
 	}
 
 	private static Optional<Locale> getSupportedLocale(String acceptLanguageHeader, String... acceptedLocales) {
-		Optional<Locale> supportedLocale = getSupportedLocale(
-				acceptLanguageHeader,
-				Arrays.stream(acceptedLocales).map(Locale::forLanguageTag).toArray(Locale[]::new)
-		);
-		return supportedLocale;
+        return getSupportedLocale(
+                acceptLanguageHeader,
+                Arrays.stream(acceptedLocales).map(Locale::forLanguageTag).toArray(Locale[]::new)
+        );
 	}
 
 	private static Optional<Locale> getSupportedLocale(String acceptLanguageHeader, Locale[] acceptedLocales) {
