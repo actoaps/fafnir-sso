@@ -1,8 +1,8 @@
 package dk.acto.auth;
 
-import dk.acto.auth.providers.FacebookProvider;
-import dk.acto.auth.providers.GoogleProvider;
-import dk.acto.auth.providers.UniLoginProvider;
+import dk.acto.auth.providers.validators.FacebookValidator;
+import dk.acto.auth.providers.validators.GoogleValidator;
+import dk.acto.auth.providers.validators.UniLoginValidator;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
@@ -27,23 +27,23 @@ public class ActoConf {
             .emitTestToken(false)
             .build();
 
-    @NotBlank(groups = FacebookProvider.class)
+    @NotBlank(groups = FacebookValidator.class)
     private final String facebookAppId;
-    @NotBlank(groups = FacebookProvider.class)
+    @NotBlank(groups = FacebookValidator.class)
     private final String facebookSecret;
 
-    @NotBlank(groups = GoogleProvider.class)
+    @NotBlank(groups = GoogleValidator.class)
     private final String googleAppId;
-    @NotBlank(groups = GoogleProvider.class)
+    @NotBlank(groups = GoogleValidator.class)
     private final String googleSecret;
 
-    @NotBlank(groups = UniLoginProvider.class)
+    @NotBlank(groups = UniLoginValidator.class)
     private final String uniLoginAppId;
-    @NotBlank(groups = UniLoginProvider.class)
+    @NotBlank(groups = UniLoginValidator.class)
     private final String uniLoginSecret;
-    @NotBlank(groups = UniLoginProvider.class)
+    @NotBlank(groups = UniLoginValidator.class)
     private final String uniLoginWSUsername;
-    @NotBlank(groups = UniLoginProvider.class)
+    @NotBlank(groups = UniLoginValidator.class)
     private final String uniLoginWSPassword;
     @NotBlank
     @URL
