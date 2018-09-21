@@ -43,7 +43,7 @@ public class Main {
 		port(8080);
 
 		get("/facebook", (request, response) -> {
-			if (VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
+			if (!VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
 			    halt(404);
             }
 
@@ -52,7 +52,7 @@ public class Main {
 		});
 
 		get("/callback-facebook", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, FacebookValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -61,7 +61,7 @@ public class Main {
 		});
 
 		get("/google", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -70,7 +70,7 @@ public class Main {
 		});
 
 		get("/callback-google", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, GoogleValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -79,7 +79,7 @@ public class Main {
 		});
 
 		get("/unilogin", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -88,7 +88,7 @@ public class Main {
 		});
 
 		get("/callback-unilogin", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -101,7 +101,7 @@ public class Main {
 		});
 
 		get("/callback-unilogin-choose-organization", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
@@ -121,7 +121,7 @@ public class Main {
 		}, new ThymeleafTemplateEngine());
 
 		post("/callback-unilogin-choose-organization", (request, response) -> {
-            if (VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
+            if (!VALIDATOR.validate(actoConf, UniLoginValidator.class).isEmpty()) {
                 halt(404);
             }
 
