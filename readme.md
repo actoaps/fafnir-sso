@@ -36,7 +36,7 @@ You must provide a configuration as an ACTO_CONF Environment variable, the JSON 
         "successUrl": "http://localhost:8080/success",
         "failureUrl": "http://localhost:8080/fail",
         "myUrl": "http://localhost:8080",
-        "emitTestToken": false
+        "testMode": false,
     }
 
 The different fields mean:
@@ -50,7 +50,8 @@ The different fields mean:
 * uniLoginWSPassword: Your unilogin webservice password.
 * successUrl: The URL to redirect to when successful - the JWT will be appended to this URL.
 * failureUrl: The URL to redirect to when unsuccessful.
-* emitTestToken: If set to true, on startup the service/docker image will write a test token to the log.
+* testMode: If set to true, on startup the service/docker image will write a test token to the log.  
+It also enables the /test endpoint, from which you can retrieve a test token programmatically.
 
 How It Works
 ---

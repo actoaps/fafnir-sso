@@ -36,7 +36,7 @@ public class Main {
 		GoogleProvider google = new GoogleProvider(actoConf, TOKEN_FACTORY);
 		UniLoginProvider unilogin = new UniLoginProvider(actoConf, TOKEN_FACTORY);
 
-		if (actoConf.isEmitTestToken()) {
+		if (actoConf.isTestMode()) {
 			log.info("Test Token: " + TOKEN_FACTORY.generateToken("test", "test", "Testy McTestface"));
 		}
 
@@ -134,6 +134,17 @@ public class Main {
 		});
 
 		get("/public-key", (request, response) -> TOKEN_FACTORY.getPublicKey());
+
+		get("/test", (request, response) -> {
+			if (actoConf.isTestMode()) {
+				String jwt = TOKEN_FACTORY.generateToken("test", "test", "Testy McTestface");
+				response.redirect(actoConf.getSuccessUrl() + "#" + jwt);
+				return "";
+			}
+
+			halt(404);
+			return "";
+		});
 	}
 
 	/**
