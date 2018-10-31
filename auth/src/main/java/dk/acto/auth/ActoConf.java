@@ -24,7 +24,7 @@ public class ActoConf {
             .failureUrl("http://localhost:8080/fail")
             .successUrl("http://localhost:8080/success")
             .myUrl("http://localhost:8080")
-            .emitTestToken(false)
+            .testMode(false)
             .build();
 
     @NotBlank(groups = FacebookValidator.class)
@@ -55,5 +55,5 @@ public class ActoConf {
     @URL
     private final String myUrl;
 
-    private final boolean emitTestToken;
+    private final boolean testMode;
 }
