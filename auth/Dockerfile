@@ -1,4 +1,4 @@
-FROM openjdk:9.0.1-11-slim
+FROM openjdk:11.0.1-slim
 
 ADD build/distributions/auth.tar ./
 WORKDIR ./auth
