@@ -3,10 +3,34 @@ plugins {
 	id 'application'
 	id 'no.nils.wsdl2java' version '0.10'
 	id "de.undercouch.download" version "3.4.3"
+    id 'org.springframework.boot' version '2.1.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.sonarqube' version '2.6.2' apply false
+    id "com.palantir.docker-run" version "0.20.1"
 }
 
+if (System.properties['sonar.login'] != null) {
+    apply plugin: 'jacoco'
+    apply plugin: 'org.sonarqube'
+    jacoco {
+        toolVersion = "0.8.2"
+    }
+
+    build.finalizedBy('sonarqube')
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+compileJava.options.encoding = 'UTF-8'
+version = '1.0'
+
+bootJar.enabled = false
+jar.enabled = true
+
+applicationDefaultJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6001"]
+
 test {
-	useTestNG()
+    ignoreFailures = true
 }
 
 repositories {
@@ -14,38 +38,48 @@ repositories {
 	mavenCentral()
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
-
-compileJava.options.encoding = 'UTF-8'
-
 mainClassName = 'dk.acto.auth.Main'
 
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.4'
-    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
+
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+
+    implementation 'io.vavr:vavr:0.9.2'
+    implementation'com.google.guava:guava:26.0-jre'
+
+    implementation "org.springframework.boot:spring-boot-starter-web-services"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+    implementation 'org.postgresql:postgresql:42.2.4'
+    implementation 'org.liquibase:liquibase-core:3.6.2'
+
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+
+    implementation 'org.modelmapper:modelmapper:2.1.0'
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.0.1'
+
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
+    implementation 'com.hazelcast:hazelcast:3.11-BETA-1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2:1.4.197'
+    testImplementation 'com.auth0:java-jwt:3.4.0'
+
+    annotationProcessor "org.projectlombok:lombok:1.18.4"
+    annotationProcessor 'io.vavr:vavr:0.9.2'
+    
 	implementation 'org.hibernate.validator:hibernate-validator:6.0.11.Final'
     implementation 'org.glassfish:javax.el:3.0.1-b08'
-	implementation 'io.vavr:vavr:0.9.2'
-	implementation 'com.google.guava:guava:25.1-jre'
 
-	implementation 'com.sparkjava:spark-core:2.7.2'
 	implementation 'com.github.scribejava:scribejava-apis:5.5.0'
 	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:5.5.0'
 	implementation 'org.thymeleaf:thymeleaf:3.0.9.RELEASE'
-	implementation 'com.sparkjava:spark-template-thymeleaf:2.7.1'
-
-	implementation 'org.apache.httpcomponents:httpclient:4.5.6'
-
-	implementation 'com.google.code.gson:gson:2.8.5'
-
-	implementation "com.fasterxml.jackson.core:jackson-databind:2.9.5"
-	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.5'
-	implementation 'org.apache.logging.log4j:log4j-core:2.11.0'
-	implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
-
+	
 	implementation 'com.auth0:java-jwt:3.4.0'
 
 	//WSDL / Apache-cxf stuff
@@ -98,11 +132,4 @@ wsdl2javaExt {
 	deleteGeneratedSourcesOnClean = true
 }
 
-task copyDependencies(type: Copy) {
-	from configurations.compileClasspath
-	into 'build/dependencies'
-}
-
-build.dependsOn(copyDependencies)
-//wsdl2java.dependsOn(downloadWSDL)
 wsdl2java.dependsOn = [downloadWSDLWsaGruppe, downloadWSDLWsiBruger, downloadWSDLWsiInst]
