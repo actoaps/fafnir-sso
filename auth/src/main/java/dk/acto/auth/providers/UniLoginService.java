@@ -27,7 +27,7 @@ public class UniLoginService {
 	}
 
 	public String getAuthorizationBaseUrl() {
-		return authorizationBaseUrl;
+		return authorizationBaseUrlSingleLogin;
 	}
 
 	public String getApiKey() {
