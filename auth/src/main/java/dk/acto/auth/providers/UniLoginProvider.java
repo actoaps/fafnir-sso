@@ -77,18 +77,19 @@ public class UniLoginProvider {
 	}
 
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
-		WsiInst wsiInst = new WsiInst();
-		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
+		WsiBruger wsiBruger = new WsiBruger();
+		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
 		//AnsatRolle: "Lærer", "Pædagog", "Vikar", "Leder", "Ledelse", "TAP", "Konsulent"
 		//EksternRolle: "Ekstern", "Praktikant"
 		//ElevRolle: "Barn", "Elev", "Studerende"
+
 		Set<UserRole> roles = new HashSet<>();
 		try {
-			List<https.uni_login.Instbruger> instbrugerList = wsiInstPortType.hentInstBruger(uniloginService.getWsUsername(), uniloginService.getWsPassword(), institutionId, userId);
-			for (Instbruger instbruger : instbrugerList) {
-				https.uni_login.Ansat ansat = instbruger.getAnsat();
-				https.uni_login.Ekstern ekstern = instbruger.getEkstern();
-				https.uni_login.Elev elev = instbruger.getElev();
+			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginService.getWsUsername(), uniloginService.getWsPassword(), userId);
+			for (Institutionstilknytning institutionstilknytning : institutionstilknytninger) {
+				https.uni_login.InstitutionstilknytningAnsat ansat = institutionstilknytning.getAnsat();
+				https.uni_login.InstitutionstilknytningEkstern ekstern = institutionstilknytning.getEkstern();
+				https.uni_login.InstitutionstilknytningElev elev = institutionstilknytning.getElev();
 				if (ansat != null) {
 					ansat.getRolle().stream()
 							.forEach(ansatrolle -> roles.add(new UserRole(ansatrolle.name(), "EMPLOYEE")));
@@ -100,7 +101,7 @@ public class UniLoginProvider {
 					roles.add(new UserRole(elev.getRolle().name(), "PUPIL"));
 				}
 			}
-		} catch (AuthentificationFault authentificationFault) {
+		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			authentificationFault.printStackTrace();
 			throw new Error("User has no rights");
 		}
