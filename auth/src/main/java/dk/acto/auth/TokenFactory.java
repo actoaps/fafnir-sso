@@ -15,41 +15,43 @@ import java.util.Date;
 
 public class TokenFactory {
 
-    private final KeyPair keys;
+	private final KeyPair keys;
 
-    public TokenFactory() {
-        this.keys = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
-                .andThen(x -> x.initialize(1024, new SecureRandom()))
-                .map(KeyPairGenerator::generateKeyPair)
-                .get();
-    }
+	public TokenFactory() {
+		this.keys = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
+				.andThen(x -> x.initialize(1024, new SecureRandom()))
+				.map(KeyPairGenerator::generateKeyPair)
+				.get();
+	}
 
-    public String generateToken(String subject, String idp, String name) {
-        return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
-                .map(x -> JWT.create()
-                        .withIssuer("fafnir-" + idp)
-                        .withSubject(subject)
-                        .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                        .withClaim("name", name)
-                        .sign(x))
-                .get();
-    }
-    public String generateToken(String subject, String idp, String userFullName, String organisationId, String organisationName) {
-        return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
-                .map(x -> JWT.create()
-                        .withIssuer("fafnir-" + idp)
-                        .withSubject(subject)
-                        .withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                        .withClaim("name", userFullName)
-                        .withClaim("org_id", organisationId)
-                        .withClaim("org_name", organisationName)
-                        .sign(x))
-                .get();
-    }
+	public String generateToken(String subject, String idp, String name) {
+		return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
+				.map(x -> JWT.create()
+						.withIssuer("fafnir-" + idp)
+						.withSubject(subject)
+						.withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+						.withClaim("name", name)
+						.sign(x))
+				.get();
+	}
 
-    public String getPublicKey() {
-        return BaseEncoding.base64().omitPadding().encode(
-                keys.getPublic().getEncoded()
-        );
-    }
+	public String generateToken(String subject, String idp, String userFullName, String organisationId, String organisationName, String[] roles) {
+		return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
+				.map(x -> JWT.create()
+						.withIssuer("fafnir-" + idp)
+						.withSubject(subject)
+						.withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+						.withClaim("name", userFullName)
+						.withClaim("org_id", organisationId)
+						.withClaim("org_name", organisationName)
+						.withArrayClaim("role", roles)
+						.sign(x))
+				.get();
+	}
+
+	public String getPublicKey() {
+		return BaseEncoding.base64().omitPadding().encode(
+				keys.getPublic().getEncoded()
+		);
+	}
 }

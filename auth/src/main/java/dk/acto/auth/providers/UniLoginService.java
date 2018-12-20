@@ -1,7 +1,5 @@
 package dk.acto.auth.providers;
 
-import com.github.scribejava.core.builder.api.DefaultApi20;
-import com.github.scribejava.core.model.Verb;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -63,13 +61,12 @@ public class UniLoginService {
 	}
 
 	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
-		URIBuilder builder = null;
 		try {
-			builder = new URIBuilder(getCallbackChooseInstitution())
+			URIBuilder builder = new URIBuilder(getCallbackChooseInstitution())
 					.addParameter("user", userId)
 					.addParameter("timestamp", timestamp)
-					.addParameter("auth", auth);
-			builder.setCharset(StandardCharsets.UTF_8);
+					.addParameter("auth", auth)
+					.setCharset(StandardCharsets.UTF_8);
 			return String.valueOf(builder.build());
 		} catch (URISyntaxException e) {
 			// Will never be reached, with a valid Authorization Url.
@@ -78,14 +75,13 @@ public class UniLoginService {
 	}
 
 	public String getAuthorizationUrl() {
-		URIBuilder builder = null;
 		try {
-			builder = new URIBuilder(getAuthorizationBaseUrl())
+			URIBuilder builder = new URIBuilder(getAuthorizationBaseUrl())
 					.addParameter("id", getApiKey())
 					.addParameter("secret", getApiSecret())
 					.addParameter("path", Base64.encodeBase64String(getCallback().getBytes()))
-					.addParameter("auth", DigestUtils.md5Hex(getCallback() + getApiSecret()));
-			builder.setCharset(StandardCharsets.UTF_8);
+					.addParameter("auth", DigestUtils.md5Hex(getCallback() + getApiSecret()))
+					.setCharset(StandardCharsets.UTF_8);
 			return String.valueOf(builder.build());
 		} catch (URISyntaxException e) {
 			// Will never be reached, with a valid Authorization Url.
