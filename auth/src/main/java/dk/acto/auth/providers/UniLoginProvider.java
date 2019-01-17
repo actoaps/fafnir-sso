@@ -3,15 +3,20 @@ package dk.acto.auth.providers;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.providers.unilogin.Institution;
+import dk.acto.auth.providers.unilogin.UserRole;
+import https.uni_login.Instbruger;
 import https.uni_login.Institutionstilknytning;
 import https.wsibruger_uni_login_dk.ws.WsiBruger;
 import https.wsibruger_uni_login_dk.ws.WsiBrugerPortType;
+import https.wsiinst_uni_login_dk.ws.AuthentificationFault;
 import https.wsiinst_uni_login_dk.ws.WsiInst;
 import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -39,15 +44,14 @@ public class UniLoginProvider {
 
 	public String callback(String user, String timestamp, String auth) {
 		// Validate auth;
-		//MD5(timestamp+secret+user)
+		// MD5(timestamp+secret+user)
 		boolean validAccess = uniloginService.isValidAccess(user, timestamp, auth);
 		if (validAccess) {
 			List<Institution> institutionList = this.getInstitutionList(user);
-			if(institutionList.size() == 1) {
-				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
-			}else if(institutionList.size() > 1){
-//			if (institutionList.size() >= 1) {
+			if (institutionList.size() > 1 || (actoConf.isTestMode() && institutionList.size() > 0)) {
 				return uniloginService.getChooseInstitutionUrl(user, timestamp, auth);
+			} else if (institutionList.size() == 1) {
+				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
 			} else {
 				log.error("User does not belong to an institution failure", "UniLoginProvider");
 				return actoConf.getFailureUrl();
@@ -72,10 +76,43 @@ public class UniLoginProvider {
 		return institution;
 	}
 
+	private Set<UserRole> getUserRoles(String institutionId, String userId) {
+		WsiBruger wsiBruger = new WsiBruger();
+		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
+		//AnsatRolle: "Lærer", "Pædagog", "Vikar", "Leder", "Ledelse", "TAP", "Konsulent"
+		//EksternRolle: "Ekstern", "Praktikant"
+		//ElevRolle: "Barn", "Elev", "Studerende"
+
+		Set<UserRole> roles = new HashSet<>();
+		try {
+			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginService.getWsUsername(), uniloginService.getWsPassword(), userId);
+			for (Institutionstilknytning institutionstilknytning : institutionstilknytninger) {
+				https.uni_login.InstitutionstilknytningAnsat ansat = institutionstilknytning.getAnsat();
+				https.uni_login.InstitutionstilknytningEkstern ekstern = institutionstilknytning.getEkstern();
+				https.uni_login.InstitutionstilknytningElev elev = institutionstilknytning.getElev();
+				if (ansat != null) {
+					ansat.getRolle().stream()
+							.forEach(ansatrolle -> roles.add(new UserRole(ansatrolle.name(), "EMPLOYEE")));
+				}
+				if (ekstern != null) {
+					roles.add(new UserRole(ekstern.getRolle().name(), "EMP_EXTERNAL"));
+				}
+				if (elev != null) {
+					roles.add(new UserRole(elev.getRolle().name(), "PUPIL"));
+				}
+			}
+		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
+			authentificationFault.printStackTrace();
+			throw new Error("User has no rights");
+		}
+		return roles;
+	}
+
 	/**
 	 * In this moment the UniLogin does NOT contain any name, like first name or last name.
 	 * See https://viden.stil.dk/pages/viewpage.action?pageId=5638128
 	 * It's only the UniLogin package named myndighedspakken, that can deliver sensitive data
+	 *
 	 * @param userId, from UniLogin
 	 * @return full name for that userId
 	 */
@@ -94,7 +131,9 @@ public class UniLoginProvider {
 		//MD5(timestamp+secret+user)
 		boolean validAccess = uniloginService.isValidAccess(userId, timestamp, auth);
 		if (validAccess) {
-			String jwt = tokenFactory.generateToken(sub, postfixIss, name, orgId, orgName);
+			Set<UserRole> roles = this.getUserRoles(institutionId, userId);
+			String[] roleArray = roles.stream().map(UserRole::toString).toArray(String[]::new);
+			String jwt = tokenFactory.generateToken(sub, postfixIss, name, orgId, orgName, roleArray);
 			return actoConf.getSuccessUrl() + "#" + jwt;
 		} else {
 			log.error("Authentication failed", "UniLoginProvider");
