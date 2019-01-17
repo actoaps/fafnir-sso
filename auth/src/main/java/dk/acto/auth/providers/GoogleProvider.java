@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.UUID;
 
 @Log4j2
-public class GoogleProvider {
+public class GoogleProvider implements Provider{
     private final ActoConf actoConf;
     private final OAuth20Service googleService;
     private final TokenFactory tokenFactory;
