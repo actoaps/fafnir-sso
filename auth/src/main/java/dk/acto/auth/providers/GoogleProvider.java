@@ -12,15 +12,19 @@ import dk.acto.auth.TokenFactory;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Log4j2
+@Component
 public class GoogleProvider implements Provider{
     private final ActoConf actoConf;
     private final OAuth20Service googleService;
     private final TokenFactory tokenFactory;
 
+    @Autowired
     public GoogleProvider(ActoConf actoConf, TokenFactory tokenFactory) {
         this.actoConf = actoConf;
         this.googleService = Try.of (() ->new ServiceBuilder(actoConf.getGoogleAppId())

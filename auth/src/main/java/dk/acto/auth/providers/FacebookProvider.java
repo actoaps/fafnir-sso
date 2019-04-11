@@ -12,16 +12,20 @@ import dk.acto.auth.TokenFactory;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Log4j2
+@Component
 public class FacebookProvider implements Provider{
     private final ActoConf actoConf;
     private final OAuth20Service facebookService;
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
 
+    @Autowired
     public FacebookProvider(ActoConf actoConf, TokenFactory tokenFactory, ObjectMapper objectMapper) {
         this.actoConf = actoConf;
         this.facebookService = Try.of( () -> new ServiceBuilder(actoConf.getFacebookAppId())

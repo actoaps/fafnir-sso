@@ -10,12 +10,14 @@ import https.wsiinst_uni_login_dk.ws.WsiInst;
 import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Log4j2
+@Component
 public class UniLoginProvider {
 	private final ActoConf actoConf;
 	private final UniLoginConf uniloginConf;

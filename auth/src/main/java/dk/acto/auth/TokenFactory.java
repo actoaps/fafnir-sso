@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.common.io.BaseEncoding;
 import io.vavr.control.Try;
+import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -13,6 +14,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+@Component
 public class TokenFactory {
 
     private final KeyPair keys;
