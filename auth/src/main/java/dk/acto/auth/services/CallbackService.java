@@ -5,5 +5,5 @@ import dk.acto.auth.ActoConf;
 import javax.servlet.http.HttpServletResponse;
 
 public interface CallbackService extends BasicService {
-    void callback (HttpServletResponse response,  ActoConf actoConf, String code);
+    void callback (HttpServletResponse response, String code);
 }

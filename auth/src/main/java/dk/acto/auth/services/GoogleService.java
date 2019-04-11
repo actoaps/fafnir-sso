@@ -19,19 +19,21 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("google")
 public class GoogleService implements CallbackService{
     private final GoogleProvider provider;
+    private final ActoConf actoConf;
 
     @Autowired
-    public GoogleService(GoogleProvider provider) {
+    public GoogleService(GoogleProvider provider, @Validated(GoogleValidator.class) ActoConf actoConf) {
         this.provider = provider;
+        this.actoConf = actoConf;
     }
 
     @GetMapping
-    public void authenticate (HttpServletResponse response, @Validated(GoogleValidator.class) ActoConf actoConf) {
+    public void authenticate (HttpServletResponse response) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
     }
 
     @GetMapping("callback")
-    public void callback (HttpServletResponse response, @Validated(GoogleValidator.class) ActoConf actoConf, @RequestParam String code ) {
+    public void callback (HttpServletResponse response, @RequestParam String code ) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
     }
 }
