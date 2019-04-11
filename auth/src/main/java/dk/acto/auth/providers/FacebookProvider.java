@@ -31,7 +31,7 @@ public class FacebookProvider implements Provider{
         this.facebookService = Try.of( () -> new ServiceBuilder(actoConf.getFacebookAppId())
                 .apiSecret(actoConf.getFacebookSecret())
                 .state(UUID.randomUUID().toString())
-                .callback(actoConf.getMyUrl() + "/callback-facebook")
+                .callback(actoConf.getMyUrl() + "/facebook/callback")
                 .scope("email")
                 .build(FacebookApi.instance())).getOrNull();
         this.tokenFactory = tokenFactory;

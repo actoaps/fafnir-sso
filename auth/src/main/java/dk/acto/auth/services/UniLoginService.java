@@ -17,20 +17,22 @@ import java.util.Map;
 @RequestMapping("unilogin")
 public class UniLoginService implements Callback3Service {
     private final UniLoginProvider provider;
+    private final ActoConf actoConf;
 
     @Autowired
-    public UniLoginService(UniLoginProvider provider) {
+    public UniLoginService(UniLoginProvider provider, @Validated(UniLoginValidator.class) ActoConf actoConf) {
         this.provider = provider;
+        this.actoConf = actoConf;
     }
 
 
     @GetMapping
-    public void authenticate(HttpServletResponse response, @Validated(UniLoginValidator.class) ActoConf actoConf) {
+    public void authenticate(HttpServletResponse response) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
     }
 
     @GetMapping("callback")
-    public void callback(HttpServletResponse response, @Validated(UniLoginValidator.class) ActoConf actoConf, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth) {
+    public void callback(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(user, timestamp, auth)));
     }
 
@@ -49,7 +51,7 @@ public class UniLoginService implements Callback3Service {
     }
 
     @PostMapping("org")
-    public void postOrg(HttpServletResponse response, @Validated(UniLoginValidator.class) ActoConf actoConf, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestParam String institution) {
+    public void postOrg(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestParam String institution) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callbackWithInstitution(user, timestamp, auth, institution)));
     }
 }

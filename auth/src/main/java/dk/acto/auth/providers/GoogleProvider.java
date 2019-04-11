@@ -30,7 +30,7 @@ public class GoogleProvider implements Provider{
         this.googleService = Try.of (() ->new ServiceBuilder(actoConf.getGoogleAppId())
                 .apiSecret(actoConf.getGoogleSecret())
                 .state(UUID.randomUUID().toString())
-                .callback(actoConf.getMyUrl() + "/callback-google")
+                .callback(actoConf.getMyUrl() + "/google/callback")
                 .scope("openid email profile")
                 .build(GoogleApi20.instance())).getOrNull();
         this.tokenFactory = tokenFactory;

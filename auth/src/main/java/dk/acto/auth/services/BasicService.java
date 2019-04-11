@@ -5,5 +5,5 @@ import dk.acto.auth.ActoConf;
 import javax.servlet.http.HttpServletResponse;
 
 public interface BasicService {
-    void authenticate(HttpServletResponse response, ActoConf actoConf);
+    void authenticate(HttpServletResponse response);
 }
