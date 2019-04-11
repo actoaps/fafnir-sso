@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
-@RequestMapping("facebook")
+@RequestMapping("google")
 public class GoogleService implements CallbackService{
     private final GoogleProvider provider;
 

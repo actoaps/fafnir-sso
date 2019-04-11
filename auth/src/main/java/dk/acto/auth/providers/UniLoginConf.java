@@ -5,11 +5,12 @@ import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
 @Data
-@Component
 public class UniLoginConf {
 	private final String authorizationBaseUrl = "https://sso.emu.dk/unilogin/login.cgi";
 	private final String authorizationBaseUrlSingleLogin = "http://sli.emu.dk/unilogin/login.cgi";
@@ -20,6 +21,7 @@ public class UniLoginConf {
 	private final String wsUsername;
 	private final String wsPassword;
 	private final UriBuilderFactory factory;
+
 
 	@Autowired
 	public UniLoginConf(UriBuilderFactory factory, ActoConf actoConf) {
