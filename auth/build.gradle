@@ -22,7 +22,7 @@ if (System.properties['sonar.login'] != null) {
 sourceCompatibility = 11
 targetCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
-version = '1.0'
+//version = '1.0'
 
 bootJar.enabled = false
 jar.enabled = true
