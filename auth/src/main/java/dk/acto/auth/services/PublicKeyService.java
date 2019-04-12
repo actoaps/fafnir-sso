@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("public-key")
 public class PublicKeyService {
-    private final TokenFactory tokenFactory;
-
-    @Autowired
-    public PublicKeyService(TokenFactory tokenFactory) {
-        this.tokenFactory = tokenFactory;
-    }
-
-    @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getPublicKey() {
-        return tokenFactory.getPublicKey();
-    }
+	private final TokenFactory tokenFactory;
+	
+	@Autowired
+	public PublicKeyService(TokenFactory tokenFactory) {
+		this.tokenFactory = tokenFactory;
+	}
+	
+	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
+	public String getPublicKey() {
+		return tokenFactory.getPublicKey();
+	}
 }

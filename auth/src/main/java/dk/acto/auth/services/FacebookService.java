@@ -17,23 +17,23 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("facebook")
-public class FacebookService implements CallbackService{
-    private final FacebookProvider provider;
-    private final ActoConf actoConf;
-
-    @Autowired
-    public FacebookService(FacebookProvider provider, @Validated(FacebookValidator.class) ActoConf actoConf) {
-        this.provider = provider;
-        this.actoConf = actoConf;
-    }
-
-    @GetMapping
-    public void authenticate(HttpServletResponse response) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
-    }
-
-    @GetMapping("callback")
-    public void callback(HttpServletResponse response, @RequestParam String code) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
-    }
+public class FacebookService implements CallbackService {
+	private final FacebookProvider provider;
+	private final ActoConf actoConf;
+	
+	@Autowired
+	public FacebookService(FacebookProvider provider, @Validated(FacebookValidator.class) ActoConf actoConf) {
+		this.provider = provider;
+		this.actoConf = actoConf;
+	}
+	
+	@GetMapping
+	public void authenticate(HttpServletResponse response) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	}
+	
+	@GetMapping("callback")
+	public void callback(HttpServletResponse response, @RequestParam String code) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
+	}
 }

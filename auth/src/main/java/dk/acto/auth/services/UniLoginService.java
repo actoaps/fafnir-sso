@@ -16,42 +16,42 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("unilogin")
 public class UniLoginService implements Callback3Service {
-    private final UniLoginProvider provider;
-    private final ActoConf actoConf;
-
-    @Autowired
-    public UniLoginService(UniLoginProvider provider, @Validated(UniLoginValidator.class) ActoConf actoConf) {
-        this.provider = provider;
-        this.actoConf = actoConf;
-    }
-
-
-    @GetMapping
-    public void authenticate(HttpServletResponse response) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
-    }
-
-    @GetMapping("callback")
-    public void callback(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(user, timestamp, auth)));
-    }
-
-    @GetMapping("org")
-    public String getOrg(@Validated(UniLoginValidator.class) ActoConf actoConf, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestHeader("Accept-Language") String locale) {
-        var institutionList = provider.getInstitutionList(user);
-        var model = Map.of(
-                "user", user,
-                "timestamp", timestamp,
-                "auth", auth,
-                "institutionList", institutionList
-        );
-        return "/thymeleaf/ChooseInstitutionUni-Login" +
-                ServiceHelper.getLocaleStr(locale, "da", "en") +
-                ".thymeleaf";
-    }
-
-    @PostMapping("org")
-    public void postOrg(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestParam String institution) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callbackWithInstitution(user, timestamp, auth, institution)));
-    }
+	private final UniLoginProvider provider;
+	private final ActoConf actoConf;
+	
+	@Autowired
+	public UniLoginService(UniLoginProvider provider, @Validated(UniLoginValidator.class) ActoConf actoConf) {
+		this.provider = provider;
+		this.actoConf = actoConf;
+	}
+	
+	
+	@GetMapping
+	public void authenticate(HttpServletResponse response) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	}
+	
+	@GetMapping("callback")
+	public void callback(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(user, timestamp, auth)));
+	}
+	
+	@GetMapping("org")
+	public String getOrg(@RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestHeader("Accept-Language") String locale) {
+		var institutionList = provider.getInstitutionList(user);
+		var model = Map.of(
+				"user", user,
+				"timestamp", timestamp,
+				"auth", auth,
+				"institutionList", institutionList
+		);
+		return "/thymeleaf/ChooseInstitutionUni-Login" +
+				ServiceHelper.getLocaleStr(locale, "da", "en") +
+				".thymeleaf";
+	}
+	
+	@PostMapping("org")
+	public void postOrg(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestParam String institution) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callbackWithInstitution(user, timestamp, auth, institution)));
+	}
 }

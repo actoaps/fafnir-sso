@@ -3,6 +3,7 @@ package dk.acto.auth.services;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.providers.TestProvider;
 import dk.acto.auth.providers.validators.GoogleValidator;
+import dk.acto.auth.providers.validators.TestValidator;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping("test")
 public class TestService {
-    private final TestProvider provider;
-
-    @Autowired
-    public TestService(TestProvider provider) {
-        this.provider = provider;
-    }
-
-    public void authenticate (HttpServletResponse response, @Validated(GoogleValidator.class) ActoConf actoConf) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
-    }
-
-
+	private final TestProvider provider;
+	private final ActoConf actoConf;
+	
+	@Autowired
+	public TestService(TestProvider provider, @Validated(TestValidator.class) ActoConf actoConf) {
+		this.provider = provider;
+		this.actoConf = actoConf;
+	}
+	
+	public void authenticate(HttpServletResponse response) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	}
+	
+	
 }
