@@ -1,23 +1,17 @@
 package dk.acto.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.acto.auth.providers.validators.FacebookValidator;
 import dk.acto.auth.providers.validators.GoogleValidator;
 import dk.acto.auth.providers.validators.TestValidator;
 import dk.acto.auth.providers.validators.UniLoginValidator;
-import io.vavr.control.Option;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
-import java.util.function.Supplier;
 
 @Data
 @Builder

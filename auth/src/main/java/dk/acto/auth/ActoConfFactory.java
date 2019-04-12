@@ -7,9 +7,6 @@ import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilderFactory;
 
 import static dk.acto.auth.ActoConf.DEFAULT;
 
@@ -25,13 +22,8 @@ public class ActoConfFactory {
 	}
 	
 	@Bean
-	public UriBuilderFactory newUriBuilderFactory() {
-		return new DefaultUriBuilderFactory();
-	}
-	
-	@Bean
-	public UniLoginConf newUniLoginConf(UriBuilderFactory factory, ActoConf actoConf) {
-		return new UniLoginConf(factory, actoConf);
+	public UniLoginConf newUniLoginConf(ActoConf actoConf) {
+		return new UniLoginConf(actoConf);
 	}
 	
 	@Bean
