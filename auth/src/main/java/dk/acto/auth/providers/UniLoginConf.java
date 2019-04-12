@@ -2,23 +2,26 @@ package dk.acto.auth.providers;
 
 import com.github.scribejava.core.model.ParameterList;
 import dk.acto.auth.ActoConf;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 public class UniLoginConf {
-	private final String authorizationBaseUrl = "https://sso.emu.dk/unilogin/login.cgi";
-	private final String authorizationBaseUrlSingleLogin = "http://sli.emu.dk/unilogin/login.cgi";
+	@Getter(AccessLevel.NONE)
+	private final String authorizationBaseUrl_SingleSignOn = "https://sso.emu.dk/unilogin/login.cgi";
+	@Getter(AccessLevel.NONE)
+	private final String authorizationBaseUrl_SingleLogin = "http://sli.emu.dk/unilogin/login.cgi";
 	private final String apiKey;
 	private final String apiSecret;
 	private final String callback;
 	private final String callbackChooseInstitution;
 	private final String wsUsername;
 	private final String wsPassword;
-
-
+	
 	@Autowired
 	public UniLoginConf(ActoConf actoConf) {
 		this.apiKey = actoConf.getUniLoginAppId();
@@ -28,15 +31,20 @@ public class UniLoginConf {
 		this.callbackChooseInstitution = actoConf.getMyUrl() + "/unilogin/org";
 		this.callback = actoConf.getMyUrl() + "/unilogin/callback";
 	}
-
+	
 	private String encodeCallbackUrl() {
 		return Base64.encodeBase64String(getCallback().getBytes());
 	}
-
+	
 	private String fingerprintAuth() {
 		return DigestUtils.md5Hex(getCallback() + getApiSecret());
 	}
-
+	
+	public String getAuthorizationBaseUrl() {
+//		return authorizationBaseUrl_SingleLogin;
+		return authorizationBaseUrl_SingleSignOn;
+	}
+	
 	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
 		ParameterList builder = new ParameterList();
 		builder.add(UniLoginConstants.USER_ID, userId);
@@ -44,7 +52,7 @@ public class UniLoginConf {
 		builder.add(UniLoginConstants.STATE_AUTH_ENCODED, auth);
 		return builder.appendTo(getCallbackChooseInstitution());
 	}
-
+	
 	public String getAuthorizationUrl() {
 		ParameterList builder = new ParameterList();
 		builder.add(UniLoginConstants.CLIENT_ID, getApiKey());
@@ -53,7 +61,7 @@ public class UniLoginConf {
 		builder.add(UniLoginConstants.STATE_AUTH_ENCODED, DigestUtils.md5Hex(getCallback() + getApiSecret()));
 		return builder.appendTo(getAuthorizationBaseUrl());
 	}
-
+	
 	/**
 	 * Calculation MD5(timestamp+secret+user)
 	 *
