@@ -12,7 +12,7 @@
 	</div>
 	<div>
 		<p class="headline-choose-institution"></p>
-		<form action="/callback-unilogin-choose-organization" method="post">
+		<form action="/unilogin/org" method="post">
 			<select id="institution" name="institution">
 				<option value="">Vælg institution</option>
 				<option th:each="institution : ${institutionList}"
