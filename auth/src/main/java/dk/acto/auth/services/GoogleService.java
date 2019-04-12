@@ -17,23 +17,23 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("google")
-public class GoogleService implements CallbackService{
-    private final GoogleProvider provider;
-    private final ActoConf actoConf;
-
-    @Autowired
-    public GoogleService(GoogleProvider provider, @Validated(GoogleValidator.class) ActoConf actoConf) {
-        this.provider = provider;
-        this.actoConf = actoConf;
-    }
-
-    @GetMapping
-    public void authenticate (HttpServletResponse response) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
-    }
-
-    @GetMapping("callback")
-    public void callback (HttpServletResponse response, @RequestParam String code ) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
-    }
+public class GoogleService implements CallbackService {
+	private final GoogleProvider provider;
+	private final ActoConf actoConf;
+	
+	@Autowired
+	public GoogleService(GoogleProvider provider, @Validated(GoogleValidator.class) ActoConf actoConf) {
+		this.provider = provider;
+		this.actoConf = actoConf;
+	}
+	
+	@GetMapping
+	public void authenticate(HttpServletResponse response) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	}
+	
+	@GetMapping("callback")
+	public void callback(HttpServletResponse response, @RequestParam String code) {
+		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
+	}
 }

@@ -27,7 +27,7 @@ public class TokenFactory {
 	}
 	
 	public String generateToken(String subject, String idp, String name) {
-		return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
+		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
 				.map(x -> JWT.create()
 						.withIssuer("fafnir-" + idp)
 						.withSubject(subject)
@@ -38,7 +38,7 @@ public class TokenFactory {
 	}
 	
 	public String generateToken(String subject, String idp, String userFullName, String organisationId, String organisationName, String[] roles) {
-		return Try.of(() -> Algorithm.RSA512(RSAPublicKey.class.cast(keys.getPublic()), RSAPrivateKey.class.cast(keys.getPrivate())))
+		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
 				.map(x -> JWT.create()
 						.withIssuer("fafnir-" + idp)
 						.withSubject(subject)
