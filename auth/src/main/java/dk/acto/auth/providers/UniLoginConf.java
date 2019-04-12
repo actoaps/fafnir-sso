@@ -41,8 +41,8 @@ public class UniLoginConf {
 	}
 	
 	public String getAuthorizationBaseUrl() {
-//		return authorizationBaseUrl_SingleLogin;
-		return authorizationBaseUrl_SingleSignOn;
+//		return authorizationBaseUrl_SingleSignOn;
+		return authorizationBaseUrl_SingleLogin;
 	}
 	
 	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
