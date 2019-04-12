@@ -2,7 +2,6 @@ package dk.acto.auth.services;
 
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.providers.TestProvider;
-import dk.acto.auth.providers.validators.GoogleValidator;
 import dk.acto.auth.providers.validators.TestValidator;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;

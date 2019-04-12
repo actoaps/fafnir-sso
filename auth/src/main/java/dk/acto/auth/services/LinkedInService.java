@@ -1,7 +1,6 @@
 package dk.acto.auth.services;
 
 import dk.acto.auth.ActoConf;
-import dk.acto.auth.providers.FacebookProvider;
 import dk.acto.auth.providers.LinkedInProvider;
 import dk.acto.auth.providers.validators.LinkedInValidator;
 import io.vavr.control.Try;
