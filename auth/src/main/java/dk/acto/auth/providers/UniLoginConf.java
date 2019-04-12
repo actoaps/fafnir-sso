@@ -1,14 +1,11 @@
 package dk.acto.auth.providers;
 
+import com.github.scribejava.core.model.ParameterList;
 import dk.acto.auth.ActoConf;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilderFactory;
 
 @Data
 public class UniLoginConf {
@@ -20,12 +17,10 @@ public class UniLoginConf {
 	private final String callbackChooseInstitution;
 	private final String wsUsername;
 	private final String wsPassword;
-	private final UriBuilderFactory factory;
 
 
 	@Autowired
-	public UniLoginConf(UriBuilderFactory factory, ActoConf actoConf) {
-		this.factory = factory;
+	public UniLoginConf(ActoConf actoConf) {
 		this.apiKey = actoConf.getUniLoginAppId();
 		this.apiSecret = actoConf.getUniLoginSecret();
 		this.wsUsername = actoConf.getUniLoginWSUsername();
@@ -43,20 +38,20 @@ public class UniLoginConf {
 	}
 
 	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
-	    return factory.builder().pathSegment(getCallbackChooseInstitution())
-				.queryParam("user", userId)
-				.queryParam("timestamp", timestamp)
-				.queryParam("auth", auth)
-                .toString();
+		ParameterList builder = new ParameterList();
+		builder.add(UniLoginConstants.USER_ID, userId);
+		builder.add(UniLoginConstants.TIMESTAMP, timestamp);
+		builder.add(UniLoginConstants.STATE_AUTH_ENCODED, auth);
+		return builder.appendTo(getCallbackChooseInstitution());
 	}
 
 	public String getAuthorizationUrl() {
-		return factory.builder().pathSegment(getAuthorizationBaseUrl())
-                .queryParam("id", getApiKey())
-                .queryParam("secret", getApiSecret())
-                .queryParam("path", Base64.encodeBase64String(getCallback().getBytes()))
-                .queryParam("auth", DigestUtils.md5Hex(getCallback() + getApiSecret()))
-                .toString();
+		ParameterList builder = new ParameterList();
+		builder.add(UniLoginConstants.CLIENT_ID, getApiKey());
+		builder.add(UniLoginConstants.CLIENT_SECRET, getApiSecret());
+		builder.add(UniLoginConstants.CALLBACK, Base64.encodeBase64String(getCallback().getBytes()));
+		builder.add(UniLoginConstants.STATE_AUTH_ENCODED, DigestUtils.md5Hex(getCallback() + getApiSecret()));
+		return builder.appendTo(getAuthorizationBaseUrl());
 	}
 
 	/**
