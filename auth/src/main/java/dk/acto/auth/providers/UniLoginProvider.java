@@ -83,7 +83,7 @@ public class UniLoginProvider {
 				https.uni_login.InstitutionstilknytningEkstern ekstern = institutionstilknytning.getEkstern();
 				https.uni_login.InstitutionstilknytningElev elev = institutionstilknytning.getElev();
 				if (ansat != null) {
-					ansat.getRolle().stream()
+					ansat.getRolle()
 							.forEach(ansatrolle -> roles.add(new UserRole(ansatrolle.name(), "EMPLOYEE")));
 				}
 				if (ekstern != null) {
