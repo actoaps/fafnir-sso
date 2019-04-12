@@ -1,9 +1,6 @@
 package dk.acto.auth;
 
-import dk.acto.auth.providers.validators.FacebookValidator;
-import dk.acto.auth.providers.validators.GoogleValidator;
-import dk.acto.auth.providers.validators.TestValidator;
-import dk.acto.auth.providers.validators.UniLoginValidator;
+import dk.acto.auth.providers.validators.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +20,8 @@ public class ActoConf {
 			.facebookSecret("secret")
 			.googleAppId("0")
 			.googleSecret("secret")
+			.linkedInAppId("0")
+			.linkedInSecret("secret")
 			.uniLoginAppId("0")
 			.uniLoginSecret("secret")
 			.uniLoginWSUsername("username")
@@ -42,6 +41,11 @@ public class ActoConf {
 	private final String googleAppId;
 	@NotBlank(groups = GoogleValidator.class)
 	private final String googleSecret;
+	
+	@NotBlank(groups = LinkedInValidator.class)
+	private final String linkedInAppId;
+	@NotBlank(groups = LinkedInValidator.class)
+	private final String linkedInSecret;
 	
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginAppId;
