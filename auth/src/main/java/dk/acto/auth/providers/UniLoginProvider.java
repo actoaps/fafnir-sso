@@ -25,18 +25,18 @@ public class UniLoginProvider {
 	private final ActoConf actoConf;
 	private final UniLoginConf uniloginConf;
 	private final TokenFactory tokenFactory;
-	
+
 	@Autowired
 	public UniLoginProvider(ActoConf actoConf, UniLoginConf uniloginConf, TokenFactory tokenFactory) {
 		this.actoConf = actoConf;
 		this.uniloginConf = uniloginConf;
 		this.tokenFactory = tokenFactory;
 	}
-	
+
 	public String authenticate() {
 		return uniloginConf.getAuthorizationUrl();
 	}
-	
+
 	public String callback(String user, String timestamp, String auth) {
 		boolean validAccess = uniloginConf.isValidAccess(user, timestamp, auth);
 		if (validAccess) {
@@ -54,7 +54,7 @@ public class UniLoginProvider {
 			return actoConf.getFailureUrl();
 		}
 	}
-	
+
 	private Institution getInstitutionFromId(String institutionId) {
 		WsiInst wsiInst = new WsiInst();
 		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
@@ -68,7 +68,7 @@ public class UniLoginProvider {
 		}
 		return institution;
 	}
-	
+
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
 		WsiBruger wsiBruger = new WsiBruger();
 		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
@@ -99,8 +99,8 @@ public class UniLoginProvider {
 		}
 		return roles;
 	}
-	
-	
+
+
 	/**
 	 * In this moment the UniLogin does NOT contain any name, like first name or last name.
 	 * See https://viden.stil.dk/pages/viewpage.action?pageId=5638128
@@ -112,36 +112,36 @@ public class UniLoginProvider {
 	private String getUserFullNameFromId(String userId) {
 		return userId;
 	}
-	
+
 	public String callbackWithInstitution(String userId, String timestamp, String auth, String institutionId) {
 		final String sub = userId; // jwt:sub == UniLogin username
 		final String postfixIss = "unilogin"; // jwt:iss ends as prefix-postfix, example fafnir-unilogin
 		String name = getUserFullNameFromId(userId); //jwt:name, full name of user
 		final String orgId = institutionId; // jwt:org_id, the organisation id of the user
 		final String orgName = getInstitutionFromId(institutionId).getName(); // jwt:org_name, the organisation name of the user
-		
+
 		boolean validAccess = uniloginConf.isValidAccess(userId, timestamp, auth);
 		if (validAccess) {
 			Set<UserRole> roles = this.getUserRoles(institutionId, userId);
 			String[] roleArray = roles.stream().map(UserRole::toString).toArray(String[]::new);
 			String jwt = tokenFactory.generateToken(sub, postfixIss, name, orgId, orgName, roleArray);
-			return actoConf.getSuccessUrl() + "#" + jwt;
+			return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 		} else {
 			log.error("Authentication failed", "UniLoginProvider");
 			return actoConf.getFailureUrl();
 		}
 	}
-	
+
 	public List<Institution> getInstitutionList(String userId) {
 		WsiBruger wsiBruger = new WsiBruger();
 		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
 		List<Institutionstilknytning> institutionstilknytninger;
-		
+
 		WsiInst wsiInst = new WsiInst();
 		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
 		try {
 			institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
-			
+
 			return institutionstilknytninger.stream().map((institutionstilknytning -> {
 				String instName = "";
 				try {

@@ -66,7 +66,7 @@ public class LinkedInProvider implements Provider {
 		}
 		
 		String jwt = tokenFactory.generateToken(subject, "linkedin", name);
-		return actoConf.getSuccessUrl() + "#" + jwt;
+		return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 	}
 }
 

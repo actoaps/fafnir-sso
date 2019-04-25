@@ -64,7 +64,7 @@ public class FacebookProvider implements Provider {
 		}
 		
 		String jwt = tokenFactory.generateToken(subject, "facebook", name);
-		return actoConf.getSuccessUrl() + "#" + jwt;
+		return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 	}
 }
 
