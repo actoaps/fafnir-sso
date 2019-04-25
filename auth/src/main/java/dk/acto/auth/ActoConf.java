@@ -15,38 +15,40 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @AllArgsConstructor
 public class ActoConf {
-	public static final ActoConf DEFAULT = ActoConf.builder()
-			.facebookAppId("0")
-			.facebookSecret("secret")
-			.googleAppId("0")
-			.googleSecret("secret")
-			.linkedInAppId("0")
-			.linkedInSecret("secret")
-			.uniLoginAppId("0")
-			.uniLoginSecret("secret")
-			.uniLoginWSUsername("username")
-			.uniLoginWSPassword("password")
-			.failureUrl("http://localhost:8080/fail")
-			.successUrl("http://localhost:8080/success")
-			.myUrl("http://localhost:8080")
-			.testMode(true)
-			.build();
-	
+	public static final ActoConf DEFAULT =
+			ActoConf.builder()
+					.facebookAppId("0")
+					.facebookSecret("secret")
+					.googleAppId("0")
+					.googleSecret("secret")
+					.linkedInAppId("0")
+					.linkedInSecret("secret")
+					.uniLoginAppId("0")
+					.uniLoginSecret("secret")
+					.uniLoginWSUsername("username")
+					.uniLoginWSPassword("password")
+					.failureUrl("http://localhost:8080/fail")
+					.successUrl("http://localhost:8080/success")
+					.myUrl("http://localhost:8080")
+					.enableParameter(false)
+					.testMode(true)
+					.build();
+
 	@NotBlank(groups = FacebookValidator.class)
 	private final String facebookAppId;
 	@NotBlank(groups = FacebookValidator.class)
 	private final String facebookSecret;
-	
+
 	@NotBlank(groups = GoogleValidator.class)
 	private final String googleAppId;
 	@NotBlank(groups = GoogleValidator.class)
 	private final String googleSecret;
-	
+
 	@NotBlank(groups = LinkedInValidator.class)
 	private final String linkedInAppId;
 	@NotBlank(groups = LinkedInValidator.class)
 	private final String linkedInSecret;
-	
+
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginAppId;
 	@NotBlank(groups = UniLoginValidator.class)
@@ -64,7 +66,9 @@ public class ActoConf {
 	@NotBlank
 	@URL
 	private final String myUrl;
-	
+
+	private final boolean enableParameter;
+
 	@AssertTrue(groups = TestValidator.class)
 	private final boolean testMode;
 }
