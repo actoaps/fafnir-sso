@@ -12,12 +12,19 @@ public class UniLoginConf {
 	private static final String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
 	private static final String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
 
+	@SuppressWarnings("squid:S1068")
 	private final String apiKey;
+	@SuppressWarnings("squid:S1068")
 	private final String apiSecret;
+	@SuppressWarnings("squid:S1068")
 	private final String callback;
+	@SuppressWarnings("squid:S1068")
 	private final String callbackChooseInstitution;
+	@SuppressWarnings("squid:S1068")
 	private final String wsUsername;
+	@SuppressWarnings("squid:S1068")
 	private final String wsPassword;
+	@SuppressWarnings("squid:S1068")
 	private final boolean useSingleSignOn;
 
 	@Autowired
