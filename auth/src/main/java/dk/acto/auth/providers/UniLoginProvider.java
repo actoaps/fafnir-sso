@@ -44,11 +44,11 @@ public class UniLoginProvider {
 			} else if (institutionList.size() == 1) {
 				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
 			} else {
-				log.error("User does not belong to an institution failure", "UniLoginProvider");
+				log.error("User does not belong to an institution failure for UniLoginProvider");
 				return actoConf.getFailureUrl();
 			}
 		} else {
-			log.error("Authentication failed", "UniLoginProvider");
+			log.error("Authentication failed for UniLoginProvider");
 			return actoConf.getFailureUrl();
 		}
 	}
@@ -136,7 +136,7 @@ public class UniLoginProvider {
 		final String postfixIss = "unilogin"; // jwt:iss ends as prefix-postfix, example fafnir-unilogin
 		String name = getUserFullNameFromId(userId); //jwt:name, full name of user
 		final String orgId = institutionId; // jwt:org_id, the organisation id of the user
-		final String orgName = getInstitutionFromId(institutionId).map(x->x.getName()).orElseThrow(()->new RuntimeException("No institution")); // jwt:org_name, the organisation name of the user
+		final String orgName = getInstitutionFromId(institutionId).map(Institution::getName).orElseThrow(()->new RuntimeException("No institution")); // jwt:org_name, the organisation name of the user
 
 		boolean validAccess = uniloginConf.isValidAccess(userId, timestamp, auth);
 		if (validAccess) {
@@ -145,7 +145,7 @@ public class UniLoginProvider {
 			String jwt = tokenFactory.generateToken(sub, postfixIss, name, orgId, orgName, roleArray);
 			return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 		} else {
-			log.error("Authentication failed", "UniLoginProvider");
+			log.error("Authentication failed for UniLoginProvider");
 			return actoConf.getFailureUrl();
 		}
 	}
