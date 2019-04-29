@@ -13,9 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -55,7 +53,7 @@ public class UniLoginProvider {
 		}
 	}
 
-	private Institution getInstitutionFromId(String institutionId) {
+	private Optional<Institution> getInstitutionFromId(String institutionId) {
 		WsiInst wsiInst = new WsiInst();
 		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
 		Institution institution;
@@ -64,9 +62,9 @@ public class UniLoginProvider {
 			institution = new Institution(inst.getInstnr(), inst.getInstnavn());
 		} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
-			throw new Error("User have no institution");
+			return Optional.empty();
 		}
-		return institution;
+		return Optional.of(institution);
 	}
 
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
@@ -76,12 +74,12 @@ public class UniLoginProvider {
 		try {
 			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
 			institutionstilknytninger = institutionstilknytninger.stream()
-					.filter(til->til.getInstnr() == institutionId)
+					.filter(til->institutionId.equals(til.getInstnr()))
 					.collect(Collectors.toList());
 			roles = toUserRoles(institutionstilknytninger);
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
-			throw new Error("User has no rights");
+			return Collections.emptySet();
 		}
 		return roles;
 	}
@@ -138,7 +136,7 @@ public class UniLoginProvider {
 		final String postfixIss = "unilogin"; // jwt:iss ends as prefix-postfix, example fafnir-unilogin
 		String name = getUserFullNameFromId(userId); //jwt:name, full name of user
 		final String orgId = institutionId; // jwt:org_id, the organisation id of the user
-		final String orgName = getInstitutionFromId(institutionId).getName(); // jwt:org_name, the organisation name of the user
+		final String orgName = getInstitutionFromId(institutionId).map(x->x.getName()).orElseThrow(()->new RuntimeException("No institution")); // jwt:org_name, the organisation name of the user
 
 		boolean validAccess = uniloginConf.isValidAccess(userId, timestamp, auth);
 		if (validAccess) {
@@ -175,6 +173,6 @@ public class UniLoginProvider {
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
 		}
-		throw new Error("User have no institution");
+		return Collections.emptyList();
 	}
 }
