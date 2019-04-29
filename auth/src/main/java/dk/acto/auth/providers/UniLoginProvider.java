@@ -63,7 +63,7 @@ public class UniLoginProvider {
 			https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), institutionId);
 			institution = new Institution(inst.getInstnr(), inst.getInstnavn());
 		} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
-			authentificationFault.printStackTrace();
+			log.error(authentificationFault.getMessage(), authentificationFault);
 			throw new Error("User have no institution");
 		}
 		return institution;
@@ -77,7 +77,7 @@ public class UniLoginProvider {
 			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
 			roles = toUserRoles(institutionstilknytninger);
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
-			authentificationFault.printStackTrace();
+			log.error(authentificationFault.getMessage(), authentificationFault);
 			throw new Error("User has no rights");
 		}
 		return roles;
@@ -164,13 +164,13 @@ public class UniLoginProvider {
 					https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), institutionstilknytning.getInstnr());
 					instName = inst.getInstnavn();
 				} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
-					authentificationFault.printStackTrace();
+					log.error(authentificationFault.getMessage(), authentificationFault);
 				}
 				List<String> roleNames = toUserRoles(institutionstilknytninger).stream().map(UserRole::getName).collect(Collectors.toList());
 				return new Institution(institutionstilknytning.getInstnr(), instName, roleNames);
 			})).distinct().collect(Collectors.toList());
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
-			authentificationFault.printStackTrace();
+			log.error(authentificationFault.getMessage(), authentificationFault);
 		}
 		throw new Error("User have no institution");
 	}
