@@ -15,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @AllArgsConstructor
 public class ActoConf {
+	@SuppressWarnings("squid:S1192")
 	public static final ActoConf DEFAULT =
 			ActoConf.builder()
 					.facebookAppId("0")
@@ -59,7 +60,7 @@ public class ActoConf {
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginWSPassword;
 	private final boolean uniLoginSingleSignOn;
-	
+
 	@NotBlank
 	@URL
 	private final String successUrl;
