@@ -59,6 +59,7 @@ public class ActoConf {
 	private final String uniLoginWSUsername;
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginWSPassword;
+	@SuppressWarnings("squid:S1068")
 	private final boolean uniLoginSingleSignOn;
 
 	@NotBlank
@@ -71,6 +72,7 @@ public class ActoConf {
 	@URL
 	private final String myUrl;
 
+	@SuppressWarnings("squid:S1068")
 	private final boolean enableParameter;
 
 	@AssertTrue(groups = TestValidator.class)
