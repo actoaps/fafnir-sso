@@ -8,4 +8,7 @@ public final class UniLoginConstants {
 	public static final String CLIENT_SECRET = "secret";
 	public static final String CALLBACK = "path";
 	public static final String STATE_AUTH_ENCODED = "auth";
+
+	private UniLoginConstants() {
+	}
 }
