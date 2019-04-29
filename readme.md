@@ -49,9 +49,10 @@ The different fields mean:
 * uniLoginSecret: Your unilogin secret.
 * uniLoginWSUsername: Your unilogin webservice username.
 * uniLoginWSPassword: Your unilogin webservice password.
+* uniLoginSingleSignOn: (Default: false) Choose if unilogin should be SingleLogin (false) or SingleSignOn (true) 
 * successUrl: The URL to redirect to when successful - the JWT will be appended to this URL.
 * failureUrl: The URL to redirect to when unsuccessful.
-* enableParameter: How the JWT token will be appended to URL, using URL?jwtToken=JWT for true or URL#JWT for false
+* enableParameter: (Default: false) How the JWT token will be appended to URL, using URL?jwtToken=JWT for true or URL#JWT for false
 * testMode: If set to true, on startup the service/docker image will write a test token to the log.  
 It also enables the /test endpoint, from which you can retrieve a test token programmatically.
 
