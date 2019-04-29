@@ -72,9 +72,12 @@ public class UniLoginProvider {
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
 		WsiBruger wsiBruger = new WsiBruger();
 		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
-		Set<UserRole> roles = new HashSet<>();
+		Set<UserRole> roles;
 		try {
 			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
+			institutionstilknytninger = institutionstilknytninger.stream()
+					.filter(til->til.getInstnr() == institutionId)
+					.collect(Collectors.toList());
 			roles = toUserRoles(institutionstilknytninger);
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
