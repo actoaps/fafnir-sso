@@ -27,6 +27,7 @@ public class ActoConf {
 					.uniLoginSecret("secret")
 					.uniLoginWSUsername("username")
 					.uniLoginWSPassword("password")
+					.uniLoginSingleSignOn(false)
 					.failureUrl("http://localhost:8080/fail")
 					.successUrl("http://localhost:8080/success")
 					.myUrl("http://localhost:8080")
@@ -57,6 +58,8 @@ public class ActoConf {
 	private final String uniLoginWSUsername;
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginWSPassword;
+	private final boolean uniLoginSingleSignOn;
+	
 	@NotBlank
 	@URL
 	private final String successUrl;
