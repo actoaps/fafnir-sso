@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 public class UniLoginConf {
-	private final static String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
-	private final static String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
+	private static final String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
+	private static final String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
 
 	private final String apiKey;
 	private final String apiSecret;
