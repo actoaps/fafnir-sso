@@ -17,7 +17,7 @@
 				<option value="">Select Institution</option>
 				<option th:each="institution : ${institutionList}"
 				        th:value="${institution.id}"
-				        th:text="${institution.id}+' : '+${institution.name}"></option>
+				        th:text="${institution.id}+' : '+${institution.name}+' (Roles: '+${#strings.listJoin(institution.roles,',')}+')'"></option>
 			</select>
 			<input type="hidden" name="auth" th:value="${auth}">
 			<input type="hidden" name="timestamp" th:value="${timestamp}">

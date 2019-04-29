@@ -72,27 +72,10 @@ public class UniLoginProvider {
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
 		WsiBruger wsiBruger = new WsiBruger();
 		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
-		//AnsatRolle: "Lærer", "Pædagog", "Vikar", "Leder", "Ledelse", "TAP", "Konsulent"
-		//EksternRolle: "Ekstern", "Praktikant"
-		//ElevRolle: "Barn", "Elev", "Studerende"
 		Set<UserRole> roles = new HashSet<>();
 		try {
 			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
-			for (Institutionstilknytning institutionstilknytning : institutionstilknytninger) {
-				https.uni_login.InstitutionstilknytningAnsat ansat = institutionstilknytning.getAnsat();
-				https.uni_login.InstitutionstilknytningEkstern ekstern = institutionstilknytning.getEkstern();
-				https.uni_login.InstitutionstilknytningElev elev = institutionstilknytning.getElev();
-				if (ansat != null) {
-					ansat.getRolle()
-							.forEach(ansatrolle -> roles.add(new UserRole(ansatrolle.name(), "EMPLOYEE")));
-				}
-				if (ekstern != null) {
-					roles.add(new UserRole(ekstern.getRolle().name(), "EMP_EXTERNAL"));
-				}
-				if (elev != null) {
-					roles.add(new UserRole(elev.getRolle().name(), "PUPIL"));
-				}
-			}
+			roles = toUserRoles(institutionstilknytninger);
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			authentificationFault.printStackTrace();
 			throw new Error("User has no rights");
@@ -100,6 +83,40 @@ public class UniLoginProvider {
 		return roles;
 	}
 
+	/**
+	 * There is three role types:
+	 * <ul>
+	 * <li>EMPLOYEE</li>
+	 * <li>EMP_EXTERNAL</li>
+	 * <li>PUPIL</li>
+	 * </ul>
+	 * <p>
+	 * AnsatRolle: "Lærer", "Pædagog", "Vikar", "Leder", "Ledelse", "TAP", "Konsulent"
+	 * EksternRolle: "Ekstern", "Praktikant"
+	 * ElevRolle: "Barn", "Elev", "Studerende"
+	 *
+	 * @param institutionstilknytninger
+	 * @return roles
+	 */
+	private Set<UserRole> toUserRoles(java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger) {
+		Set<UserRole> roles = new HashSet<>();
+		for (Institutionstilknytning institutionstilknytning : institutionstilknytninger) {
+			https.uni_login.InstitutionstilknytningAnsat ansat = institutionstilknytning.getAnsat();
+			https.uni_login.InstitutionstilknytningEkstern ekstern = institutionstilknytning.getEkstern();
+			https.uni_login.InstitutionstilknytningElev elev = institutionstilknytning.getElev();
+			if (ansat != null) {
+				ansat.getRolle()
+						.forEach(ansatrolle -> roles.add(new UserRole(ansatrolle.name(), "EMPLOYEE")));
+			}
+			if (ekstern != null) {
+				roles.add(new UserRole(ekstern.getRolle().name(), "EMP_EXTERNAL"));
+			}
+			if (elev != null) {
+				roles.add(new UserRole(elev.getRolle().name(), "PUPIL"));
+			}
+		}
+		return roles;
+	}
 
 	/**
 	 * In this moment the UniLogin does NOT contain any name, like first name or last name.
@@ -141,7 +158,6 @@ public class UniLoginProvider {
 		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
 		try {
 			institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
-
 			return institutionstilknytninger.stream().map((institutionstilknytning -> {
 				String instName = "";
 				try {
@@ -150,7 +166,8 @@ public class UniLoginProvider {
 				} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 					authentificationFault.printStackTrace();
 				}
-				return new Institution(institutionstilknytning.getInstnr(), instName);
+				List<String> roleNames = toUserRoles(institutionstilknytninger).stream().map(UserRole::getName).collect(Collectors.toList());
+				return new Institution(institutionstilknytning.getInstnr(), instName, roleNames);
 			})).distinct().collect(Collectors.toList());
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			authentificationFault.printStackTrace();
