@@ -2,9 +2,7 @@ package dk.acto.auth.providers;
 
 import com.github.scribejava.core.model.ParameterList;
 import dk.acto.auth.ActoConf;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UniLoginConf {
 	private final static String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
 	private final static String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
-	
+
 	private final String apiKey;
 	private final String apiSecret;
 	private final String callback;
