@@ -17,12 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("test")
 public class TestService {
 	private final TestProvider provider;
-	private final ActoConf actoConf;
-	
+
 	@Autowired
 	public TestService(TestProvider provider, @Validated(TestValidator.class) ActoConf actoConf) {
 		this.provider = provider;
-		this.actoConf = actoConf;
 	}
 	
 	public void authenticate(HttpServletResponse response) {

@@ -20,12 +20,10 @@ import java.util.Map;
 @RequestMapping("unilogin")
 public class UniLoginService implements Callback3Service {
 	private final UniLoginProvider provider;
-	private final ActoConf actoConf;
 
 	@Autowired
 	public UniLoginService(UniLoginProvider provider, @Validated(UniLoginValidator.class) ActoConf actoConf) {
 		this.provider = provider;
-		this.actoConf = actoConf;
 	}
 
 

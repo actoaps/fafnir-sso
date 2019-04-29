@@ -19,12 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("google")
 public class GoogleService implements CallbackService {
 	private final GoogleProvider provider;
-	private final ActoConf actoConf;
-	
+
 	@Autowired
 	public GoogleService(GoogleProvider provider, @Validated(GoogleValidator.class) ActoConf actoConf) {
 		this.provider = provider;
-		this.actoConf = actoConf;
 	}
 	
 	@GetMapping
