@@ -41,7 +41,7 @@ public class UniLoginProvider {
 		boolean validAccess = uniloginConf.isValidAccess(user, timestamp, auth);
 		if (validAccess) {
 			List<Institution> institutionList = this.getInstitutionList(user);
-			if (institutionList.size() > 1 || (actoConf.isTestMode() && institutionList.size() > 0)) {
+			if (institutionList.size() > 1 || (actoConf.isTestMode() && !institutionList.isEmpty())) {
 				return uniloginConf.getChooseInstitutionUrl(user, timestamp, auth);
 			} else if (institutionList.size() == 1) {
 				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
