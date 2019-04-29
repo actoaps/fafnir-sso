@@ -19,12 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("linkedin")
 public class LinkedInService implements CallbackService {
 	private final LinkedInProvider provider;
-	private final ActoConf actoConf;
-	
+
 	@Autowired
 	public LinkedInService(LinkedInProvider provider, @Validated(LinkedInValidator.class) ActoConf actoConf) {
 		this.provider = provider;
-		this.actoConf = actoConf;
 	}
 	
 	@GetMapping

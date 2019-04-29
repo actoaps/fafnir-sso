@@ -19,12 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("facebook")
 public class FacebookService implements CallbackService {
 	private final FacebookProvider provider;
-	private final ActoConf actoConf;
-	
+
 	@Autowired
 	public FacebookService(FacebookProvider provider, @Validated(FacebookValidator.class) ActoConf actoConf) {
 		this.provider = provider;
-		this.actoConf = actoConf;
 	}
 	
 	@GetMapping
