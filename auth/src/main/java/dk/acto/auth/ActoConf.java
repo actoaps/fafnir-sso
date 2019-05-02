@@ -15,20 +15,25 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @AllArgsConstructor
 public class ActoConf {
-	@SuppressWarnings("squid:S1192")
+	private static final String SECRET = "secret";
+	private static final String DEMO = "demo";
+	private static final String ZERO = "0";
+
 	public static final ActoConf DEFAULT =
 			ActoConf.builder()
-					.facebookAppId("0")
-					.facebookSecret("secret")
-					.googleAppId("0")
-					.googleSecret("secret")
-					.linkedInAppId("0")
-					.linkedInSecret("secret")
-					.uniLoginAppId("0")
-					.uniLoginSecret("secret")
+					.facebookAppId(ZERO)
+					.facebookSecret(SECRET)
+					.googleAppId(ZERO)
+					.googleSecret(SECRET)
+					.linkedInAppId(ZERO)
+					.linkedInSecret(SECRET)
+					.uniLoginAppId(ZERO)
+					.uniLoginSecret(SECRET)
 					.uniLoginWSUsername("username")
 					.uniLoginWSPassword("password")
 					.uniLoginSingleSignOn(false)
+					.economicAppSecretToken(DEMO)
+					.economicAgreementGrantToken(DEMO)
 					.failureUrl("http://localhost:8080/fail")
 					.successUrl("http://localhost:8080/success")
 					.myUrl("http://localhost:8080")
@@ -59,8 +64,12 @@ public class ActoConf {
 	private final String uniLoginWSUsername;
 	@NotBlank(groups = UniLoginValidator.class)
 	private final String uniLoginWSPassword;
-	@SuppressWarnings("squid:S1068")
 	private final boolean uniLoginSingleSignOn;
+
+	@NotBlank(groups = EconomicCustomerValidator.class)
+	private final String economicAppSecretToken;
+	@NotBlank(groups = EconomicCustomerValidator.class)
+	private final String economicAgreementGrantToken;
 
 	@NotBlank
 	@URL
@@ -72,7 +81,6 @@ public class ActoConf {
 	@URL
 	private final String myUrl;
 
-	@SuppressWarnings("squid:S1068")
 	private final boolean enableParameter;
 
 	@AssertTrue(groups = TestValidator.class)

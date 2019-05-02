@@ -1,5 +1,7 @@
 package dk.acto.auth.services;
 
+import dk.acto.auth.ActoConf;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,10 +10,16 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-interface ServiceHelper {
+public interface ServiceHelper {
 	static Object functionalRedirectTo(HttpServletResponse response, Supplier<String> function) throws IOException {
 		response.sendRedirect(function.get());
 		return null;
+	}
+
+	static String getJwtUrl(ActoConf actoconf, String jwt){
+		return Optional.ofNullable(jwt)
+				.map(x -> actoconf.getSuccessUrl() + "#" + jwt)
+				.orElse(actoconf.getFailureUrl());
 	}
 	
 	static String getLocaleStr(String acceptLanguageHeader, String... acceptedLocales) {
