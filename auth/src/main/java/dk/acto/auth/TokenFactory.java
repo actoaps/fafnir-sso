@@ -36,7 +36,19 @@ public class TokenFactory {
 						.sign(x))
 				.get();
 	}
-	
+
+	public String generateToken(String subject, String idp, String name, String locale) {
+		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
+				.map(x -> JWT.create()
+						.withIssuer("fafnir-" + idp)
+						.withSubject(subject)
+						.withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+						.withClaim("name", name)
+						.withClaim("locale", locale )
+						.sign(x))
+				.get();
+	}
+
 	public String generateToken(String subject, String idp, String userFullName, String organisationId, String organisationName, String[] roles) {
 		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
 				.map(x -> JWT.create()

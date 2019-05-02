@@ -24,12 +24,14 @@ public class FacebookService implements CallbackService {
 	public FacebookService(FacebookProvider provider, @Validated(FacebookValidator.class) ActoConf actoConf) {
 		this.provider = provider;
 	}
-	
+
+	@Override
 	@GetMapping
 	public void authenticate(HttpServletResponse response) {
 		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
 	}
-	
+
+	@Override
 	@GetMapping("callback")
 	public void callback(HttpServletResponse response, @RequestParam String code) {
 		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(code)));
