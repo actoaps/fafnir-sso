@@ -45,7 +45,7 @@ public class EconomicCustomerProvider implements Provider {
                         .map(EconomicCustomer.CustomerWrapper::getCollection)
                         .getOrElse(List.of()).stream()
                 .filter(x -> x.getCustomerNumber().equals(customerNumber) && x.getEmail().equals(email))
-                .map(x -> tokenFactory.generateToken(x.getEmail(),
+                .map(x -> tokenFactory.generateToken(x.getCustomerNumber(),
                         "economic",
                         x.getName(),
                         localeMap.getOrDefault(x.getCurrency(), "en-GB")))
