@@ -30,9 +30,8 @@ public class LinkedInProvider implements Provider {
 		this.actoConf = actoConf;
 		this.linkedInService = Try.of(() -> new ServiceBuilder(actoConf.getLinkedInAppId())
 				.apiSecret(actoConf.getLinkedInSecret())
-				.state(UUID.randomUUID().toString())
 				.callback(actoConf.getMyUrl() + "/linkedin/callback")
-				.scope("r_liteprofile r_emailaddress") //r_fullprofile
+				.defaultScope("r_liteprofile r_emailaddress") //r_fullprofile
 				.build(LinkedInApi20.instance())).getOrNull();
 		this.tokenFactory = tokenFactory;
 		this.objectMapper = objectMapper;

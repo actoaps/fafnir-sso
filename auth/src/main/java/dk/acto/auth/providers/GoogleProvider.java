@@ -29,9 +29,8 @@ public class GoogleProvider implements Provider {
 		this.actoConf = actoConf;
 		this.googleService = Try.of(() -> new ServiceBuilder(actoConf.getGoogleAppId())
 				.apiSecret(actoConf.getGoogleSecret())
-				.state(UUID.randomUUID().toString())
 				.callback(actoConf.getMyUrl() + "/google/callback")
-				.scope("openid email profile")
+				.defaultScope("openid email profile")
 				.build(GoogleApi20.instance())).getOrNull();
 		this.tokenFactory = tokenFactory;
 	}
