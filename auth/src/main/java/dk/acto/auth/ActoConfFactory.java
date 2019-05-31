@@ -5,6 +5,7 @@ import dk.acto.auth.providers.TestProvider;
 import dk.acto.auth.providers.UniLoginConf;
 import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,10 +15,10 @@ import static dk.acto.auth.ActoConf.DEFAULT;
 @Configuration
 public class ActoConfFactory {
 	@Bean
-	public ActoConf configure(ObjectMapper objectMapper) {
-		return Option.of(System.getenv("ACTO_CONF"))
+	public ActoConf getActoConf(@Value("${ACTO_CONF}") String actoConfJson, ObjectMapper objectMapper) {
+		return Option.of(actoConfJson)
 				.toTry().mapTry(x -> objectMapper.readValue(x, ActoConf.class))
-				.onFailure(x -> log.warn("ACTO_CONF environment variable not found, using DEFAULT"))
+				.onFailure(x -> log.warn("ACTO_CONF environment variable not found, using DEFAULT", x))
 				.getOrElse(DEFAULT);
 	}
 	
