@@ -9,8 +9,10 @@ Authentication Providers
 Fafnir-SSO supports the following Authentication providers:
 
 * Facebook
-* Sign-In with Google
+* Google
 * Unilogin
+* Economic customers
+* LinkedIn
 
 Authentication Tokens
 ---
