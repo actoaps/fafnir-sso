@@ -1,0 +1,39 @@
+
+button {
+    min-height: $height;
+    width: 100%;
+    padding: $padding $padding;
+    padding: 0.4em 1em;
+    
+    text-align: left;
+    background: $purple;
+    color: $white;
+    border: none;
+    //outline: none;
+    border-radius: $borderRadius;
+    border-radius: 19px;
+    font-size: 0.9rem;
+    &:hover {
+        background: lighten($purple,5%);
+    }
+    &:focus {
+        // outline-color: $navy;
+    }
+    &:active {
+        // outline-color: $navy;
+    }
+
+}
+.submitButton {
+    margin-top: 8px;
+    letter-spacing: 1px;
+    // border-left: 6px solid $navy;
+    ::after {
+        content: "";
+        float: right;
+        
+    }
+    &:active, &:focus {
+        border-left: 6px solid $gold;
+    }
+}

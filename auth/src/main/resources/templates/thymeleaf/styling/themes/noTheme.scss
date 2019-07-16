@@ -1,0 +1,75 @@
+// REM and EM is supported from ie10 and onward, formula: 18*emValue = approx pixel value.
+
+* {
+    box-sizing: border-box;
+}
+html {
+    // Fluid typography fallback
+    font-size: 20px; 
+    // 13.3px font at 320pxVW, and 18 at 1920
+    // https://css-tricks.com/snippets/css/fluid-typography/
+    font-size: calc(13.3px + (18 - 13.3) * ((100vw - 320px) / (1920 - 320)));
+    font-family: $bodyFamily;
+    background-color: $htmlBackground;
+}
+html, body {
+// first lines are for IE8, centering in a table.
+    margin: 0;
+    padding: 15px;
+    padding: 0.83em;
+    width: 100%;
+    height: 100%;
+    display: table;
+// IE8 ends 
+
+}
+
+
+.container {
+// first lines are for IE8, centering in a table.
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+// IE8 ends 
+    .content {
+    // first lines are for IE8, centering in a table.
+        display: inline-block;
+        text-align: left;
+    // IE8 ends 
+
+    // IE9 begins
+        position: relative;
+        padding: $paddingLarge;
+        background: $contentBackground;
+        border-radius: $borderRadius;
+        border-top-left-radius: 0;
+    }
+}
+
+.inner-content {
+    svg {
+        position: absolute;
+        // fill: $gold;
+        fill: $purple;
+        height: 72px;
+        height: 4rem;
+        
+        margin: $padding;
+
+    // Option one: offset
+        // top: -26px;
+        // left: -24px;
+        // top: -1.9em;
+        // left: -2em;
+    // Option two: corner 
+        top: -20px;
+        left: -20px;
+        top: -1.2rem;
+        left: -1.2rem;
+        
+     
+    }
+}
+
+
+
