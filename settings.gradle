@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'fafnir-sso'
-include 'auth', 'sample'
+include 'auth'
