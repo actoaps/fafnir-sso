@@ -24,7 +24,7 @@ public class EconomicCustomerProvider implements Provider {
     private final Map<String, String> localeMap = Map.of(
             "NOK", "no-NO",
             "SEK", "sv-SE",
-            "DKK", "da-DK"
+            "EUR", "en-GB"
     );
 
     public EconomicCustomerProvider(TokenFactory tokenFactory, ActoConf actoConf, ActoConf actoconf) {
@@ -48,7 +48,7 @@ public class EconomicCustomerProvider implements Provider {
                 .map(x -> tokenFactory.generateToken(x.getCustomerNumber(),
                         "economic",
                         x.getName(),
-                        localeMap.getOrDefault(x.getCurrency(), "en-GB")))
+                        localeMap.getOrDefault(x.getCurrency(), "da-DK")))
                 .findAny();
         return ServiceHelper.getJwtUrl(actoConf, result.orElse(null));
     }
