@@ -10,11 +10,14 @@ button {
     color: $white;
     border: none;
     //outline: none;
-    border-radius: $borderRadius;
-    border-radius: 19px;
+    border-radius: $borderRadiusButton;
+    //border-radius: 19px;
     font-size: 0.9rem;
+
+
     &:hover {
         background: lighten($purple,5%);
+        @include boxShadow(1);
     }
     &:focus {
         // outline-color: $navy;
@@ -28,6 +31,8 @@ button {
     margin-top: 8px;
     letter-spacing: 1px;
     // border-left: 6px solid $navy;
+    transition: box-shadow ease 0.3s;
+    will-change: box-shadow;
     ::after {
         content: "";
         float: right;
@@ -35,5 +40,6 @@ button {
     }
     &:active, &:focus {
         border-left: 6px solid $gold;
+        @include boxShadow(3);
     }
 }
