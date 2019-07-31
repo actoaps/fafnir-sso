@@ -30,7 +30,8 @@ html, body {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
-// IE8 ends 
+// IE8 ends
+
     .content {
     // first lines are for IE8, centering in a table.
         display: inline-block;
@@ -41,8 +42,11 @@ html, body {
         position: relative;
         padding: $paddingLarge;
         background: $contentBackground;
-        border-radius: $borderRadius;
+        border-radius: $borderRadiusCards;
         border-top-left-radius: 0;
+    // IE9 ends
+
+        @include boxShadow(1);
     }
 }
 
@@ -64,10 +68,8 @@ html, body {
     // Option two: corner 
         top: -20px;
         left: -20px;
-        top: -1.2rem;
-        left: -1.2rem;
-        
-     
+        top: -1.19rem;
+        left: -1.19rem;
     }
 }
 

@@ -6,8 +6,8 @@ $grey: #A8A8A8;
 $white: #F1F1F1;
 
 // Color purposes 
-$htmlBackground:  white;
-$contentBackground: $white;
+$htmlBackground:  #f2f2f2;
+$contentBackground: #FFF;
 
 
 // Sizing and placement, only ie8 supported values.
@@ -21,9 +21,9 @@ $margin: 16px;
 $marginLarg: 32px;
 
 // Styling, only ie8 supported values.
-$borderRadius: 19px;
-
+$borderRadiusCards: 15px;
+$borderRadiusButton: 5px;
 
 // Typography
 $bodyFamily: Barlow, “Helvetica Neue”, Arial, sans-serif;
-$headerFamily: LL Simple Regular Web, Trebuchet MS, sans-serif;
+$headerFamily: LL Simple Regular Web, Trebuchet MS, cursive;
