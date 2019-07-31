@@ -1,0 +1,78 @@
+// REM not supported before IE10
+form {
+  position: relative;
+  padding: $padding;
+  min-width: 256px;
+
+  label {
+    float: left;
+    height: $heightSmal;
+    margin: 0 0 1rem 0;
+    padding: $padding 0 0 0;
+
+    font-weight: bold;
+    // color: $gold;
+    color: $navy;
+    font-size: 18px;
+    font-size: 1rem;
+  }
+
+  input {
+    //position: absolute;
+    height: $height;
+
+    margin: 0 0 18px 0;
+    margin: 0 0 1.14rem 0;
+    min-width: 196px;
+    width: 100%;
+    border-radius: $borderRadiusButton;
+    border: 2px solid #eeeeee;
+    float: right;
+    padding-left: 10.8px;
+    padding-left: 0.6rem;
+    // border-left: 6px solid $navy;
+    outline: none;
+    transition: all ease 0.3s;
+    will-change: border-left;
+    &:active, &:focus {
+      // outline-color: $purple;
+      outline: none;
+      border: 2px solid #bdbdbd;
+      border-left: 6px solid $gold;
+      border-bottom: 1px;
+      @include boxShadow(1);
+    }
+
+  }
+
+  select {
+    min-height: $heightSmal;
+    width: 100%;
+
+    margin-bottom: $margin;
+    padding: $padding $padding;
+
+    background: white;
+    border: 2px solid #f5f5f5;
+    border-radius: $borderRadiusButton;
+
+    letter-spacing: 1px;
+    font-size: 18px;
+    font-size: 1rem;
+    color: $navy;
+    will-change: border-bottom-left-radius, border-bottom-right-radius;
+    &:active, &:focus {
+      outline-color: $navy;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      @include boxShadow(1);
+    }
+
+    option {
+      min-height: $height;
+      &:active, &:focus {
+        outline-color: $navy;
+      }
+    }
+  }
+}
