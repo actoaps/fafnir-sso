@@ -430,15 +430,29 @@ html, body {
     border-top-left-radius: 0;
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12); }
 
-.inner-content svg {
+.decal {
   position: absolute;
-  fill: #6118D6;
-  height: 72px;
-  height: 4rem;
-  margin: 8px;
-  top: -20px;
-  left: -20px;
-  top: -1.19rem;
-  left: -1.19rem; }
+  height: 128px;
+  width: 128px;
+  top: calc(-128px * 8.09/100);
+  left: calc(-128px * 8.09/100); }
+
+.rect1 {
+  position: absolute;
+  top: 9.2%;
+  left: 0;
+  height: 43.22%;
+  width: 8.09%;
+  background: #6118D6;
+  border-radius: 2px; }
+
+.rect2 {
+  position: absolute;
+  top: 0;
+  left: 9.2%;
+  width: 43.22%;
+  height: 8.09%;
+  background: #6118D6;
+  border-radius: 2px; }
 
 /*# sourceMappingURL=styles.css.map */
