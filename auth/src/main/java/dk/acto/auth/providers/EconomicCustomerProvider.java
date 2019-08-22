@@ -1,5 +1,6 @@
 package dk.acto.auth.providers;
 
+import com.google.common.net.UrlEscapers;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.providers.economic.EconomicCustomer;
@@ -39,18 +40,14 @@ public class EconomicCustomerProvider implements Provider {
     }
 
     public String callback(final String email, final String customerNumber) {
-        var result = Option.of("https://restapi.e-conomic.com/customers")
-                        .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(httpHeaders), EconomicCustomer.CustomerWrapper.class))
+        var result = Option.of("https://restapi.e-conomic.com/customers/"  + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
+                        .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(httpHeaders), EconomicCustomer.class))
                         .map(HttpEntity::getBody)
-                        .map(EconomicCustomer.CustomerWrapper::getCollection)
-                        .getOrElse(List.of()).stream()
-                .filter(x -> x.getCustomerNumber().equals(customerNumber) && x.getEmail().equals(email))
                 .map(x -> tokenFactory.generateToken(x.getCustomerNumber(),
                         "economic",
                         x.getName(),
-                        localeMap.getOrDefault(x.getCurrency(), "da-DK")))
-                .findAny();
-        return ServiceHelper.getJwtUrl(actoConf, result.orElse(null));
+                        localeMap.getOrDefault(x.getCurrency(), "da-DK")));
+        return ServiceHelper.getJwtUrl(actoConf, result.getOrNull());
     }
 
     private HttpHeaders getHeaders (ActoConf actoConf) {
