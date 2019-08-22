@@ -5,6 +5,7 @@ import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.providers.economic.EconomicCustomer;
 import dk.acto.auth.services.ServiceHelper;
+import io.vavr.control.Try;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class EconomicCustomerProvider implements Provider {
@@ -39,7 +39,7 @@ public class EconomicCustomerProvider implements Provider {
     }
 
     public String callback(final String email, final String customerNumber) {
-        return Optional.of("https://restapi.e-conomic.com/customers/"  + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
+        return Try.of(() -> "https://restapi.e-conomic.com/customers/"  + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
                         .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(httpHeaders), EconomicCustomer.class))
                         .map(HttpEntity::getBody)
                 .filter(x -> x.getEmail() != null)
@@ -49,7 +49,7 @@ public class EconomicCustomerProvider implements Provider {
                         x.getName(),
                         localeMap.getOrDefault(x.getCurrency(), "da-DK")))
                 .map(x -> ServiceHelper.getJwtUrl(actoConf, x))
-                .orElse(actoConf.getFailureUrl());
+                .getOrElse(actoConf.getFailureUrl());
     }
 
     private HttpHeaders getHeaders (ActoConf actoConf) {
