@@ -15,8 +15,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Log4j2
 @Component
 public class FacebookProvider implements Provider {
@@ -24,7 +22,7 @@ public class FacebookProvider implements Provider {
 	private final OAuth20Service facebookService;
 	private final TokenFactory tokenFactory;
 	private final ObjectMapper objectMapper;
-	
+
 	@Autowired
 	public FacebookProvider(ActoConf actoConf, TokenFactory tokenFactory, ObjectMapper objectMapper) {
 		this.actoConf = actoConf;
@@ -36,11 +34,11 @@ public class FacebookProvider implements Provider {
 		this.tokenFactory = tokenFactory;
 		this.objectMapper = objectMapper;
 	}
-	
+
 	public String authenticate() {
 		return facebookService.getAuthorizationUrl();
 	}
-	
+
 	public String callback(String code) {
 		OAuth2AccessToken token = Option.of(code)
 				.toTry()
@@ -50,7 +48,7 @@ public class FacebookProvider implements Provider {
 		if (token == null) {
 			return actoConf.getFailureUrl();
 		}
-		
+
 		final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name");
 		facebookService.signRequest(token, facebookRequest);
 		var result = Try.of(() -> facebookService.execute(facebookRequest).getBody())
@@ -61,7 +59,7 @@ public class FacebookProvider implements Provider {
 		if (subject == null || subject.isEmpty()) {
 			return actoConf.getFailureUrl();
 		}
-		
+
 		String jwt = tokenFactory.generateToken(subject, "facebook", name);
 		return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 	}
