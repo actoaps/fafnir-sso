@@ -17,6 +17,6 @@ public class TestProvider implements Provider {
 	@Override
 	public String authenticate() {
 		String jwt = tokenFactory.generateToken("test", "test", "Testy McTestface");
-		return actoConf.getSuccessUrl() + "#" + jwt;
+		return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 	}
 }
