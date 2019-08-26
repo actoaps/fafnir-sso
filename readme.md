@@ -68,5 +68,5 @@ destroyed when the service shuts down, invalidating all existing JWT's. It will 
 validate your JWT.
 
 Your JWT is returned to the success url as a fragment, as browsers do not ordinarily send this part to the server,
-so the JWT will not bleed though to server access logs. This means that the browser is responsible for storing the JWT
+so the JWT will not bleed through to server access logs. This means that the browser is responsible for storing the JWT
 securely until it is needed for API requests.
