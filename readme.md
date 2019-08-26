@@ -2,7 +2,7 @@ Fafnir-SSO
 ===
 Fafnir-SSO is an SSO provider, which provides a Single Sign On functionality based on industry standards and best
 practices, using 3rd party providers Fafnir generates JWT's which can be used uniformly by web applications in a
-distributed clouid based setup.
+distributed cloud based setup.
 
 Authentication Providers
 ---
