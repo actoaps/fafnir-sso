@@ -17,6 +17,7 @@ Fafnir-SSO supports the following Authentication providers:
 Authentication Tokens
 ---
 Fafnir-SSO issues JWT RSA-512 tokens, which can be validated using the exposed public key. The fields populated are:
+
 * sub: The subjects name, as provided by the Authentication provider.
 * iss: The issuer, which will be fafnir-<providername>, where <providername> will be the name of the provider used.
 * iat: The time the JWT was issued at.
