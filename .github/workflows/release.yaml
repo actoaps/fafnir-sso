@@ -33,9 +33,7 @@ jobs:
 
           export BUILD_ID=$(git rev-list --no-merges --count $GITHUB_REF)
 
-          docker build -t actoaps/fafnir-sso ./auth
-
-          docker tag actoaps/fafnir-sso registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
+          docker build -t registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID ./auth
 
           docker push registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
         env:
