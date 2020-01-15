@@ -16,8 +16,8 @@ if (System.properties['sonar.login'] != null) {
     jacoco {
         toolVersion = "0.8.3"
     }
-
-    build.finalizedBy('sonarqube')
+    // Wait for fix
+    // build.finalizedBy('sonarqube')
 }
 
 sourceCompatibility = 11
