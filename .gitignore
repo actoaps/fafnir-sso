@@ -1,0 +1,15 @@
+.idea/
+*.iml
+out/
+
+WSDL
+resources/wsdl/
+dk/acto/auth/generated/
+
+# Gradle
+.gradle/
+build/
+gradle.properties
+
+# Webapp
+node_modules/
