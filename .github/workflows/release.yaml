@@ -1,0 +1,40 @@
+name: Release to Docker
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 13
+        uses: actions/setup-java@v1
+        with:
+          java-version: 13.0.1
+
+      - name: Gradle Build
+        run: |
+          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=1.0.$(git rev-list --no-merges --count $GITHUB_REF)
+        env:
+          SONAR_HOST: ${{ secrets.SONAR_HOST }}
+          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+
+      - name: Release to Docker
+        run: |
+          docker login --username $DOCKER_HUB_USERNAME --pasword $DOCKER_HUB_PASSWORD
+
+          export BUILD_ID=$(git rev-list --no-merges --count $GITHUB_REF)
+
+          docker build -t fafnir-sso ./auth
+
+          docker tag fafnir-sso registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
+
+          docker push registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
