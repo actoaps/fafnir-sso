@@ -38,3 +38,6 @@ jobs:
           docker tag fafnir-sso registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
 
           docker push registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
