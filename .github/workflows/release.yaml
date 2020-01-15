@@ -35,7 +35,7 @@ jobs:
 
           docker build -t actoaps/fafnir-sso ./auth
 
-          docker tag fafnir-sso registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
+          docker tag actoaps/fafnir-sso registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
 
           docker push registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
         env:
