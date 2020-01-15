@@ -10,6 +10,7 @@ dk/acto/auth/generated/
 .gradle/
 build/
 gradle.properties
+generated/
 
 # Webapp
 node_modules/
