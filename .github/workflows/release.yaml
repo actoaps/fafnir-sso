@@ -34,11 +34,10 @@ jobs:
       - name: Release to Docker
         run: |
           docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
-
-
-          docker build -t registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID ./auth
-
-          docker push registry.hub.docker.com/actoaps/fafnir-sso:1.0.$BUILD_ID
+          docker build -t actoaps/fafnir-sso:$BUILD_ID ./auth
+          docker tag actoaps/fafnir-sso:$BUILD_ID actoaps/fafnir-sso:latest
+          docker push actoaps/fafnir-sso:$BUILD_ID
+          docker push actoaps/fafnir-sso:latest
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
