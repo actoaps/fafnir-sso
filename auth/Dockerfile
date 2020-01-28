@@ -1,4 +1,4 @@
-FROM openjdk:11.0.1-slim
+FROM openjdk:13-jdk-oraclelinux7
 
 ADD build/distributions/auth.tar ./
 WORKDIR ./auth
