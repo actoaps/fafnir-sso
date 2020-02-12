@@ -13,6 +13,7 @@ Fafnir-SSO supports the following Authentication providers:
 * Unilogin
 * Economic customers
 * LinkedIn
+* Hazelcast (Username/Password)
 
 Authentication Tokens
 ---
