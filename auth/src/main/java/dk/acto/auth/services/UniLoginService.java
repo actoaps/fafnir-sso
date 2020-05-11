@@ -1,6 +1,7 @@
 package dk.acto.auth.services;
 
 import dk.acto.auth.ActoConf;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.providers.UniLoginConstants;
 import dk.acto.auth.providers.UniLoginProvider;
 import dk.acto.auth.providers.validators.UniLoginValidator;
@@ -13,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.Map;
 
 @Controller
@@ -40,8 +42,8 @@ public class UniLoginService implements Callback3Service {
 	}
 
 	@GetMapping("org")
-	public String getOrg(@RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestHeader("Accept-Language") String locale, Model model) {
-		var institutionList = provider.getInstitutionList(user);
+	public String getOrg(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestHeader("Accept-Language") String locale, Model model) {
+		var institutionList = Try.of(() -> provider.getInstitutionList(user)).getOrElse(Collections.emptyList());
 		model.addAllAttributes(
 				Map.of(
 						UniLoginConstants.USER_ID, user,
@@ -50,9 +52,9 @@ public class UniLoginService implements Callback3Service {
 						"institutionList", institutionList
 				)
 		);
-		return "thymeleaf/ChooseInstitutionUni-Login" +
-				ServiceHelper.getLocaleStr(locale, "da", "en") +
-				".thymeleaf";
+		return institutionList.size() > 0
+				? "thymeleaf/ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf"
+				: provider.getFailureUrl(FailureReason.CONNECTION_FAILED);
 	}
 
 	@PostMapping("org")
