@@ -1,6 +1,7 @@
 package dk.acto.auth.providers;
 
 import dk.acto.auth.ActoConf;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.providers.unilogin.Institution;
 import dk.acto.auth.providers.unilogin.UserRole;
@@ -9,6 +10,7 @@ import https.wsibruger_uni_login_dk.ws.WsiBruger;
 import https.wsibruger_uni_login_dk.ws.WsiBrugerPortType;
 import https.wsiinst_uni_login_dk.ws.WsiInst;
 import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
+import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,50 +40,46 @@ public class UniLoginProvider {
 	public String callback(String user, String timestamp, String auth) {
 		boolean validAccess = uniloginConf.isValidAccess(user, timestamp, auth);
 		if (validAccess) {
-			List<Institution> institutionList = this.getInstitutionList(user);
+			List<Institution> institutionList = Try.of(() -> this.getInstitutionList(user)).getOrElse(Collections.emptyList());
 			if (institutionList.size() > 1 || (actoConf.isTestMode() && !institutionList.isEmpty())) {
 				return uniloginConf.getChooseInstitutionUrl(user, timestamp, auth);
 			} else if (institutionList.size() == 1) {
 				return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
 			} else {
 				log.error("User does not belong to an institution failure for UniLoginProvider");
-				return actoConf.getFailureUrl();
+				return this.getFailureUrl(FailureReason.CONNECTION_FAILED);
 			}
 		} else {
 			log.error("Authentication failed for UniLoginProvider");
-			return actoConf.getFailureUrl();
+			return this.getFailureUrl(FailureReason.AUTHENTICATION_FAILED);
 		}
 	}
 
 	private Optional<Institution> getInstitutionFromId(String institutionId) {
 		WsiInst wsiInst = new WsiInst();
 		WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
-		Institution institution;
 		try {
 			https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), institutionId);
-			institution = new Institution(inst.getInstnr(), inst.getInstnavn());
+			return Optional.of(new Institution(inst.getInstnr(), inst.getInstnavn()));
 		} catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
 			return Optional.empty();
 		}
-		return Optional.of(institution);
 	}
 
 	private Set<UserRole> getUserRoles(String institutionId, String userId) {
 		WsiBruger wsiBruger = new WsiBruger();
 		WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
-		Set<UserRole> roles;
 		try {
 			java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
 			institutionstilknytninger = institutionstilknytninger.stream()
 					.filter(til->institutionId.equals(til.getInstnr()))
 					.collect(Collectors.toList());
-			roles = toUserRoles(institutionstilknytninger);
+			return toUserRoles(institutionstilknytninger);
 		} catch (https.wsibruger_uni_login_dk.ws.AuthentificationFault authentificationFault) {
 			log.error(authentificationFault.getMessage(), authentificationFault);
 			return Collections.emptySet();
 		}
-		return roles;
 	}
 
 	/**
@@ -146,7 +144,7 @@ public class UniLoginProvider {
 			return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 		} else {
 			log.error("Authentication failed for UniLoginProvider");
-			return actoConf.getFailureUrl();
+			return this.getFailureUrl(FailureReason.AUTHENTICATION_FAILED);
 		}
 	}
 
@@ -174,5 +172,9 @@ public class UniLoginProvider {
 			log.error(authentificationFault.getMessage(), authentificationFault);
 		}
 		return Collections.emptyList();
+	}
+
+	public String getFailureUrl(FailureReason reason) {
+		return actoConf.getFailureUrl() + "#" + reason.getErrorCode();
 	}
 }
