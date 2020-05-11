@@ -52,9 +52,10 @@ public class UniLoginService implements Callback3Service {
 						"institutionList", institutionList
 				)
 		);
-		return institutionList.size() > 0
-				? "thymeleaf/ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf"
-				: provider.getFailureUrl(FailureReason.CONNECTION_FAILED);
+		if (institutionList.isEmpty()) {
+			Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.getFailureUrl(FailureReason.CONNECTION_FAILED)));
+		}
+		return "thymeleaf/ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf";
 	}
 
 	@PostMapping("org")
