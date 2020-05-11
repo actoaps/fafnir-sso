@@ -13,6 +13,7 @@ Fafnir-SSO supports the following Authentication providers:
 * Unilogin
 * Economic customers
 * LinkedIn
+* Hazelcast (Username/Password)
 
 Authentication Tokens
 ---
@@ -48,7 +49,7 @@ The different fields mean:
 * facebookAppId: Your facebook appid, you can find this in the facebook developer console.  
 * facebookSecret: Your facebook secret, you can find this in the facebook developer console.  
 * googleAppId: Your google appid, you can find this in the google developer console.  
-* googleSecret: Your google secret, you can find this in the facebook developer console.  
+* googleSecret: Your google secret, you can find this in the google developer console.  
 * uniLoginAppId: Your unilogin appid.  
 * uniLoginSecret: Your unilogin secret.  
 * uniLoginWSUsername: Your unilogin webservice username.  
