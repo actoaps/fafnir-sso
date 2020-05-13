@@ -1,5 +1,6 @@
 // Adapted 7 -1 structure: https://sass-guidelin.es/#architecture
-@import 'abstracts/variables';
+// choose theme to compile:
+@import 'themes/acto';
 @import 'abstracts/mixins';
 
 @import 'base/normalize';
@@ -8,5 +9,4 @@
 @import 'components/buttons';
 @import 'components/formElements';
 
-
-@import 'themes/styling';
+@import 'components/styling';

@@ -1,0 +1,36 @@
+// The Acto colors
+$main: #d03635;
+$accent: #fb8f03;
+$header: #33393b;
+$grey: #f3f3f3;
+$white: #fff;
+
+// Color purposes
+$htmlBackground:  #f2f2f2;
+$contentBackground: #FFF;
+
+
+// Sizing and placement, only ie8 supported values.
+$height: 38px;
+$heightSmal: 24px;
+
+$padding: 8px;
+$paddingLarge: 16px;
+
+$margin: 16px;
+$marginLarg: 32px;
+
+// Styling, only ie8 supported values.
+$borderRadiusCards: 15px;
+$borderRadiusButton: 5px;
+
+// Typography
+@font-face{
+  font-family:'Santral';
+  src:url('https://phabsalon.dk/fileadmin/templates/web/font//330B35_12_0.eot');
+  src:url('https://phabsalon.dk/fileadmin/templates/web/font//330B35_12_0.eot?#iefix') format('embedded-opentype'),url('https://phabsalon.dk/fileadmin/templates/web/font//330B35_12_0.woff2') format('woff2'),url('https://phabsalon.dk/fileadmin/templates/web/font//330B35_12_0.woff') format('woff'),url('https://phabsalon.dk/fileadmin/templates/web/font//330B35_12_0.ttf') format('truetype');
+  font-weight:400;
+  font-style:normal
+}
+$bodyFamily: 'Santral', sans-serif;
+$headerFamily: 'Santral',sans-serif;

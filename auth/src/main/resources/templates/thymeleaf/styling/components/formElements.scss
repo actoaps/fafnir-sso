@@ -11,14 +11,12 @@ form {
     padding: $padding 0 0 0;
 
     font-weight: bold;
-    // color: $gold;
-    color: $navy;
+    color: $header;
     font-size: 18px;
     font-size: 1rem;
   }
 
   input {
-    //position: absolute;
     height: $height;
 
     margin: 0 0 18px 0;
@@ -30,15 +28,14 @@ form {
     float: right;
     padding-left: 10.8px;
     padding-left: 0.6rem;
-    // border-left: 6px solid $navy;
+
     outline: none;
     transition: all ease 0.3s;
     will-change: border-left;
     &:active, &:focus {
-      // outline-color: $purple;
       outline: none;
       border: 2px solid #bdbdbd;
-      border-left: 6px solid $gold;
+      border-left: 6px solid $accent;
       border-bottom: 1px;
       @include boxShadow(1);
     }
@@ -59,10 +56,10 @@ form {
     letter-spacing: 1px;
     font-size: 18px;
     font-size: 1rem;
-    color: $navy;
+    color: $header;
     will-change: border-bottom-left-radius, border-bottom-right-radius;
     &:active, &:focus {
-      outline-color: $navy;
+      outline-color: $header;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       @include boxShadow(1);
@@ -71,7 +68,7 @@ form {
     option {
       min-height: $height;
       &:active, &:focus {
-        outline-color: $navy;
+        outline-color: $header;
       }
     }
   }
