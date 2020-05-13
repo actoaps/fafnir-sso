@@ -4,9 +4,9 @@ button {
     width: 100%;
     padding: $padding $padding;
     padding: 0.4em 1em;
-    
+
     text-align: left;
-    background: $purple;
+    background: $main;
     color: $white;
     border: none;
     //outline: none;
@@ -16,30 +16,30 @@ button {
 
 
     &:hover {
-        background: lighten($purple,5%);
+        background: lighten($main,5%);
         @include boxShadow(1);
     }
     &:focus {
-        // outline-color: $navy;
+        // outline-color: $header;
     }
     &:active {
-        // outline-color: $navy;
+        // outline-color: header;
     }
 
 }
 .submitButton {
     margin-top: 8px;
     letter-spacing: 1px;
-    // border-left: 6px solid $navy;
+    // border-left: 6px solid $header;
     transition: box-shadow ease 0.3s;
     will-change: box-shadow;
     ::after {
         content: "";
         float: right;
-        
+
     }
     &:active, &:focus {
-        border-left: 6px solid $gold;
+        border-left: 6px solid $accent;
         @include boxShadow(3);
     }
 }
