@@ -29,16 +29,16 @@ public class HazelcastProvider implements Provider {
             return "/hazelcast/login";
     }
 
-    public String callback(final String email, final String password) {
+    public String callback(final String username, final String password) {
         IMap<String, String> map = hazelcastInstance.getMap("fafnir-user");
-        var lowercaseEmail = email.toLowerCase();
-        return Optional.ofNullable(map.get(lowercaseEmail))
+        var identifier = actoConf.isHazelcastUsernameIsEmail() ? username.toLowerCase() : username;
+        return Optional.ofNullable(map.get(identifier))
                 .map(this::decryptPassword)
                 .filter(password::equals)
                 .map(x -> tokenFactory.generateToken(
-                        lowercaseEmail,
+                        identifier,
                         "hazelcast",
-                        lowercaseEmail))
+                        identifier))
                 .map(x -> ServiceHelper.getJwtUrl(actoConf, x))
                 .orElse(actoConf.getFailureUrl());
     }
