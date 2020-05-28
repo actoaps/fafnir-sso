@@ -42,6 +42,7 @@ You must provide a configuration as an ACTO_CONF Environment variable, the JSON 
         "myUrl": "http://localhost:8080",
         "enableParameter": false,
         "testMode": false,
+        "hazelcastUsernameIsEmail": false
     }
 
 The different fields mean:  
@@ -59,7 +60,8 @@ The different fields mean:
 * failureUrl: The URL to redirect to when unsuccessful.  
 * myUrl: The URL for the whole app.
 * enableParameter: (Default: false) How the JWT token will be appended to URL, using URL?jwtToken=JWT for true or URL#JWT for false  
-* testMode: If set to true, on startup the service/docker image will write a test token to the log. It also enables the /test endpoint, from which you can retrieve a test token programmatically.  
+* testMode: If set to true, on startup the service/docker image will write a test token to the log. It also enables the /test endpoint, from which you can retrieve a test token programmatically. 
+* hazelcastUsernameIsEmail: If set to true, the username will be treated as case insensitive when logging in. It assumes that all usernames (emails) are stored as lowercase. 
 
 How It Works
 ---
