@@ -31,13 +31,14 @@ public class HazelcastProvider implements Provider {
 
     public String callback(final String email, final String password) {
         IMap<String, String> map = hazelcastInstance.getMap("fafnir-user");
-        return Optional.ofNullable(map.get(email))
+        var lowercaseEmail = email.toLowerCase();
+        return Optional.ofNullable(map.get(lowercaseEmail))
                 .map(this::decryptPassword)
                 .filter(password::equals)
                 .map(x -> tokenFactory.generateToken(
-                        email,
+                        lowercaseEmail,
                         "hazelcast",
-                        email))
+                        lowercaseEmail))
                 .map(x -> ServiceHelper.getJwtUrl(actoConf, x))
                 .orElse(actoConf.getFailureUrl());
     }
