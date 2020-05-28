@@ -29,15 +29,16 @@ public class HazelcastProvider implements Provider {
             return "/hazelcast/login";
     }
 
-    public String callback(final String email, final String password) {
+    public String callback(final String username, final String password) {
         IMap<String, String> map = hazelcastInstance.getMap("fafnir-user");
-        return Optional.ofNullable(map.get(email))
+        var identifier = actoConf.isHazelcastUsernameIsEmail() ? username.toLowerCase() : username;
+        return Optional.ofNullable(map.get(identifier))
                 .map(this::decryptPassword)
                 .filter(password::equals)
                 .map(x -> tokenFactory.generateToken(
-                        email,
+                        identifier,
                         "hazelcast",
-                        email))
+                        identifier))
                 .map(x -> ServiceHelper.getJwtUrl(actoConf, x))
                 .orElse(actoConf.getFailureUrl());
     }
