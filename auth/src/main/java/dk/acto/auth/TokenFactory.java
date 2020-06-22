@@ -29,6 +29,18 @@ public class TokenFactory {
 				.get();
 	}
 
+	public String generateTokenWithMetaId(String subject, String idp, String name, String metaId) {
+		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
+				.map(x -> JWT.create()
+						.withIssuer("fafnir-" + idp)
+						.withSubject(subject)
+						.withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+						.withClaim("name", name)
+						.withClaim("mId", metaId)
+						.sign(x))
+				.get();
+	}
+
 	public String generateToken(String subject, String idp, String name) {
 		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
 				.map(x -> JWT.create()
