@@ -36,7 +36,7 @@ public class TokenFactory {
 						.withSubject(subject)
 						.withIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
 						.withClaim("name", name)
-						.withClaim("metaId", metaId)
+						.withClaim("mId", metaId)
 						.sign(x))
 				.get();
 	}
