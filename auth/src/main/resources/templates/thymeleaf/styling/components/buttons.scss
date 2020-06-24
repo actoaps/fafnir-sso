@@ -1,45 +1,44 @@
-
 button {
     min-height: $height;
     width: 100%;
     padding: $padding $padding;
-    padding: 0.4em 1em;
+    padding: 0.5em 1em;
 
     text-align: left;
     background: $main;
     color: $white;
+
     border: none;
-    //outline: none;
     border-radius: $borderRadiusButton;
-    //border-radius: 19px;
     font-size: 0.9rem;
-
-
+    will-change: box-shadow, background;
     &:hover {
-        background: lighten($main,5%);
         @include boxShadow(1);
+        background: lighten($main,10%);
+        cursor: pointer;
     }
-    &:focus {
-        // outline-color: $header;
+    &:focus, &:active {
+      @include boxShadow(1);
+      background: lighten($main,10%);
     }
-    &:active {
-        // outline-color: header;
-    }
-
 }
 .submitButton {
-    margin-top: 8px;
+    margin-top: 1em;
     letter-spacing: 1px;
-    // border-left: 6px solid $header;
-    transition: box-shadow ease 0.3s;
-    will-change: box-shadow;
-    ::after {
-        content: "";
-        float: right;
+    background: transparent;
+    color: black;
+    border: 2px solid slategrey;
 
+    will-change: box-shadow, border;
+    transition: all ease 0.2s;
+    &:hover {
+        background: transparent;
+        box-shadow: none;
     }
     &:active, &:focus {
-        border-left: 6px solid $accent;
         @include boxShadow(3);
+        background: transparent;
+
+        border: 3px solid $accent;
     }
 }

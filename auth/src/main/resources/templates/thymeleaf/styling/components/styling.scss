@@ -40,41 +40,17 @@ html, body {
     // IE9 begins
         position: relative;
         padding: $paddingLarge;
+        padding: 2.75em 2em 1.75em;
         background: $contentBackground;
         border-radius: $borderRadiusCards;
-        border-top-left-radius: 0;
+        //border-top-left-radius: 0;
     // IE9 ends
 
-        @include boxShadow(1);
+        //@include boxShadow(1);
+        border: 2px solid dimgrey;
+    }
+    .inner-content {
+        width: 100%;
     }
 }
-
-.decal  {
-    // We cannot use inline svg as inline svg is a html5 feature. Therefore I have recreated the decal.
-    position: absolute;
-    height:  128px;
-    width: 128px;
-    // rect thinnest side (width) percentage multiplied with the container (decal) width.
-    top: calc(-128px * 8.09/100);
-    left: calc(-128px * 8.09/100);
-}
-.rect1 {
-    position: absolute;
-    top: 9.2%;
-    left: 0;
-    height: 43.22%;
-    width: 8.09%;
-    background: $main;
-    border-radius: 2px;
-}
-.rect2 {
-    position: absolute;
-    top: 0;
-    left: 9.2%;
-    width: 43.22%;
-    height: 8.09%;
-    background: $main;
-    border-radius: 2px;
-}
-
 
