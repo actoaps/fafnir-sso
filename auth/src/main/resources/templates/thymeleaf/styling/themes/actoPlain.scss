@@ -1,9 +1,12 @@
 // The Acto colors
-$main: #2E2A43;
-$accent: #6118D6;
-$header: #2E2A43;
-$grey: #A8A8A8;
+$main: #708090;
+$accent: #334c4f;
+$header: #2f4f4f;
+$grey: #778899;
 $white: #F1F1F1;
+
+// light slategrey
+// slategrey #708090
 
 // Color purposes
 $htmlBackground: #ffffff;
@@ -25,5 +28,5 @@ $borderRadiusCards: 7.5px;
 $borderRadiusButton: 5px;
 
 // Typography
-$bodyFamily: sans-serif;
-$headerFamily: serif;
+$bodyFamily: 'Open Sans', 'Roboto', sans-serif;
+$headerFamily: 'Open Sans', 'Roboto', sans-serif;

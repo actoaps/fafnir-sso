@@ -47,7 +47,8 @@ html, body {
     // IE9 ends
 
         //@include boxShadow(1);
-        border: 2px solid dimgrey;
+        border: 2px solid $header;
+
     }
     .inner-content {
         width: 100%;
