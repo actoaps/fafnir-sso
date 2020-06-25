@@ -27,13 +27,14 @@ button {
     letter-spacing: 1px;
     background: transparent;
     color: black;
-    border: 2px solid slategrey;
+    border: 2px solid $main;
 
     will-change: box-shadow, border;
     transition: all ease 0.2s;
     &:hover {
         background: transparent;
         box-shadow: none;
+        border: 2px solid lighten($accent, 10%);
     }
     &:active, &:focus {
         @include boxShadow(3);

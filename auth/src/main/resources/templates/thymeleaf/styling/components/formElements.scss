@@ -25,7 +25,7 @@ form {
     padding-left: 0.6rem;
 
     float: right;
-    border: 1px solid lightslategrey;
+    border: 1px solid $grey;
     border-left: 6px solid transparent;
     border-right: none;
     border-top: none;
@@ -34,12 +34,12 @@ form {
     transition: all ease 0.2s;
     will-change: border-left;
     &:hover {
-      border-bottom: 2px solid slategrey;
-      border-left: 6px solid lighten($accent, 15%);
+      border-bottom: 2px solid $main;
+      border-left: 6px solid rgba($accent, .75);
     }
     &:active, &:focus {
       outline: none;
-      border-bottom: 2px solid slategray;
+      border-bottom: 2px solid $main;
       border-left: 6px solid $accent;
     }
   }
@@ -52,7 +52,7 @@ form {
     padding: $padding $padding;
 
     background: white;
-    border: 2px solid lightslategrey;
+    border: 2px solid $grey;
     border-radius: $borderRadiusButton;
 
     letter-spacing: 1px;
@@ -60,17 +60,20 @@ form {
     font-size: 1rem;
     color: $header;
     will-change: border-bottom-left-radius, border-bottom-right-radius;
+    &:hover {
+      @include boxShadow(1);
+    }
     &:active, &:focus {
-      outline-color: lighten(slategrey, 10%);
+      outline-color: lighten($grey, 5%);
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      //@include boxShadow(1);
+      @include boxShadow(2);
     }
 
     option {
       min-height: $height;
       &:active, &:focus {
-        outline-color: slategrey;
+        outline-color: $main;
       }
     }
   }

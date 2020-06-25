@@ -338,11 +338,11 @@ template {
 }
 
 html, body, p, input, select {
-  font-family: sans-serif;
+  font-family: "Open Sans", "Roboto", sans-serif;
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: serif;
+  font-family: "Open Sans", "Roboto", sans-serif;
 }
 
 h1 {
@@ -352,7 +352,7 @@ h1 {
   line-height: 1.5;
   letter-spacing: 1.2px;
   margin-block-start: 0;
-  color: #2E2A43;
+  color: #2f4f4f;
 }
 
 button {
@@ -361,7 +361,7 @@ button {
   padding: 8px 8px;
   padding: 0.5em 1em;
   text-align: left;
-  background: #2E2A43;
+  background: #708090;
   color: #F1F1F1;
   border: none;
   border-radius: 5px;
@@ -370,12 +370,12 @@ button {
 }
 button:hover {
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
-  background: #443e62;
+  background: #8d9aa6;
   cursor: pointer;
 }
 button:focus, button:active {
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
-  background: #443e62;
+  background: #8d9aa6;
 }
 
 .submitButton {
@@ -383,18 +383,19 @@ button:focus, button:active {
   letter-spacing: 1px;
   background: transparent;
   color: black;
-  border: 2px solid slategrey;
+  border: 2px solid #708090;
   will-change: box-shadow, border;
   transition: all ease 0.2s;
 }
 .submitButton:hover {
   background: transparent;
   box-shadow: none;
+  border: 2px solid #476a6e;
 }
 .submitButton:active, .submitButton:focus {
   box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 3px 3px -2px rgba(0, 0, 0, 0.12);
   background: transparent;
-  border: 3px solid #6118D6;
+  border: 3px solid #334c4f;
 }
 
 form {
@@ -408,7 +409,7 @@ form label {
   margin: 0 0 1rem 0;
   padding: 8px 0 0 0;
   font-weight: bold;
-  color: #2E2A43;
+  color: #2f4f4f;
   font-size: 18px;
   font-size: 1rem;
 }
@@ -421,7 +422,7 @@ form input {
   padding-left: 10.8px;
   padding-left: 0.6rem;
   float: right;
-  border: 1px solid lightslategrey;
+  border: 1px solid #778899;
   border-left: 6px solid transparent;
   border-right: none;
   border-top: none;
@@ -431,13 +432,13 @@ form input {
   will-change: border-left;
 }
 form input:hover {
-  border-bottom: 2px solid slategrey;
-  border-left: 6px solid #8b4feb;
+  border-bottom: 2px solid #708090;
+  border-left: 6px solid rgba(51, 76, 79, 0.75);
 }
 form input:active, form input:focus {
   outline: none;
-  border-bottom: 2px solid slategray;
-  border-left: 6px solid #6118D6;
+  border-bottom: 2px solid #708090;
+  border-left: 6px solid #334c4f;
 }
 form select {
   min-height: 48px;
@@ -445,24 +446,28 @@ form select {
   margin-bottom: 16px;
   padding: 8px 8px;
   background: white;
-  border: 2px solid lightslategrey;
+  border: 2px solid #778899;
   border-radius: 5px;
   letter-spacing: 1px;
   font-size: 18px;
   font-size: 1rem;
-  color: #2E2A43;
+  color: #2f4f4f;
   will-change: border-bottom-left-radius, border-bottom-right-radius;
 }
+form select:hover {
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+}
 form select:active, form select:focus {
-  outline-color: #8d9aa6;
+  outline-color: #8695a4;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
 }
 form select option {
   min-height: 48px;
 }
 form select option:active, form select option:focus {
-  outline-color: slategrey;
+  outline-color: #708090;
 }
 
 * {
@@ -472,7 +477,7 @@ form select option:active, form select option:focus {
 html {
   font-size: 20px;
   font-size: calc(13.3px + (18 - 13.3) * ((100vw - 320px) / (1920 - 320)));
-  font-family: sans-serif;
+  font-family: "Open Sans", "Roboto", sans-serif;
   background-color: #ffffff;
 }
 
@@ -498,7 +503,7 @@ html, body {
   padding: 2.75em 2em 1.75em;
   background: #FFF;
   border-radius: 7.5px;
-  border: 2px solid dimgrey;
+  border: 2px solid #2f4f4f;
 }
 .container .inner-content {
   width: 100%;
