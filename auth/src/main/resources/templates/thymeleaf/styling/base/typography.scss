@@ -1,5 +1,6 @@
-
-
+html, body, p, input, select {
+    font-family: $bodyFamily;
+}
 h1,h2,h3,h4,h5 {
     font-family: $headerFamily;
 }
@@ -12,9 +13,5 @@ h1 {
     letter-spacing: 1.2px;
 
     margin-block-start: 0;
-    // color: $white;
-    color: $navy;
-    // @supports (initial-letter: 1.1) {
-        // initial-letter: 1.1;
-    // }
+    color: $header;
 }
