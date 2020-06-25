@@ -38,7 +38,8 @@ public class ActoConf {
 					.successUrl("http://localhost:8080/success")
 					.myUrl("http://localhost:8080")
 					.enableParameter(false)
-					.testMode(true)
+					.testMode(false)
+					.hazelcastUsernameIsEmail(false)
 					.build();
 
 	@NotBlank(groups = FacebookValidator.class)
@@ -82,6 +83,8 @@ public class ActoConf {
 	private final String myUrl;
 
 	private final boolean enableParameter;
+
+	private final boolean hazelcastUsernameIsEmail;
 
 	@AssertTrue(groups = TestValidator.class)
 	private final boolean testMode;
