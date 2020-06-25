@@ -49,18 +49,19 @@ public class FacebookProvider implements Provider {
 			return actoConf.getFailureUrl();
 		}
 
-		final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name");
+		final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name,id");
 		facebookService.signRequest(token, facebookRequest);
 		var result = Try.of(() -> facebookService.execute(facebookRequest).getBody())
 				.mapTry(objectMapper::readTree)
 				.getOrNull();
 		String subject = result.get("email").asText();
 		String name = result.get("name").asText();
+		String id = result.get("id").asText();
 		if (subject == null || subject.isEmpty()) {
 			return actoConf.getFailureUrl();
 		}
 
-		String jwt = tokenFactory.generateToken(subject, "facebook", name);
+		String jwt = tokenFactory.generateTokenWithMetaId(subject, "facebook", name, id);
 		return actoConf.getSuccessUrl() + (actoConf.isEnableParameter() ? "?jwtToken=" : "#") + jwt;
 	}
 }
