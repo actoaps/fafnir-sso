@@ -26,10 +26,26 @@ jobs:
 
       - name: Gradle Build
         run: |
-          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=1.0.$(git rev-list --no-merges --count $GITHUB_REF)
+          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
         env:
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
+
+      - name: Import GPG key
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v2
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+
+      - name: Release client to Maven Central
+        run: |
+          gpg --export-secret-keys > secring.gpg
+          ./gradlew uploadArchives -Dsigning.keyId=$KEY_ID -Dsigning.secretKeyRingFile=./secring.gpg -DnexusUsername=$USERNAME -DnexusPassword=$PASSWORD
+        env:
+          KEY_ID: ${{ steps.gpg.outputs.keyid }}
+          USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Release to Docker
         run: |
