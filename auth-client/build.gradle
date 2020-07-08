@@ -1,13 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
 plugins {
-    id 'java'
-    id 'maven-publish'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id "java-library"
+    id "org.springframework.boot" version "2.2.4.RELEASE"
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
 }
 
 sourceCompatibility = 11
 targetCompatibility = 11
-compileJava.options.encoding = 'UTF-8'
+compileJava.options.encoding = "UTF-8"
 
 repositories {
     mavenCentral()
@@ -18,7 +26,7 @@ group = "dk.acto"
 bootJar.enabled = false
 jar.enabled = true
 
-def myVersion = System.properties['versionOverride']
+def myVersion = System.properties["versionOverride"]
 if ((myVersion?.trim())){
     version = myVersion
 } else {
@@ -26,16 +34,62 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.10'
+    compileOnly "org.projectlombok:lombok:1.18.10"
 
-    implementation 'io.vavr:vavr:0.10.2'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
+    implementation "io.vavr:vavr:0.10.2"
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation "org.apache.tomcat.embed:tomcat-embed-core:9.0.35"
 
     implementation "org.springframework:spring-context"
     implementation "org.springframework:spring-web"
     implementation "org.springframework.security:spring-security-web"
 
     annotationProcessor "org.projectlombok:lombok:1.18.10"
-    annotationProcessor 'io.vavr:vavr:0.10.2'
+    annotationProcessor "io.vavr:vavr:0.10.2"
+
+}
+
+if (System.properties.containsKey("nexusUsername") && System.properties.containsKey("nexusPassword")) {
+    project.ext {
+        nexusUsername = System.properties["nexusUsername"]
+        nexusPassword = System.properties["nexusPassword"]
+    }
+}
+
+apply plugin: 'com.bmuschko.nexus'
+
+modifyPom {
+    project {
+        name 'Fafnir SSO Client'
+        description 'Client library for the Fafnir SSO solution, for use with Spring Boot'
+        url 'https://github.com/actoaps/fafnir-sso'
+
+        scm {
+            url 'https://github.com/actoaps/fafnir-sso'
+            connection 'scm:https://github.com/actoaps/fafnir-sso.git'
+            developerConnection 'scm:git://github.com/actoaps/fafnir-sso.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT'
+                url 'https://opensource.org/licenses/MIT'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'EliasJorgensen'
+                name 'Elias Jørgensen'
+                email 'ej@acto.dk'
+            }
+        }
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption("html5", true)
+    }
 }
