@@ -133,3 +133,12 @@ wsdl2javaExt {
 }
 
 wsdl2java.dependsOn = [downloadWSDLWsaGruppe, downloadWSDLWsiBruger, downloadWSDLWsiInst]
+
+distributions {
+	main {
+		distTar.archiveName = "auth.tar"
+		distZip.enabled = false
+		bootDistTar.enabled = false
+		bootDistZip.enabled = false
+	}
+}
