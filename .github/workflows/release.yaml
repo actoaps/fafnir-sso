@@ -41,11 +41,12 @@ jobs:
       - name: Release client to Maven Central
         run: |
           gpg --export-secret-keys > secring.gpg
-          ./gradlew uploadArchives -Dsigning.keyId=$KEY_ID -Dsigning.secretKeyRingFile=./secring.gpg -DnexusUsername=$USERNAME -DnexusPassword=$PASSWORD
+          ./gradlew uploadArchives -DversionOverride=$BUILD_ID -Dsigning.keyId=$KEY_ID -Dsigning.secretKeyRingFile=./secring.gpg -DnexusUsername=$USERNAME -DnexusPassword=$PASSWORD
         env:
           KEY_ID: ${{ steps.gpg.outputs.keyid }}
           USERNAME: ${{ secrets.OSSRH_USERNAME }}
           PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
 
       - name: Release to Docker
         run: |
