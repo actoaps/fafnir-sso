@@ -17,7 +17,7 @@ jobs:
 
       - name: Calculate version
         id: spell
-        uses: actoaps/version-spell@v2
+        uses: actoaps/version-spell@v3
 
       - name: Set up JDK 13
         uses: actions/setup-java@v1
@@ -41,7 +41,7 @@ jobs:
       - name: Release client to Maven Central
         run: |
           gpg --export-secret-keys > secring.gpg
-          ./gradlew :auth-client:uploadArchives -Dsigning.keyId=$KEY_ID -Dsigning.secretKeyRingFile=./secring.gpg -DnexusUsername=$USERNAME -DnexusPassword=$PASSWORD -DversionOverride=$BUILD_ID
+          ./gradlew :auth-client:uploadArchives -Psigning.keyId=$KEY_ID -Psigning.secretKeyRingFile=./secring.gpg -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD -DversionOverride=$BUILD_ID
         env:
           KEY_ID: ${{ steps.gpg.outputs.keyid }}
           USERNAME: ${{ secrets.OSSRH_USERNAME }}
