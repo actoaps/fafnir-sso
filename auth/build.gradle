@@ -23,7 +23,13 @@ if (System.properties['sonar.login'] != null) {
 sourceCompatibility = 11
 targetCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
-//version = '1.0'
+
+def myVersion = System.properties['versionOverride']
+if ((myVersion?.trim())){
+	version = myVersion
+} else {
+	version = "1.0-SNAPSHOT"
+}
 
 bootJar.enabled = false
 jar.enabled = true
