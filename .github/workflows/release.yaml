@@ -26,10 +26,15 @@ jobs:
 
       - name: Gradle Build
         run: |
-          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=1.0.$(git rev-list --no-merges --count $GITHUB_REF)
+          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
         env:
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
+
+      - name: Release client to Github Packages
+        run: |
+          ./gradlew publish
 
       - name: Release to Docker
         run: |
