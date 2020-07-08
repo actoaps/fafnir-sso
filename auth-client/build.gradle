@@ -26,7 +26,7 @@ group = "dk.acto"
 bootJar.enabled = false
 jar.enabled = true
 
-def myVersion = System.properties["versionOverride"]
+def myVersion = System.properties['versionOverride']
 if ((myVersion?.trim())){
     version = myVersion
 } else {
@@ -47,13 +47,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.10"
     annotationProcessor "io.vavr:vavr:0.10.2"
 
-}
-
-if (System.properties.containsKey("nexusUsername") && System.properties.containsKey("nexusPassword")) {
-    project.ext {
-        nexusUsername = System.properties["nexusUsername"]
-        nexusPassword = System.properties["nexusPassword"]
-    }
 }
 
 apply plugin: 'com.bmuschko.nexus'
@@ -92,4 +85,15 @@ javadoc {
     if(JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption("html5", true)
     }
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
+
+nexusStaging {
+    packageGroup = group
+    stagingProfileId = "1648366e1c864"
 }
