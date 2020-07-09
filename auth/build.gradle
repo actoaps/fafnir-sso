@@ -20,8 +20,8 @@ if (System.properties['sonar.login'] != null) {
     // build.finalizedBy('sonarqube')
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 13
+targetCompatibility = 13
 compileJava.options.encoding = 'UTF-8'
 
 def myVersion = System.properties['versionOverride']
