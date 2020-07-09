@@ -96,4 +96,5 @@ nexus {
 nexusStaging {
     packageGroup = group
     stagingProfileId = "1648366e1c864"
+    numberOfRetries = 50
 }
