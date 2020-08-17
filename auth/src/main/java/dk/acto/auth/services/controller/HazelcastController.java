@@ -1,6 +1,8 @@
-package dk.acto.auth.services;
+package dk.acto.auth.services.controller;
 
 import dk.acto.auth.providers.HazelcastProvider;
+import dk.acto.auth.providers.credentials.UsernamePassword;
+import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -12,14 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("hazelcast")
-public class HazelcastService  implements Callback2Service {
+public class HazelcastController {
     private final HazelcastProvider provider;
 
-    public HazelcastService(HazelcastProvider provider) {
+    public HazelcastController(HazelcastProvider provider) {
         this.provider = provider;
     }
 
-    @Override
     @GetMapping
     public void authenticate(HttpServletResponse response) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
@@ -27,7 +28,10 @@ public class HazelcastService  implements Callback2Service {
 
     @PostMapping("login")
     public void callback(HttpServletResponse response, @RequestParam String email, @RequestParam String password) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(email, password)));
+        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(UsernamePassword.builder()
+                .username(email)
+                .password(password)
+                        .build())));
     }
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
