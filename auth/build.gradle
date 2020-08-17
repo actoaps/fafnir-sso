@@ -5,19 +5,8 @@ plugins {
 	id 'de.undercouch.download' version '4.0.4'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'org.sonarqube' version '2.8' apply false
     id 'com.palantir.docker-run' version '0.24.0'
 	id "name.remal.check-updates" version "1.0.164"
-}
-
-if (System.properties['sonar.login'] != null) {
-    apply plugin: 'jacoco'
-    apply plugin: 'org.sonarqube'
-    jacoco {
-        toolVersion = "0.8.3"
-    }
-    // Wait for fix
-    // build.finalizedBy('sonarqube')
 }
 
 sourceCompatibility = 13
@@ -46,7 +35,6 @@ repositories {
 }
 
 mainClassName = 'dk.acto.auth.Main'
-
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.10'
