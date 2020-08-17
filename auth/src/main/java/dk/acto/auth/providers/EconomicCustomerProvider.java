@@ -4,10 +4,14 @@ import com.google.common.net.UrlEscapers;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.model.FafnirUser;
+import dk.acto.auth.model.conf.EconomicConf;
+import dk.acto.auth.model.conf.FafnirConf;
 import dk.acto.auth.providers.credentials.UsernamePassword;
 import dk.acto.auth.providers.economic.EconomicCustomer;
 import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,15 +19,18 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
+@AllArgsConstructor
+@ConditionalOnBean(EconomicConf.class)
 public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePassword> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ActoConf actoConf;
+    private final EconomicConf economicConf;
+//    private final FafnirConf fafnirConf;
     private final HttpHeaders httpHeaders;
     private final Map<String, Locale> localeMap = Map.of(
             "NOK", Locale.forLanguageTag("no-NO"),
@@ -31,18 +38,12 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
             "EUR", Locale.forLanguageTag("en-GB")
     );
 
-    public EconomicCustomerProvider(TokenFactory tokenFactory, ActoConf actoConf, ActoConf actoconf) {
-        this.tokenFactory = tokenFactory;
-        this.actoConf = actoConf;
-        this.httpHeaders = getHeaders(actoconf);
-    }
-
     @Override
     public String authenticate() {
         return "/economic/login";
     }
 
-    public String callback(final UsernamePassword data) {
+    public Optional<String> callback(final UsernamePassword data) {
         var email = data.getUsername();
         var customerNumber = data.getPassword();
 
@@ -57,8 +58,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                         .name(x.getName())
                         .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
                                 .build()))
-                .map(x -> ServiceHelper.getJwtUrl(actoConf, x))
-                .getOrElse(actoConf.getFailureUrl());
+                .toJavaOptional();
     }
 
     private HttpHeaders getHeaders (ActoConf actoConf) {

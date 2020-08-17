@@ -1,6 +1,7 @@
 package dk.acto.auth.services.controller;
 
 import dk.acto.auth.ActoConf;
+import dk.acto.auth.providers.EconomicCustomerProvider;
 import dk.acto.auth.providers.LinkedInProvider;
 import dk.acto.auth.providers.credentials.Token;
 import dk.acto.auth.providers.validators.LinkedInValidator;
@@ -8,6 +9,7 @@ import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("linkedin")
+@ConditionalOnBean(LinkedInProvider.class)
 public class LinkedInController {
 	private final LinkedInProvider provider;
 

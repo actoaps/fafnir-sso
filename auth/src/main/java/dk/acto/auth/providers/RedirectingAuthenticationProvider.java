@@ -1,6 +1,8 @@
 package dk.acto.auth.providers;
 
+import dk.acto.auth.model.CallbackResult;
+
 public interface RedirectingAuthenticationProvider<T> {
     String authenticate();
-    String callback(T data);
+    CallbackResult callback(T data);
 }

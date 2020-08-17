@@ -2,6 +2,7 @@ package dk.acto.auth.services.controller;
 
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.FailureReason;
+import dk.acto.auth.providers.EconomicCustomerProvider;
 import dk.acto.auth.providers.UniLoginConstants;
 import dk.acto.auth.providers.UniLoginProvider;
 import dk.acto.auth.providers.validators.UniLoginValidator;
@@ -9,6 +10,7 @@ import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +23,7 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequestMapping("unilogin")
+@ConditionalOnBean(UniLoginProvider.class)
 public class UniLoginController {
 	private final UniLoginProvider provider;
 

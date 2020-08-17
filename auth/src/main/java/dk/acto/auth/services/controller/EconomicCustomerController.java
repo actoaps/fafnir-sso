@@ -1,11 +1,13 @@
 package dk.acto.auth.services.controller;
 
+import dk.acto.auth.model.conf.EconomicConf;
 import dk.acto.auth.providers.EconomicCustomerProvider;
 import dk.acto.auth.providers.credentials.UsernamePassword;
 import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @AllArgsConstructor
+@ConditionalOnBean(EconomicCustomerProvider.class)
 @RequestMapping("economic")
 public class EconomicCustomerController{
     private final EconomicCustomerProvider provider;
