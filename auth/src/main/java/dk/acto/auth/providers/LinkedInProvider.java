@@ -1,70 +1,64 @@
 package dk.acto.auth.providers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.apis.LinkedInApi20;
-import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.auth.ActoConf;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
+import dk.acto.auth.model.CallbackResult;
 import dk.acto.auth.model.FafnirUser;
+import dk.acto.auth.model.conf.LinkedInConf;
 import dk.acto.auth.providers.credentials.Token;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
-@Log4j2
+@Slf4j
+@ConditionalOnBean(LinkedInConf.class)
 @Component
 public class LinkedInProvider implements RedirectingAuthenticationProvider<Token> {
-	private final ActoConf actoConf;
-	private final OAuth20Service linkedInService;
+	private final OAuth20Service linkedInOAuth;
 	private final TokenFactory tokenFactory;
 	private final ObjectMapper objectMapper;
 
 	@Autowired
-	public LinkedInProvider(ActoConf actoConf, TokenFactory tokenFactory, ObjectMapper objectMapper) {
-		this.actoConf = actoConf;
-		this.linkedInService = Try.of(() -> new ServiceBuilder(actoConf.getLinkedInAppId())
-				.apiSecret(actoConf.getLinkedInSecret())
-				.callback(actoConf.getMyUrl() + "/linkedin/callback")
-				.defaultScope("r_liteprofile r_emailaddress") //r_fullprofile
-				.build(LinkedInApi20.instance())).getOrNull();
+	public LinkedInProvider( TokenFactory tokenFactory, ObjectMapper objectMapper) {
 		this.tokenFactory = tokenFactory;
 		this.objectMapper = objectMapper;
 	}
 
 	public String authenticate() {
-		return linkedInService.getAuthorizationUrl();
+		return linkedInOAuth.getAuthorizationUrl();
 	}
 
-	public String callback(Token data) {
+	public CallbackResult callback(Token data) {
 		var code = data.getToken();
 		OAuth2AccessToken token = Option.of(code)
 				.toTry()
-				.mapTry(linkedInService::getAccessToken)
+				.mapTry(linkedInOAuth::getAccessToken)
 				.onFailure(x -> log.error("Authentication failed", x))
 				.getOrNull();
 		if (token == null) {
-			return actoConf.getFailureUrl();
+			return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
 		}
 
 		// Url not working try:
 		//  https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))
 		final OAuthRequest linkedInRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/me");
-		linkedInService.signRequest(token, linkedInRequest);
-		var result = Try.of(() -> linkedInService.execute(linkedInRequest).getBody())
+		linkedInOAuth.signRequest(token, linkedInRequest);
+		var result = Try.of(() -> linkedInOAuth.execute(linkedInRequest).getBody())
 				.mapTry(objectMapper::readTree)
 				.getOrNull();
 		String subject = result.get("email").asText();
 		String name = result.get("name").asText();
 		if (subject == null || subject.isEmpty()) {
-			return actoConf.getFailureUrl();
+			return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
 		}
 
 		String jwt = tokenFactory.generateToken(FafnirUser.builder()
@@ -72,6 +66,6 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
 				.provider("linkedin")
 				.name(name)
 				.build());
-		return actoConf.getSuccessUrl() + "#" + jwt;
+		return CallbackResult.success(jwt);
 	}
 }

@@ -1,9 +1,11 @@
 package dk.acto.auth.providers;
 
-import dk.acto.auth.ActoConf;
 import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.model.FafnirUser;
+import dk.acto.auth.model.conf.EconomicConf;
+import dk.acto.auth.model.conf.FafnirConf;
+import dk.acto.auth.model.conf.TestConf;
 import dk.acto.auth.providers.unilogin.Institution;
 import dk.acto.auth.providers.unilogin.UserRole;
 import https.uni_login.Institutionstilknytning;
@@ -12,8 +14,10 @@ import https.wsibruger_uni_login_dk.ws.WsiBrugerPortType;
 import https.wsiinst_uni_login_dk.ws.WsiInst;
 import https.wsiinst_uni_login_dk.ws.WsiInstPortType;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -22,17 +26,13 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
+@ConditionalOnBean(EconomicConf.class)
+@AllArgsConstructor
 public class UniLoginProvider {
-    private final ActoConf actoConf;
+    private final FafnirConf fafnirConf;
     private final UniLoginConf uniloginConf;
     private final TokenFactory tokenFactory;
-
-    @Autowired
-    public UniLoginProvider(ActoConf actoConf, UniLoginConf uniloginConf, TokenFactory tokenFactory) {
-        this.actoConf = actoConf;
-        this.uniloginConf = uniloginConf;
-        this.tokenFactory = tokenFactory;
-    }
+    private final Optional<TestConf> testConf;
 
     public String authenticate() {
         return uniloginConf.getAuthorizationUrl();
@@ -42,7 +42,7 @@ public class UniLoginProvider {
         boolean validAccess = uniloginConf.isValidAccess(user, timestamp, auth);
         if (validAccess) {
             List<Institution> institutionList = Try.of(() -> this.getInstitutionList(user)).getOrElse(Collections.emptyList());
-            if (institutionList.size() > 1 || (actoConf.isTestMode() && !institutionList.isEmpty())) {
+            if (institutionList.size() > 1 || (testConf.isPresent() && !institutionList.isEmpty())) {
                 return uniloginConf.getChooseInstitutionUrl(user, timestamp, auth);
             } else if (institutionList.size() == 1) {
                 return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
@@ -149,7 +149,7 @@ public class UniLoginProvider {
                     .organisationName(orgName)
                     .roles(List.of(roleArray))
                     .build());
-            return actoConf.getSuccessUrl() + "#" + jwt;
+            return fafnirConf.getSuccessRedirect() + "#" + jwt;
         } else {
             log.error("Authentication failed for UniLoginProvider");
             return this.getFailureUrl(FailureReason.AUTHENTICATION_FAILED);
@@ -183,6 +183,6 @@ public class UniLoginProvider {
     }
 
     public String getFailureUrl(FailureReason reason) {
-        return actoConf.getFailureUrl() + "#" + reason.getErrorCode();
+        return fafnirConf.getFailureRedirect() + "#" + reason.getErrorCode();
     }
 }

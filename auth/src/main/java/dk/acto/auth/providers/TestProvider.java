@@ -3,15 +3,21 @@ package dk.acto.auth.providers;
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.model.FafnirUser;
+import dk.acto.auth.model.conf.EconomicConf;
+import dk.acto.auth.model.conf.FafnirConf;
+import dk.acto.auth.model.conf.TestConf;
 import dk.acto.auth.providers.credentials.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+@Component
 @AllArgsConstructor
+@ConditionalOnBean(TestConf.class)
 public class TestProvider implements RedirectingAuthenticationProvider<Token> {
 	private final TokenFactory tokenFactory;
-	private final ActoConf actoConf;
+	private final FafnirConf fafnirConf;
 
 	@Override
 	public String authenticate() {
@@ -21,7 +27,7 @@ public class TestProvider implements RedirectingAuthenticationProvider<Token> {
 						.provider("test")
 						.name("TEsty McTestface")
 						.build());
-		return actoConf.getSuccessUrl() + "#" + jwt;
+		return fafnirConf.getSuccessRedirect() + "#" + jwt;
 	}
 
 	@Override

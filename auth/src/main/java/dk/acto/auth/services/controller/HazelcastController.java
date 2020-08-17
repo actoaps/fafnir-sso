@@ -1,10 +1,12 @@
 package dk.acto.auth.services.controller;
 
+import dk.acto.auth.providers.EconomicCustomerProvider;
 import dk.acto.auth.providers.HazelcastProvider;
 import dk.acto.auth.providers.credentials.UsernamePassword;
 import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("hazelcast")
+@ConditionalOnBean(HazelcastProvider.class)
 public class HazelcastController {
     private final HazelcastProvider provider;
 

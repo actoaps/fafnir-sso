@@ -1,6 +1,6 @@
 package dk.acto.auth.services;
 
-import dk.acto.auth.ActoConf;
+import dk.acto.auth.model.conf.FafnirConf;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,10 +16,10 @@ public interface ServiceHelper {
 		return null;
 	}
 
-	static String getJwtUrl(ActoConf actoconf, String jwt) {
+	static String getJwtUrl(FafnirConf fafnirConf, String jwt) {
 		return Optional.ofNullable(jwt)
-				.map(x -> actoconf.getSuccessUrl() + "#" + jwt)
-				.orElse(actoconf.getFailureUrl());
+				.map(x -> fafnirConf.getSuccessRedirect() + "#" + jwt)
+				.orElse(fafnirConf.getFailureRedirect());
 	}
 
 	static String getLocaleStr(String acceptLanguageHeader, String... acceptedLocales) {

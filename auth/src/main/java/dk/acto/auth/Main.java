@@ -1,22 +1,22 @@
 package dk.acto.auth;
 
 import dk.acto.auth.model.FafnirUser;
-import lombok.extern.log4j.Log4j2;
+import dk.acto.auth.model.conf.TestConf;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-@SpringBootApplication
-@Log4j2
-public class Main {
-    private final TokenFactory tokenFactory;
-    private final ActoConf actoConf;
+import java.util.Optional;
 
-    public Main(TokenFactory tokenFactory, ActoConf actoConf) {
-        this.tokenFactory = tokenFactory;
-        this.actoConf = actoConf;
-    }
+@SpringBootApplication
+@AllArgsConstructor
+@Slf4j
+public class Main {
+    private final Optional<TestConf> testConf;
+    private final TokenFactory tokenFactory;
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
@@ -24,7 +24,7 @@ public class Main {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (this.actoConf.isTestMode()) {
+        if (testConf.isPresent()) {
             String jwt = tokenFactory.generateToken(FafnirUser.builder()
                     .subject("test")
                     .provider("test")
@@ -33,4 +33,5 @@ public class Main {
             log.info("Test token: " + jwt);
         }
     }
+
 }
