@@ -1,7 +1,10 @@
-package dk.acto.auth.services;
+package dk.acto.auth.services.controller;
 
 import dk.acto.auth.providers.EconomicCustomerProvider;
+import dk.acto.auth.providers.credentials.UsernamePassword;
+import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -11,15 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 @RequestMapping("economic")
-public class EconomicCustomerService implements Callback2Service {
+public class EconomicCustomerController{
     private final EconomicCustomerProvider provider;
 
-    public EconomicCustomerService(EconomicCustomerProvider provider) {
-        this.provider = provider;
-    }
-
-    @Override
     @GetMapping
     public void authenticate(HttpServletResponse response) {
         Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
@@ -27,7 +26,10 @@ public class EconomicCustomerService implements Callback2Service {
 
     @PostMapping("login")
     public void callback(HttpServletResponse response, @RequestParam String email, @RequestParam String customerNumber) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(email, customerNumber)));
+        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(UsernamePassword.builder()
+                .username(email)
+                .password(customerNumber)
+                .build())));
     }
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)

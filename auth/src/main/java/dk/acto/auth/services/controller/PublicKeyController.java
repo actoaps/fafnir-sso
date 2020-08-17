@@ -1,4 +1,4 @@
-package dk.acto.auth.services;
+package dk.acto.auth.services.controller;
 
 import dk.acto.auth.TokenFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("public-key")
-public class PublicKeyService {
+public class PublicKeyController {
 	private final TokenFactory tokenFactory;
-	
+
 	@Autowired
-	public PublicKeyService(TokenFactory tokenFactory) {
+	public PublicKeyController(TokenFactory tokenFactory) {
 		this.tokenFactory = tokenFactory;
 	}
-	
+
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
 	public String getPublicKey() {
 		return tokenFactory.getPublicKey();

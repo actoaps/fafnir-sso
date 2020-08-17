@@ -1,8 +1,9 @@
-package dk.acto.auth.services;
+package dk.acto.auth.services.controller;
 
 import dk.acto.auth.ActoConf;
 import dk.acto.auth.providers.TestProvider;
 import dk.acto.auth.providers.validators.TestValidator;
+import dk.acto.auth.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("test")
-public class TestService {
+public class TestController {
 	private final TestProvider provider;
 
 	@Autowired
-	public TestService(TestProvider provider, @Validated(TestValidator.class) ActoConf actoConf) {
+	public TestController(TestProvider provider, @Validated(TestValidator.class) ActoConf actoConf) {
 		this.provider = provider;
 	}
 

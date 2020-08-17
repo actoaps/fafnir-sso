@@ -37,7 +37,6 @@ public class ActoConf {
 					.failureUrl("http://localhost:8080/fail")
 					.successUrl("http://localhost:8080/success")
 					.myUrl("http://localhost:8080")
-					.enableParameter(false)
 					.testMode(false)
 					.hazelcastUsernameIsEmail(false)
 					.build();
@@ -81,8 +80,6 @@ public class ActoConf {
 	@NotBlank
 	@URL
 	private final String myUrl;
-
-	private final boolean enableParameter;
 
 	private final boolean hazelcastUsernameIsEmail;
 
