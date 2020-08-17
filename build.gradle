@@ -1,4 +1,72 @@
 plugins {
     id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'base'
+    id 'org.sonarqube' version '3.0' apply false
+}
+
+subprojects {
+    tasks.withType(Test) {
+        testLogging {
+            // set options for log level LIFECYCLE
+            events "FAILED",
+                    "PASSED",
+                    "SKIPPED"
+            "STANDARD_OUT"
+            exceptionFormat "FULL"
+            showExceptions true
+            showCauses true
+            showStackTraces true
+        }
+    }
+
+    apply plugin: 'jacoco'
+
+    plugins.withId('java') {
+        jacoco {
+            toolVersion = "0.8.5"
+        }
+
+        jacocoTestReport {
+            dependsOn(test)
+            reports {
+                xml.enabled true
+                csv.enabled false
+                html.destination file("${buildDir}/jacocoHtml")
+            }
+        }
+
+        test.finalizedBy(jacocoTestReport)
+    }
+}
+
+if (System.properties['sonar.login'] != null) {
+    apply plugin: 'org.sonarqube'
+
+    subprojects {
+        plugins.withId('com.github.node-gradle.node') {
+            sonarqube {
+                properties {
+                    property "sonar.sources", "src"
+                }
+            }
+        }
+        plugins.withId('java') {
+            sonarqube {
+                properties {
+                    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco"
+                }
+            }
+        }
+    }
+
+    project.subprojects.each {build.dependsOn(":${it.name}:build")}
+
+    task sonarAnalysis(group:"Sonarqube") {
+        Task sonarTask = project.getTasks().getByName('sonarqube')
+        doLast {
+            sonarTask.run()
+        }
+    }
+    build.finalizedBy(sonarAnalysis)
 }
 

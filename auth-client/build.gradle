@@ -46,7 +46,6 @@ dependencies {
 
     annotationProcessor "org.projectlombok:lombok:1.18.10"
     annotationProcessor "io.vavr:vavr:0.10.2"
-
 }
 
 apply plugin: 'com.bmuschko.nexus'
