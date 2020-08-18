@@ -2,7 +2,9 @@ package dk.acto.auth.providers;
 
 import com.google.common.net.UrlEscapers;
 import dk.acto.auth.ActoConf;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
+import dk.acto.auth.model.CallbackResult;
 import dk.acto.auth.model.FafnirUser;
 import dk.acto.auth.model.conf.EconomicConf;
 import dk.acto.auth.model.conf.FafnirConf;
@@ -43,7 +45,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         return "/economic/login";
     }
 
-    public Optional<String> callback(final UsernamePassword data) {
+    public CallbackResult callback(final UsernamePassword data) {
         var email = data.getUsername();
         var customerNumber = data.getPassword();
 
@@ -58,7 +60,9 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                         .name(x.getName())
                         .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
                                 .build()))
-                .toJavaOptional();
+                .map(CallbackResult::success)
+                .recoverWith(Throwable.class,Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
+                .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
     private HttpHeaders getHeaders (ActoConf actoConf) {

@@ -14,6 +14,7 @@ import dk.acto.auth.model.conf.LinkedInConf;
 import dk.acto.auth.providers.credentials.Token;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,16 +23,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @ConditionalOnBean(LinkedInConf.class)
 @Component
+@AllArgsConstructor
 public class LinkedInProvider implements RedirectingAuthenticationProvider<Token> {
 	private final OAuth20Service linkedInOAuth;
 	private final TokenFactory tokenFactory;
 	private final ObjectMapper objectMapper;
 
-	@Autowired
-	public LinkedInProvider( TokenFactory tokenFactory, ObjectMapper objectMapper) {
-		this.tokenFactory = tokenFactory;
-		this.objectMapper = objectMapper;
-	}
 
 	public String authenticate() {
 		return linkedInOAuth.getAuthorizationUrl();

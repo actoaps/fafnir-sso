@@ -1,44 +1,35 @@
 package dk.acto.auth.services.controller;
 
-import dk.acto.auth.ActoConf;
-import dk.acto.auth.providers.EconomicCustomerProvider;
+import dk.acto.auth.model.conf.FafnirConf;
 import dk.acto.auth.providers.GoogleProvider;
 import dk.acto.auth.providers.credentials.Token;
-import dk.acto.auth.providers.validators.GoogleValidator;
-import dk.acto.auth.services.ServiceHelper;
-import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletResponse;
-
-@RestController
+@Controller
 @Slf4j
 @RequestMapping("google")
 @ConditionalOnBean(GoogleProvider.class)
+@AllArgsConstructor
 public class GoogleController {
 	private final GoogleProvider provider;
-
-	@Autowired
-	public GoogleController(GoogleProvider provider, @Validated(GoogleValidator.class) ActoConf actoConf) {
-		this.provider = provider;
-	}
+	private final FafnirConf fafnirConf;
 
 	@GetMapping
-	public void authenticate(HttpServletResponse response) {
-		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	public RedirectView authenticate() {
+		return new RedirectView(provider.authenticate());
 	}
 
 	@GetMapping("callback")
-	public void callback(HttpServletResponse response, @RequestParam String code) {
-		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(Token.builder()
+	public RedirectView callback(@RequestParam String code) {
+		return new RedirectView(provider.callback(Token.builder()
 				.token(code)
-				.build())));
+				.build()).getUrl(fafnirConf));
 	}
 }

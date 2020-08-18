@@ -1,16 +1,16 @@
 package dk.acto.auth.providers;
 
-import dk.acto.auth.ActoConf;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
+import dk.acto.auth.model.CallbackResult;
 import dk.acto.auth.model.FafnirUser;
-import dk.acto.auth.model.conf.EconomicConf;
 import dk.acto.auth.model.conf.FafnirConf;
 import dk.acto.auth.model.conf.TestConf;
 import dk.acto.auth.providers.credentials.Token;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Component
 @AllArgsConstructor
@@ -31,7 +31,7 @@ public class TestProvider implements RedirectingAuthenticationProvider<Token> {
 	}
 
 	@Override
-	public String callback(Token data) {
-		return null;
+	public CallbackResult callback(Token data) {
+		return CallbackResult.failure(FailureReason.CONNECTION_FAILED);
 	}
 }
