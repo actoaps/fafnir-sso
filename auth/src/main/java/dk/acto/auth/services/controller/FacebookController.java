@@ -1,10 +1,8 @@
 package dk.acto.auth.services.controller;
 
-import dk.acto.auth.providers.EconomicCustomerProvider;
+import dk.acto.auth.model.conf.FafnirConf;
 import dk.acto.auth.providers.FacebookProvider;
 import dk.acto.auth.providers.credentials.Token;
-import dk.acto.auth.services.ServiceHelper;
-import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -23,16 +21,17 @@ import javax.servlet.http.HttpServletResponse;
 @ConditionalOnBean(FacebookProvider.class)
 public class FacebookController {
 	private final FacebookProvider provider;
+	private final FafnirConf fafnirConf;
 
 	@GetMapping
-	public void authenticate(HttpServletResponse response) {
-		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	public RedirectView authenticate(HttpServletResponse response) {
+		return new RedirectView(provider.authenticate());
 	}
 
 	@GetMapping("callback")
-	public void callback(HttpServletResponse response, @RequestParam String code) {
-		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callback(Token.builder()
+	public RedirectView callback(HttpServletResponse response, @RequestParam String code) {
+		return new RedirectView(provider.callback(Token.builder()
 				.token(code)
-				.build())));
+				.build()).getUrl(fafnirConf));
 	}
 }

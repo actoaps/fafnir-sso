@@ -1,6 +1,9 @@
 package dk.acto.auth.model;
 
 import dk.acto.auth.FailureReason;
+import dk.acto.auth.model.conf.FafnirConf;
+
+import java.util.Optional;
 
 public class CallbackResult {
     private final String jwt;
@@ -17,5 +20,11 @@ public class CallbackResult {
 
     public static CallbackResult failure(FailureReason failureReason){
         return new CallbackResult(null, failureReason);
+    }
+
+    public String getUrl (FafnirConf fafnirConf) {
+        return Optional.ofNullable(jwt)
+                .map(token -> fafnirConf.getSuccessRedirect() + "#" + token)
+                .orElseGet(() ->fafnirConf.getFailureRedirect() +"#" +failureReason.getErrorCode());
     }
 }
