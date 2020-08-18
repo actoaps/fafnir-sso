@@ -10,7 +10,7 @@ import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +21,9 @@ import javax.validation.Validator;
 public class BeanConf {
     private final Validator validator;
 
+
     @Bean
-    @ConditionalOnExpression("${ECONOMIC_AST} and ${ECONOMIC_AGT}")
+    @ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
     public EconomicConf getEconomicConf(
             @Value("${ECONOMIC_AST}") String secret,
             @Value("${ECONOMIC_AGT}") String grant) {
@@ -31,16 +32,16 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnExpression("${FACEBOOK_AID} and ${FACEBOOK_SECRET}")
+    @ConditionalOnProperty(name = {"FACEBOOK_AID", "FACEBOOK_SECRET"})
     public FacebookConf getFacebookConf(
-            @Value("${FACEBOOK_AID:#{null}}") String appId,
-            @Value("${FACEBOOK_SECRET:#{null}}") String secret) {
+            @Value("${FACEBOOK_AID}") String appId,
+            @Value("${FACEBOOK_SECRET}") String secret) {
         var bean = new FacebookConf(appId, secret);
         return validator.validate(bean).isEmpty() ? bean : null;
     }
 
     @Bean
-    @ConditionalOnExpression("${GOOGLE_AID} and ${GOOGLE_SECRET}")
+    @ConditionalOnProperty(name = {"GOOGLE_AID", "GOOGLE_SECRET"})
     public GoogleConf getGoogleConf(
             @Value("${GOOGLE_AID}") String appId,
             @Value("${GOOGLE_SECRET}") String secret) {
@@ -48,7 +49,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnExpression("${LINKED_IN_AID} and ${LINKED_IN_SECRET}")
+    @ConditionalOnProperty(name = {"LINKED_IN_AID", "LINKED_IN_SECRET"})
     public LinkedInConf getLinkedInConf(
             @Value("${LINKED_IN_AID}") String appId,
             @Value("${LINKED_IN_SECRET}") String secret) {
@@ -56,7 +57,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnExpression("${UL_AID} and ${UL_SECRET} and ${UL_WS_USER} and ${UL_WS_PASS}")
+    @ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
     public UniLoginConf getUnuLoginConf(
             @Value("${UL_AID}") String appId,
             @Value("${UL_SECRET}") String secret,
@@ -74,16 +75,14 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnExpression("${TEST_ENABLED}")
+    @ConditionalOnProperty(name = "TEST_ENABLED")
     public TestConf getTestConf() {
         return new TestConf(true);
-
-
     }
 
     @Bean
     public FafnirConf getFafnirConf(
-            @Value("${FAFNIR_URL:http://localhost:8080/}") String url,
+            @Value("${FAFNIR_URL:http://localhost:8080}") String url,
             @Value("${FAFNIR_SUCCESS:http://localhost:8080/success}") String success,
             @Value("${FAFNIR_FAILURE:http://localhost:8080/fail}") String failure) {
         return new FafnirConf(url, success, failure);
@@ -112,7 +111,7 @@ public class BeanConf {
     @Bean
     @ConditionalOnBean(LinkedInConf.class)
     public OAuth20Service linkedInOAuth(LinkedInConf linkedInConf, FafnirConf fafnirConf ) {
-        Try.of(() -> new ServiceBuilder(linkedInConf.getAppId())
+        return Try.of(() -> new ServiceBuilder(linkedInConf.getAppId())
                 .apiSecret(linkedInConf.getSecret())
                 .callback(fafnirConf.getUrl() + "/linkedin/callback")
                 .defaultScope("r_liteprofile r_emailaddress") //r_fullprofile

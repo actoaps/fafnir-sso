@@ -2,13 +2,13 @@ package dk.acto.auth.providers;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
+import dk.acto.auth.model.CallbackResult;
 import dk.acto.auth.model.FafnirUser;
-import dk.acto.auth.model.conf.FafnirConf;
 import dk.acto.auth.model.conf.HazelcastConf;
 import dk.acto.auth.providers.credentials.UsernamePassword;
-import dk.acto.auth.services.ServiceHelper;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
@@ -16,26 +16,18 @@ import java.util.Optional;
 
 @Component
 @ConditionalOnBean(HazelcastConf.class)
+@AllArgsConstructor
 public class HazelcastProvider implements RedirectingAuthenticationProvider<UsernamePassword> {
     private final TokenFactory tokenFactory;
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
-    private final FafnirConf fafnirConf;
-
-    public HazelcastProvider(TokenFactory tokenFactory,
-                             @Qualifier("hazelcastInstance") HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf, FafnirConf fafnirConf) {
-        this.tokenFactory = tokenFactory;
-        this.hazelcastInstance = hazelcastInstance;
-        this.hazelcastConf = hazelcastConf;
-        this.fafnirConf = fafnirConf;
-    }
 
     @Override
     public String authenticate() {
             return "/hazelcast/login";
     }
 
-    public String callback(final UsernamePassword data) {
+    public CallbackResult callback(final UsernamePassword data) {
         var username = data.getUsername();
         var password = data.getPassword();
 
@@ -50,8 +42,8 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                                 .subject(identifier)
                                 .provider("hazelcast")
                                 .build()))
-                .map(x -> ServiceHelper.getJwtUrl(fafnirConf, x))
-                .orElse(fafnirConf.getFailureRedirect());
+                .map(CallbackResult::success)
+                .orElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
     private String decryptPassword(String encryptedPassword) {
