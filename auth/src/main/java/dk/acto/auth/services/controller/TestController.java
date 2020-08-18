@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +27,7 @@ public class TestController {
 	private final TestProvider provider;
 
 	@GetMapping
-	public void authenticate(HttpServletResponse response) {
-		Try.of(() -> ServiceHelper.functionalRedirectTo(response, provider::authenticate));
+	public RedirectView authenticate(HttpServletResponse response) {
+		return new RedirectView(provider.authenticate());
 	}
 }
