@@ -12,19 +12,22 @@ import dk.acto.auth.model.FafnirUser;
 import dk.acto.auth.model.conf.GoogleConf;
 import dk.acto.auth.providers.credentials.Token;
 import io.vavr.control.Option;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @ConditionalOnBean(GoogleConf.class)
-@AllArgsConstructor
 public class GoogleProvider implements RedirectingAuthenticationProvider<Token> {
-    private final GoogleConf googleConf;
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;
+
+    public GoogleProvider(@Qualifier("googleOAuth") OAuth20Service googleOauth, TokenFactory tokenFactory) {
+        this.googleOauth = googleOauth;
+        this.tokenFactory = tokenFactory;
+    }
 
     public String authenticate() {
         return googleOauth.getAuthorizationUrl();

@@ -7,42 +7,34 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.auth.model.conf.*;
 import io.vavr.control.Try;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.validation.Validator;
-
 @Configuration
-@AllArgsConstructor
 public class BeanConf {
-    private final Validator validator;
-
 
     @Bean
     @ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
-    public EconomicConf getEconomicConf(
+    public EconomicConf economicConf(
             @Value("${ECONOMIC_AST}") String secret,
             @Value("${ECONOMIC_AGT}") String grant) {
-        var bean = new EconomicConf(secret, grant);
-        return validator.validate(bean).isEmpty() ? bean : null;
+        return new EconomicConf(secret, grant);
     }
 
     @Bean
     @ConditionalOnProperty(name = {"FACEBOOK_AID", "FACEBOOK_SECRET"})
-    public FacebookConf getFacebookConf(
+    public FacebookConf facebookConf(
             @Value("${FACEBOOK_AID}") String appId,
             @Value("${FACEBOOK_SECRET}") String secret) {
-        var bean = new FacebookConf(appId, secret);
-        return validator.validate(bean).isEmpty() ? bean : null;
+        return new FacebookConf(appId, secret);
     }
 
     @Bean
     @ConditionalOnProperty(name = {"GOOGLE_AID", "GOOGLE_SECRET"})
-    public GoogleConf getGoogleConf(
+    public GoogleConf googleConf(
             @Value("${GOOGLE_AID}") String appId,
             @Value("${GOOGLE_SECRET}") String secret) {
         return new GoogleConf(appId, secret);
@@ -50,7 +42,7 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnProperty(name = {"LINKED_IN_AID", "LINKED_IN_SECRET"})
-    public LinkedInConf getLinkedInConf(
+    public LinkedInConf linkedInConf(
             @Value("${LINKED_IN_AID}") String appId,
             @Value("${LINKED_IN_SECRET}") String secret) {
         return new LinkedInConf(appId, secret);
@@ -58,7 +50,7 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
-    public UniLoginConf getUnuLoginConf(
+    public UniLoginConf uniLoginConf(
             @Value("${UL_AID}") String appId,
             @Value("${UL_SECRET}") String secret,
             @Value("${UL_WS_USER}") String wsUser,
@@ -68,7 +60,7 @@ public class BeanConf {
     }
 
     @Bean
-    public HazelcastConf getHazelcastConf(
+    public HazelcastConf hazelcastConf(
             @Value("${HAZELCAST_USERNAME_IS_EMAIL:false}") boolean userNameIsEmail,
             @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted) {
         return new HazelcastConf(userNameIsEmail, passwordIsEncrypted);
@@ -76,12 +68,12 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnProperty(name = "TEST_ENABLED")
-    public TestConf getTestConf() {
+    public TestConf testConf() {
         return new TestConf(true);
     }
 
     @Bean
-    public FafnirConf getFafnirConf(
+    public FafnirConf fafnirConf(
             @Value("${FAFNIR_URL:http://localhost:8080}") String url,
             @Value("${FAFNIR_SUCCESS:http://localhost:8080/success}") String success,
             @Value("${FAFNIR_FAILURE:http://localhost:8080/fail}") String failure) {
@@ -90,7 +82,7 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnBean(GoogleConf.class)
-    public OAuth20Service getGoogleOAuth (GoogleConf googleConf, FafnirConf fafnirConf) {
+    public OAuth20Service googleOAuth (GoogleConf googleConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(googleConf.getAppId())
                 .apiSecret(googleConf.getSecret())
                 .callback(fafnirConf + "/google/callback")
@@ -100,7 +92,7 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnBean(FacebookConf.class)
-    public OAuth20Service getFacebookOAuth (FacebookConf facebookConf, FafnirConf fafnirConf) {
+    public OAuth20Service facebookOAuth (FacebookConf facebookConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(facebookConf.getAppId())
                 .apiSecret(facebookConf.getSecret())
                 .callback(fafnirConf.getUrl() + "/facebook/callback")
