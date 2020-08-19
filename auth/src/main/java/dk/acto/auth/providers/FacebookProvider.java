@@ -1,37 +1,36 @@
 package dk.acto.auth.providers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.apis.FacebookApi;
-import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.auth.ActoConf;
 import dk.acto.auth.FailureReason;
 import dk.acto.auth.TokenFactory;
 import dk.acto.auth.model.CallbackResult;
 import dk.acto.auth.model.FafnirUser;
-import dk.acto.auth.model.conf.EconomicConf;
 import dk.acto.auth.model.conf.FacebookConf;
 import dk.acto.auth.providers.credentials.Token;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
 @ConditionalOnBean(FacebookConf.class)
-@AllArgsConstructor
 public class FacebookProvider implements RedirectingAuthenticationProvider<Token> {
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
     private final OAuth20Service facebookOauth;
 
+    public FacebookProvider(TokenFactory tokenFactory, ObjectMapper objectMapper, @Qualifier("facebookOAuth") OAuth20Service facebookOauth) {
+        this.tokenFactory = tokenFactory;
+        this.objectMapper = objectMapper;
+        this.facebookOauth = facebookOauth;
+    }
 
     public String authenticate() {
         return facebookOauth.getAuthorizationUrl();
