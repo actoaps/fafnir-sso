@@ -12,19 +12,12 @@ public class UniLoginConf {
 	private static final String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
 	private static final String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
 
-	@SuppressWarnings("squid:S1068")
 	private final String apiKey;
-	@SuppressWarnings("squid:S1068")
 	private final String apiSecret;
-	@SuppressWarnings("squid:S1068")
 	private final String callback;
-	@SuppressWarnings("squid:S1068")
 	private final String callbackChooseInstitution;
-	@SuppressWarnings("squid:S1068")
 	private final String wsUsername;
-	@SuppressWarnings("squid:S1068")
 	private final String wsPassword;
-	@SuppressWarnings("squid:S1068")
 	private final boolean useSingleSignOn;
 
 	@Autowired
@@ -61,14 +54,6 @@ public class UniLoginConf {
 		return builder.appendTo(getAuthorizationBaseUrl());
 	}
 
-	/**
-	 * Calculation MD5(timestamp+secret+user)
-	 *
-	 * @param user      name of valid user
-	 * @param timestamp YYYYMMDDhhmmss
-	 * @param auth      is MD5(timestamp+secret+user)
-	 * @return
-	 */
 	public boolean isValidAccess(String user, String timestamp, String auth) {
 		return DigestUtils.md5Hex(timestamp + getApiSecret() + user).equals(auth);
 	}
