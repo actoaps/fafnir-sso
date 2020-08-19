@@ -1,31 +1,37 @@
 package dk.acto.auth;
 
-import lombok.extern.log4j.Log4j2;
+import dk.acto.auth.model.FafnirUser;
+import dk.acto.auth.model.conf.TestConf;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
+import java.util.Optional;
+
 @SpringBootApplication
-@Log4j2
+@AllArgsConstructor
+@Slf4j
 public class Main {
-	private final TokenFactory tokenFactory;
-	private final ActoConf actoConf;
+    private final Optional<TestConf> testConf;
+    private final TokenFactory tokenFactory;
 
-	public Main(TokenFactory tokenFactory, ActoConf actoConf) {
-		this.tokenFactory = tokenFactory;
-		this.actoConf = actoConf;
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(Main.class, args);
-	}
+    @EventListener
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        if (testConf.isPresent()) {
+            String jwt = tokenFactory.generateToken(FafnirUser.builder()
+                    .subject("test")
+                    .provider("test")
+                    .name("Testy McTestFace")
+                    .build());
+            log.info("Test token: " + jwt);
+        }
+    }
 
-	@EventListener
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (this.actoConf.isTestMode()) {
-			String jwt = tokenFactory.generateToken("test", "test", "Testy McTestface");
-			log.info("Test token: " + jwt);
-		}
-	}
 }
