@@ -85,7 +85,7 @@ public class BeanConf {
     public OAuth20Service googleOAuth (GoogleConf googleConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(googleConf.getAppId())
                 .apiSecret(googleConf.getSecret())
-                .callback(fafnirConf + "/google/callback")
+                .callback(fafnirConf.getUrl() + "/google/callback")
                 .defaultScope("openid email profile")
                 .build(GoogleApi20.instance())).getOrNull();
     }
