@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class BeanConf {
@@ -61,6 +62,7 @@ public class BeanConf {
     }
 
     @Bean
+    @Primary
     public HazelcastConf hazelcastConf(
             @Value("${HAZELCAST_MAP_NAME:fafnir-users}") String mapName,
             @Value("${HAZELCAST_USERNAME_IS_EMAIL:false}") boolean userNameIsEmail,

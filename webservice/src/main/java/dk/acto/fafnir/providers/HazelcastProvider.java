@@ -38,9 +38,13 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                 .filter(user -> validatePassword(user, password))
                 .map(x -> tokenFactory.generateToken(
                         FafnirUser.builder()
-                                .name(identifier)
-                                .subject(identifier)
+                                .name(x.getName())
+                                .subject(x.getSubject())
                                 .provider("hazelcast")
+                                .locale(x.getLocale())
+                                .metaId(x.getMetaId())
+                                .organisationId(x.getOrganisationId())
+                                .organisationName(x.getOrganisationName())
                                 .build()))
                 .map(CallbackResult::success)
                 .orElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
