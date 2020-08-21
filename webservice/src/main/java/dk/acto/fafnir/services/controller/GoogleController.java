@@ -2,7 +2,7 @@ package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.GoogleProvider;
-import dk.acto.fafnir.providers.credentials.Token;
+import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -28,7 +28,7 @@ public class GoogleController {
 
 	@GetMapping("callback")
 	public RedirectView callback(@RequestParam String code) {
-		return new RedirectView(provider.callback(Token.builder()
+		return new RedirectView(provider.callback(TokenCredentials.builder()
 				.token(code)
 				.build()).getUrl(fafnirConf));
 	}

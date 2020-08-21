@@ -7,7 +7,7 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class UsernamePassword {
+public class UsernamePasswordCredentials {
     String username;
     String password;
 }

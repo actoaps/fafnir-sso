@@ -25,7 +25,7 @@ public final class CryptoUtil {
     }
 
     public static String encryptPassword(String password, PublicKey publicKey) {
-        return Try.of(() -> Cipher.getInstance("RSA/ECB/PKCS1Padding"))
+        return Try.of(() -> Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING"))
                 .andThenTry(x -> x.init(Cipher.ENCRYPT_MODE, publicKey))
                 .mapTry(x -> x.doFinal(password.getBytes(StandardCharsets.UTF_8)))
                 .map(x -> Base64.getEncoder().encodeToString(x))

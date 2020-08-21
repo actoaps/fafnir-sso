@@ -1,36 +1,29 @@
 package dk.acto.fafnir.services.controller;
 
-import dk.acto.fafnir.ActoConf;
 import dk.acto.fafnir.FailureReason;
-import dk.acto.fafnir.providers.UniLoginConstants;
 import dk.acto.fafnir.providers.UniLoginProvider;
-import dk.acto.fafnir.providers.validators.UniLoginValidator;
 import dk.acto.fafnir.services.ServiceHelper;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Map;
 
+import static dk.acto.fafnir.providers.UniLoginHelper.*;
+
 @Controller
 @Slf4j
 @RequestMapping("unilogin")
 @ConditionalOnBean(UniLoginProvider.class)
+@AllArgsConstructor
 public class UniLoginController {
 	private final UniLoginProvider provider;
-
-	@Autowired
-	public UniLoginController(UniLoginProvider provider, @Validated(UniLoginValidator.class) ActoConf actoConf) {
-		this.provider = provider;
-	}
-
 
 	@GetMapping
 	@ResponseBody
@@ -49,9 +42,9 @@ public class UniLoginController {
 		var institutionList = Try.of(() -> provider.getInstitutionList(user)).getOrElse(Collections.emptyList());
 		model.addAllAttributes(
 				Map.of(
-						UniLoginConstants.USER_ID, user,
-						UniLoginConstants.TIMESTAMP, timestamp,
-						UniLoginConstants.STATE_AUTH_ENCODED, auth,
+						USER_ID, user,
+						TIMESTAMP, timestamp,
+						STATE_AUTH_ENCODED, auth,
 						"institutionList", institutionList
 				)
 		);

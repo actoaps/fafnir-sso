@@ -2,5 +2,4 @@ rootProject.name = 'fafnir-sso'
 include 'webservice'
 include 'client'
 include 'api'
-include 'test'
 

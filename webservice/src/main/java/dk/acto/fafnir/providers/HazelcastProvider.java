@@ -7,7 +7,7 @@ import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.HazelcastConf;
-import dk.acto.fafnir.providers.credentials.UsernamePassword;
+import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.util.CryptoUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @Component
 @ConditionalOnBean(HazelcastConf.class)
 @AllArgsConstructor
-public class HazelcastProvider implements RedirectingAuthenticationProvider<UsernamePassword> {
+public class HazelcastProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
@@ -28,7 +28,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
             return "/hazelcast/login";
     }
 
-    public CallbackResult callback(final UsernamePassword data) {
+    public CallbackResult callback(final UsernamePasswordCredentials data) {
         var username = data.getUsername();
         var password = data.getPassword();
 
@@ -45,6 +45,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                                 .metaId(x.getMetaId())
                                 .organisationId(x.getOrganisationId())
                                 .organisationName(x.getOrganisationName())
+                                .roles(x.getRoles())
                                 .build()))
                 .map(CallbackResult::success)
                 .orElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));

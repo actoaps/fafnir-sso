@@ -10,7 +10,7 @@ import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.GoogleConf;
-import dk.acto.fafnir.providers.credentials.Token;
+import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @ConditionalOnBean(GoogleConf.class)
-public class GoogleProvider implements RedirectingAuthenticationProvider<Token> {
+public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;
 
@@ -34,7 +34,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<Token> 
     }
 
     @Override
-    public CallbackResult callback(Token data) {
+    public CallbackResult callback(TokenCredentials data) {
         var code = data.getToken();
         final OAuth2AccessToken token = Option.of(code)
                 .toTry()

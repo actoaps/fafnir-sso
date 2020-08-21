@@ -6,6 +6,7 @@ import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.EconomicConf;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.model.conf.TestConf;
+import dk.acto.fafnir.model.conf.UniLoginConf;
 import dk.acto.fafnir.providers.unilogin.Institution;
 import dk.acto.fafnir.providers.unilogin.UserRole;
 import https.uni_login.Institutionstilknytning;
@@ -25,24 +26,24 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
-@ConditionalOnBean(EconomicConf.class)
+@ConditionalOnBean(UniLoginHelper.class)
 @AllArgsConstructor
 public class UniLoginProvider {
     private final FafnirConf fafnirConf;
-    private final UniLoginConf uniloginConf;
+    private final UniLoginHelper uniloginHelper;
     private final TokenFactory tokenFactory;
     private final Optional<TestConf> testConf;
 
     public String authenticate() {
-        return uniloginConf.getAuthorizationUrl();
+        return uniloginHelper.getAuthorizationUrl();
     }
 
     public String callback(String user, String timestamp, String auth) {
-        boolean validAccess = uniloginConf.isValidAccess(user, timestamp, auth);
+        boolean validAccess = uniloginHelper.isValidAccess(user, timestamp, auth);
         if (validAccess) {
             List<Institution> institutionList = Try.of(() -> this.getInstitutionList(user)).getOrElse(Collections.emptyList());
             if (institutionList.size() > 1 || (testConf.isPresent() && !institutionList.isEmpty())) {
-                return uniloginConf.getChooseInstitutionUrl(user, timestamp, auth);
+                return uniloginHelper.getChooseInstitutionUrl(user, timestamp, auth);
             } else if (institutionList.size() == 1) {
                 return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());
             } else {
@@ -59,7 +60,7 @@ public class UniLoginProvider {
         WsiInst wsiInst = new WsiInst();
         WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
         try {
-            https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), institutionId);
+            https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionId);
             return Optional.of(new Institution(inst.getInstnr(), inst.getInstnavn()));
         } catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
             log.error(authentificationFault.getMessage(), authentificationFault);
@@ -71,7 +72,7 @@ public class UniLoginProvider {
         WsiBruger wsiBruger = new WsiBruger();
         WsiBrugerPortType wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
         try {
-            java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
+            java.util.List<https.uni_login.Institutionstilknytning> institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
             institutionstilknytninger = institutionstilknytninger.stream()
                     .filter(til -> institutionId.equals(til.getInstnr()))
                     .collect(Collectors.toList());
@@ -136,17 +137,16 @@ public class UniLoginProvider {
         final String orgId = institutionId; // jwt:org_id, the organisation id of the user
         final String orgName = getInstitutionFromId(institutionId).map(Institution::getName).orElseThrow(() -> new RuntimeException("No institution")); // jwt:org_name, the organisation name of the user
 
-        boolean validAccess = uniloginConf.isValidAccess(userId, timestamp, auth);
+        boolean validAccess = uniloginHelper.isValidAccess(userId, timestamp, auth);
         if (validAccess) {
             Set<UserRole> roles = this.getUserRoles(institutionId, userId);
-            String[] roleArray = roles.stream().map(UserRole::toString).toArray(String[]::new);
             String jwt = tokenFactory.generateToken(FafnirUser.builder()
                     .subject(sub)
                     .provider(postfixIss)
                     .name(name)
                     .organisationId(orgId)
                     .organisationName(orgName)
-                    .roles(List.of(roleArray))
+                    .roles(roles.stream().map(UserRole::getName).collect(Collectors.toCollection(LinkedList::new)))
                     .build());
             return fafnirConf.getSuccessRedirect() + "#" + jwt;
         } else {
@@ -163,11 +163,11 @@ public class UniLoginProvider {
         WsiInst wsiInst = new WsiInst();
         WsiInstPortType wsiInstPortType = wsiInst.getWsiInstPort();
         try {
-            institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), userId);
+            institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
             return institutionstilknytninger.stream().map((institutionstilknytning -> {
                 String instName = "";
                 try {
-                    https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginConf.getWsUsername(), uniloginConf.getWsPassword(), institutionstilknytning.getInstnr());
+                    https.uni_login.Institution inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionstilknytning.getInstnr());
                     instName = inst.getInstnavn();
                 } catch (https.wsiinst_uni_login_dk.ws.AuthentificationFault authentificationFault) {
                     log.error(authentificationFault.getMessage(), authentificationFault);
