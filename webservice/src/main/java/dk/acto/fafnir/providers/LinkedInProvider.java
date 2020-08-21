@@ -10,7 +10,7 @@ import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.LinkedInConf;
-import dk.acto.fafnir.providers.credentials.Token;
+import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @ConditionalOnBean(LinkedInConf.class)
 @Component
-public class LinkedInProvider implements RedirectingAuthenticationProvider<Token> {
+public class LinkedInProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
 	private final OAuth20Service linkedInOAuth;
 	private final TokenFactory tokenFactory;
 	private final ObjectMapper objectMapper;
@@ -37,7 +37,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
 		return linkedInOAuth.getAuthorizationUrl();
 	}
 
-	public CallbackResult callback(Token data) {
+	public CallbackResult callback(TokenCredentials data) {
 		var code = data.getToken();
 		OAuth2AccessToken token = Option.of(code)
 				.toTry()

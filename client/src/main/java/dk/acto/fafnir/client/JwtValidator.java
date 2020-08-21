@@ -2,6 +2,7 @@ package dk.acto.fafnir.client;
 
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
+import dk.acto.fafnir.model.FafnirUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
@@ -12,12 +13,11 @@ import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @AllArgsConstructor
@@ -46,9 +46,29 @@ public class JwtValidator {
                 .orElse(null);
     }
 
-    private Map<String, String> mapClaims(Claims claims) {
-        var result =  new TreeMap<String, String>();
-        claims.forEach((k, v) -> result.put(k, String.valueOf(v)));
-        return result;
+    private FafnirUser mapClaims(Claims claims) {
+        return FafnirUser.builder()
+                .subject(claims.getSubject())
+                .name(claims.get("name", String.class))
+                .locale(Optional.ofNullable(claims.get("locale", String.class)).map(Locale::forLanguageTag).orElse(null))
+                .provider(claims.getIssuer())
+                .metaId(claims.get("mId", String.class))
+                .organisationId(claims.get("org_id", String.class))
+                .organisationName(claims.get("org_name", String.class))
+                .created(claims.getIssuedAt().toInstant())
+                .roles(mapRoles(claims.get("role")))
+                .build();
+    }
+
+    private LinkedList<String> mapRoles (Object roles) {
+        var builder = Stream.<String>builder();
+
+        Optional.ofNullable(roles)
+                .ifPresent(r -> Try.of(() -> (List<?>) r)
+                        .forEach(list -> list
+                                .forEach(each -> Try.of(() -> (String) each)
+                                        .forEach(builder))));
+
+        return builder.build().collect(Collectors.toCollection(LinkedList::new));
     }
 }

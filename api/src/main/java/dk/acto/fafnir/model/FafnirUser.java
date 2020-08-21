@@ -5,7 +5,8 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.io.Serializable;
-import java.util.List;
+import java.time.Instant;
+import java.util.LinkedList;
 import java.util.Locale;
 
 @Value
@@ -22,5 +23,6 @@ public class FafnirUser implements Serializable {
     Locale locale;
     String organisationId;
     String organisationName;
-    List<String> roles;
+    LinkedList<String> roles;
+    Instant created;
 }

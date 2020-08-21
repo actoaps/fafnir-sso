@@ -6,7 +6,7 @@ import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.model.conf.TestConf;
-import dk.acto.fafnir.providers.credentials.Token;
+import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 @ConditionalOnBean(TestConf.class)
-public class TestProvider implements RedirectingAuthenticationProvider<Token> {
+public class TestProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
 	private final TokenFactory tokenFactory;
 	private final FafnirConf fafnirConf;
 
@@ -30,7 +30,7 @@ public class TestProvider implements RedirectingAuthenticationProvider<Token> {
 	}
 
 	@Override
-	public CallbackResult callback(Token data) {
+	public CallbackResult callback(TokenCredentials data) {
 		return CallbackResult.failure(FailureReason.CONNECTION_FAILED);
 	}
 }

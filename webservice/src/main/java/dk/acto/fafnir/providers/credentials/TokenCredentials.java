@@ -7,6 +7,6 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class Token {
+public class TokenCredentials {
     String token;
 }

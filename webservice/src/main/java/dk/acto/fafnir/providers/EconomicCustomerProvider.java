@@ -1,13 +1,12 @@
 package dk.acto.fafnir.providers;
 
 import com.google.common.net.UrlEscapers;
-import dk.acto.fafnir.ActoConf;
 import dk.acto.fafnir.FailureReason;
 import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
-import dk.acto.fafnir.model.conf.EconomicConf;
 import dk.acto.fafnir.model.FafnirUser;
-import dk.acto.fafnir.providers.credentials.UsernamePassword;
+import dk.acto.fafnir.model.conf.EconomicConf;
+import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.providers.economic.EconomicCustomer;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 @ConditionalOnBean(EconomicConf.class)
-public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePassword> {
+public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
     private final HttpHeaders httpHeaders;
@@ -40,7 +39,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         return "/economic/login";
     }
 
-    public CallbackResult callback(final UsernamePassword data) {
+    public CallbackResult callback(final UsernamePasswordCredentials data) {
         var email = data.getUsername();
         var customerNumber = data.getPassword();
 
@@ -60,11 +59,11 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
-    private HttpHeaders getHeaders (ActoConf actoConf) {
+    private HttpHeaders getHeaders (EconomicConf economicConf) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-AppSecretToken", actoConf.getEconomicAppSecretToken());
-        headers.add("X-AgreementGrantToken", actoConf.getEconomicAgreementGrantToken());
+        headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
+        headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
         return headers;
     }
 }

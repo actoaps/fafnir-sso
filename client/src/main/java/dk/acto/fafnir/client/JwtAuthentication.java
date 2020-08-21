@@ -1,5 +1,6 @@
 package dk.acto.fafnir.client;
 
+import dk.acto.fafnir.model.FafnirUser;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
@@ -9,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Data
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class JwtAuthentication implements Authentication, UserDetails {
     @Singular
     private final List<GrantedAuthority> authorities;
-    private final Map<String, String> details;
+    private final FafnirUser details;
 
     @Override
     public String getCredentials() {
@@ -31,7 +31,7 @@ public class JwtAuthentication implements Authentication, UserDetails {
 
     @Override
     public boolean isAuthenticated() {
-        return !getSubject().isBlank();
+        return getSubject() != null;
     }
 
     @Override
@@ -41,7 +41,9 @@ public class JwtAuthentication implements Authentication, UserDetails {
 
     @Override
     public String getName() {
-        return details.getOrDefault("name", "None");
+        return Optional.ofNullable(details)
+                .map(FafnirUser::getName)
+                .orElse(null);
     }
 
     @Override
@@ -76,15 +78,18 @@ public class JwtAuthentication implements Authentication, UserDetails {
 
     private String getSubject() {
         return Optional.ofNullable(details)
-            .map(x -> x.get("sub"))
-            .orElse("");
+            .map(FafnirUser::getSubject)
+            .orElse(null);
     }
 
     public String getMetaId() {
-        return details.getOrDefault("mId", "");
+        return Optional.ofNullable(details)
+                .map(FafnirUser::getMetaId)
+                .orElse(null);
     }
 
     public boolean hasMetaId () {
-        return details.get("mId") != null;
+        return Optional.ofNullable(details)
+                .map(FafnirUser::getMetaId).isPresent();
     }
 }

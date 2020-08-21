@@ -2,7 +2,7 @@ package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.HazelcastProvider;
-import dk.acto.fafnir.providers.credentials.UsernamePassword;
+import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -33,7 +33,7 @@ public class HazelcastController {
 
     @PostMapping("login")
     public RedirectView callback(HttpServletResponse response, @RequestParam String email, @RequestParam String password) {
-        return new RedirectView(provider.callback(UsernamePassword.builder()
+        return new RedirectView(provider.callback(UsernamePasswordCredentials.builder()
                 .username(email)
                 .password(password)
                         .build()).getUrl(fafnirConf));

@@ -10,7 +10,7 @@ import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.FacebookConf;
-import dk.acto.fafnir.providers.credentials.Token;
+import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @ConditionalOnBean(FacebookConf.class)
-public class FacebookProvider implements RedirectingAuthenticationProvider<Token> {
+public class FacebookProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
     private final OAuth20Service facebookOauth;
@@ -36,7 +36,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         return facebookOauth.getAuthorizationUrl();
     }
 
-    public CallbackResult callback(Token data) {
+    public CallbackResult callback(TokenCredentials data) {
         var code = data.getToken();
         OAuth2AccessToken token = Option.of(code)
                 .toTry()

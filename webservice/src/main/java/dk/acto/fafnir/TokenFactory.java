@@ -7,12 +7,9 @@ import dk.acto.fafnir.exception.NoIssuer;
 import dk.acto.fafnir.exception.NoSubject;
 import dk.acto.fafnir.exception.NoUser;
 import dk.acto.fafnir.model.FafnirUser;
-import dk.acto.fafnir.util.CryptoUtil;
 import io.vavr.control.Try;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Cipher;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -20,7 +17,6 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
