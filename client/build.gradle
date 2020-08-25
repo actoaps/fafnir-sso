@@ -1,0 +1,99 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+plugins {
+    id "java-library"
+//    id "org.springframework.boot" version "2.2.4.RELEASE"
+//    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+}
+
+sourceCompatibility = 14
+targetCompatibility = 14
+compileJava.options.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+}
+
+group = "dk.acto"
+
+def myVersion = System.properties['versionOverride']
+if ((myVersion?.trim())){
+    version = myVersion
+} else {
+    version = "1.0-SNAPSHOT"
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:1.18.10"
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+
+    implementation project(":api")
+
+    implementation "io.vavr:vavr:0.10.2"
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation 'com.hazelcast:hazelcast:4.0.1'
+
+    implementation 'org.springframework:spring-context:5.2.8.RELEASE'
+    implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
+
+    annotationProcessor "org.projectlombok:lombok:1.18.10"
+    annotationProcessor "io.vavr:vavr:0.10.2"
+}
+
+apply plugin: 'com.bmuschko.nexus'
+
+modifyPom {
+    project {
+        name 'Fafnir SSO Client'
+        description 'Client library for the Fafnir SSO solution, for use with Spring Boot'
+        url 'https://github.com/actoaps/fafnir-sso'
+
+        scm {
+            url 'https://github.com/actoaps/fafnir-sso'
+            connection 'scm:https://github.com/actoaps/fafnir-sso.git'
+            developerConnection 'scm:git://github.com/actoaps/fafnir-sso.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT'
+                url 'https://opensource.org/licenses/MIT'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'EliasJorgensen'
+                name 'Elias Jørgensen'
+                email 'ej@acto.dk'
+            }
+        }
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption("html5", true)
+    }
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
+
+nexusStaging {
+    packageGroup = group
+    stagingProfileId = "1648366e1c864"
+    numberOfRetries = 50
+    delayBetweenRetriesInMillis = 5000
+}
