@@ -3,4 +3,10 @@
            xsi:schemaLocation="http://www.hazelcast.com/schema/config https://hazelcast.com/schema/config/hazelcast-config-3.9.xsd">
     <map name="fafnir-users">
     </map>
+    <network>
+        <join>
+            <multicast enabled="false"/>
+            <tcp-ip enabled="true" />
+        </join>
+    </network>
 </hazelcast>
