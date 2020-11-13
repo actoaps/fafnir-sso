@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @Slf4j
 @RequestMapping("hazelcast")
-@ConditionalOnBean(HazelcastConf.class)
+@ConditionalOnBean(HazelcastProvider.class)
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;
@@ -43,5 +44,10 @@ public class HazelcastController {
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginView() {
         return new ModelAndView("thymeleaf/Hazelcast.thymeleaf.html");
+    }
+
+    @PostConstruct
+    private void postConstruct() {
+        log.info("Exposing Hazelcast Endpoint...");
     }
 }

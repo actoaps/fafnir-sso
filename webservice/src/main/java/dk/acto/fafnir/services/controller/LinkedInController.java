@@ -1,7 +1,6 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
-import dk.acto.fafnir.model.conf.LinkedInConf;
 import dk.acto.fafnir.providers.LinkedInProvider;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
@@ -13,12 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @Slf4j
 @RequestMapping("linkedin")
-@ConditionalOnBean(LinkedInConf.class)
+@ConditionalOnBean(LinkedInProvider.class)
 @AllArgsConstructor
 public class LinkedInController {
 	private final LinkedInProvider provider;
@@ -34,5 +34,10 @@ public class LinkedInController {
 		return new RedirectView(provider.callback(TokenCredentials.builder()
 				.token(code)
 				.build()).getUrl(fafnirConf));
+	}
+
+	@PostConstruct
+	private void postConstruct() {
+		log.info("Exposing LinkedIn Endpoint...");
 	}
 }
