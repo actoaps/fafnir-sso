@@ -13,8 +13,8 @@ plugins {
 //    id "io.spring.dependency-management" version "1.0.9.RELEASE"
 }
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 15
+targetCompatibility = 15
 compileJava.options.encoding = "UTF-8"
 
 repositories {
