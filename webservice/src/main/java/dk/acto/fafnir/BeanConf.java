@@ -5,7 +5,6 @@ import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.model.conf.HazelcastConf;
 import dk.acto.fafnir.model.conf.*;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 @Slf4j
 @Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class BeanConf {
 
     @Bean
