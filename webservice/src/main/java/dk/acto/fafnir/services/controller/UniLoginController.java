@@ -1,6 +1,7 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.FailureReason;
+import dk.acto.fafnir.model.conf.UniLoginConf;
 import dk.acto.fafnir.providers.UniLoginProvider;
 import dk.acto.fafnir.services.ServiceHelper;
 import io.vavr.control.Try;
@@ -20,7 +21,7 @@ import static dk.acto.fafnir.providers.UniLoginHelper.*;
 @Controller
 @Slf4j
 @RequestMapping("unilogin")
-@ConditionalOnBean(UniLoginProvider.class)
+@ConditionalOnBean(UniLoginConf.class)
 @AllArgsConstructor
 public class UniLoginController {
 	private final UniLoginProvider provider;

@@ -1,5 +1,6 @@
 package dk.acto.fafnir.services.controller;
 
+import dk.acto.fafnir.model.conf.TestConf;
 import dk.acto.fafnir.providers.TestProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @RequestMapping("test")
-@ConditionalOnBean(TestProvider.class)
+@ConditionalOnBean(TestConf.class)
 @AllArgsConstructor
 public class TestController {
 	private final TestProvider provider;

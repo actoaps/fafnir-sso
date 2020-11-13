@@ -1,6 +1,7 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
+import dk.acto.fafnir.model.conf.LinkedInConf;
 import dk.acto.fafnir.providers.LinkedInProvider;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @Slf4j
 @RequestMapping("linkedin")
-@ConditionalOnBean(LinkedInProvider.class)
+@ConditionalOnBean(LinkedInConf.class)
 @AllArgsConstructor
 public class LinkedInController {
 	private final LinkedInProvider provider;

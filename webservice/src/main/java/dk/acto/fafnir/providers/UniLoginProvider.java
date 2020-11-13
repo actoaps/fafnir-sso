@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
-@ConditionalOnBean(UniLoginHelper.class)
+@ConditionalOnBean(UniLoginConf.class)
 @AllArgsConstructor
 public class UniLoginProvider {
     private final FafnirConf fafnirConf;
