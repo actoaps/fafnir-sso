@@ -1,0 +1,122 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'no.nils.wsdl2java' version '0.12'
+	id 'de.undercouch.download' version '4.1.1'
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'com.palantir.docker-run' version '0.24.0'
+	id "name.remal.check-updates" version "1.1.4"
+}
+
+sourceCompatibility = 15
+targetCompatibility = 15
+compileJava.options.encoding = 'UTF-8'
+
+def myVersion = System.properties['versionOverride']
+if ((myVersion?.trim())){
+	version = myVersion
+} else {
+	version = "1.0-SNAPSHOT"
+}
+
+bootJar.enabled = false
+jar.enabled = true
+
+applicationDefaultJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6001"]
+
+test {
+    ignoreFailures = false
+}
+
+repositories {
+	jcenter()
+	mavenCentral()
+}
+
+mainClassName = 'dk.acto.auth.Main'
+
+dependencies {
+    implementation 'junit:junit:4.12'
+	compileOnly 'org.projectlombok:lombok:1.18.10'
+
+	implementation project(':api')
+
+    implementation 'io.vavr:vavr:0.10.3'
+    implementation 'com.google.guava:guava:28.2-jre'
+
+	implementation 'org.apache.commons:commons-lang3:3.11'
+	implementation 'commons-codec:commons-codec:1.15'
+
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
+
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.64'
+    implementation 'com.hazelcast:hazelcast:4.0.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation project(':client')
+
+	annotationProcessor "org.projectlombok:lombok:1.18.10"
+    annotationProcessor 'io.vavr:vavr:0.10.3'
+
+	implementation 'org.hibernate.validator:hibernate-validator:6.1.1.Final'
+    implementation 'org.glassfish:javax.el:3.0.1-b11'
+
+	implementation 'com.github.scribejava:scribejava-apis:8.0.0'
+	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.0.0'
+
+	implementation 'com.auth0:java-jwt:3.9.0'
+
+	//WSDL / Apache-cxf stuff
+	runtimeOnly 'org.apache.cxf:cxf-rt-frontend-jaxws:3.3.6'
+	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.3.6'
+	runtimeOnly 'com.sun.activation:javax.activation:1.2.0'
+
+	wsdl2java 'javax.xml.bind:jaxb-api:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-ri:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-xjc:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-core:2.3.0'
+	wsdl2java 'com.sun.xml.bind:jaxb-impl:2.3.0'
+
+}
+
+task downloadWSDLWsaGruppe(type: Download) {
+	src 'https://wsagruppe.uni-login.dk/wsagruppe-v1/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsagruppe_v1.wsdl'
+}
+task downloadWSDLWsiBruger(type: Download) {
+	src 'https://wsibruger.uni-login.dk/wsibruger-v3/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsibruger_v3.wsdl'
+}
+task downloadWSDLWsiInst(type: Download) {
+	src 'https://wsiinst.uni-login.dk/wsiinst-v2/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsiinst_v2.wsdl'
+}
+
+wsdl2java {
+	encoding = 'utf-8'
+	wsdlsToGenerate = [
+			['-wsdlLocation', 'classpath:wsdl/wsagruppe_v1.wsdl', project.file('src/main/resources/wsdl/wsagruppe_v1.wsdl')],
+			['-wsdlLocation', 'classpath:wsdl/wsibruger_v3.wsdl', project.file('src/main/resources/wsdl/wsibruger_v3.wsdl')],
+			['-wsdlLocation', 'classpath:wsdl/wsiinst_v2.wsdl', project.file('src/main/resources/wsdl/wsiinst_v2.wsdl')],
+	]
+	cxfVersion = "3.3.1"
+}
+
+tasks.wsdl2java.dependsOn tasks.downloadWSDLWsaGruppe, tasks.downloadWSDLWsiBruger, tasks.downloadWSDLWsiInst
+
+distributions {
+	main {
+		distTar.archiveFileName = "auth.tar"
+		distZip.enabled = false
+		bootDistTar.enabled = false
+		bootDistZip.enabled = false
+	}
+}

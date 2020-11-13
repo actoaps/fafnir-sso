@@ -14,3 +14,5 @@ generated/
 
 # Webapp
 node_modules/
+
+*.hprof

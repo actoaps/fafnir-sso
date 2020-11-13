@@ -5,7 +5,7 @@ practices, using 3rd party providers Fafnir generates JWT's which can be used un
 distributed cloud based setup.
 
 Authentication Providers
----
+===
 Fafnir-SSO supports the following Authentication providers:
 
 * Facebook
@@ -16,7 +16,7 @@ Fafnir-SSO supports the following Authentication providers:
 * Hazelcast (Username/Password)
 
 Authentication Tokens
----
+===
 Fafnir-SSO issues JWT RSA-512 tokens, which can be validated using the exposed public key. The fields populated are:
 
 * sub: The subjects name, as provided by the Authentication provider.
@@ -25,6 +25,42 @@ Fafnir-SSO issues JWT RSA-512 tokens, which can be validated using the exposed p
 * name: The full name, as provided by the authentication provider.
 
 Usage
+===
+
+Version 2.0
+---
+In version 2 onward, configuration happens through individual environment variables.
+These are (Environment variables marked with :heavy_check_mark: are **required** if you want a specific login provider to be available):
+* E-conomic
+    * ECONOMIC_AST - The E-conomic Application Secret Token :heavy_check_mark:
+    * ECONOMIC_AGT - The Economic Application Grant Token :heavy_check_mark:
+* Facebook
+    * FACEBOOK_AID - The Facebook Application Id :heavy_check_mark:
+    * FACEBOOK_SECRET - The Facebook Secret :heavy_check_mark:
+* Google
+    * GOOGLE_AID - The Google Application Id :heavy_check_mark:
+    * GOOGLE_SECRET - The Google Secret :heavy_check_mark:
+* LinkedIn
+    * LINKED_IN_AID - The LinkedIn Application Id :heavy_check_mark:
+    * LINKED_IN_SECRET - The LinkedIn Secret :heavy_check_mark:
+* UniLogin
+    * UL_AID - The UniLogin Application Id
+    * UL_SECRET - The UniLogin Secret :heavy_check_mark:
+    * UL_WS_USER - Your UniLogin WebService username :heavy_check_mark:
+    * UL_WS_PASS - Your UniLogin WebService password :heavy_check_mark:
+    * UL_SSO - Whether to use UniLogin in Single Sign On mode, default is false.
+* Hazelcast
+    * HAZELCAST_USERNAME_IS_EMAIL - Determines if usernames are stored in lowercase only, so that look ups can be performed case-insensitively, default is false.
+    * HAZELCAST_PASSWORD_IS_ENCRYPTED - Determines if username are encrypted using RSA encryption, or hashed with bcrypt, default is false.
+    * HAZELCAST_MAP_NAME - The name of the Hazelcast Map to use for storing user data. Default is `fafnir-users`
+* Fafnir
+    * FAFNIR_URL - The url used to access this instance of fafnir, default is  http://localhost:8080
+    * FAFNIR_SUCCESS - The url to redirect to after successful authentication, default is http://localhost:8080/success
+    * FAFNIR_FAILURE - The url to redirect to after authentication failure, default is http://localhost:8080/fail
+* Testing
+    * TEST_ENABLED - enables the `/test` endpoint which will always return a valid jwt for a test user.
+
+Version 1.x (Deprecated)
 ---
 You must provide a configuration as an ACTO_CONF Environment variable, the JSON should look like this:
 
@@ -72,4 +108,4 @@ validate your JWT.
 
 Your JWT is returned to the success url as a fragment, as browsers do not ordinarily send this part to the server,
 so the JWT will not bleed through to server access logs. This means that the browser is responsible for storing the JWT
-securely until it is needed for API requests.
+securely until it is needed for API requests. 
