@@ -34,7 +34,7 @@ repositories {
 	mavenCentral()
 }
 
-mainClassName = 'dk.acto.auth.Main'
+mainClassName = 'dk.acto.fafnir.Main'
 
 dependencies {
     implementation 'junit:junit:4.12'

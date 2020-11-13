@@ -1,6 +1,7 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
+import dk.acto.fafnir.model.conf.HazelcastConf;
 import dk.acto.fafnir.providers.HazelcastProvider;
 import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @Slf4j
 @RequestMapping("hazelcast")
-@ConditionalOnBean(HazelcastProvider.class)
+@ConditionalOnBean(HazelcastConf.class)
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;

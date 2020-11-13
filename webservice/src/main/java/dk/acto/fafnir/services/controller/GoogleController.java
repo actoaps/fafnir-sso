@@ -1,6 +1,7 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
+import dk.acto.fafnir.model.conf.GoogleConf;
 import dk.acto.fafnir.providers.GoogleProvider;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @Slf4j
 @RequestMapping("google")
-@ConditionalOnBean(GoogleProvider.class)
+@ConditionalOnBean(GoogleConf.class)
 @AllArgsConstructor
 public class GoogleController {
 	private final GoogleProvider provider;
