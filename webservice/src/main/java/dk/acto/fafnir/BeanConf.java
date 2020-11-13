@@ -8,6 +8,7 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.model.conf.HazelcastConf;
 import dk.acto.fafnir.model.conf.*;
 import io.vavr.control.Try;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+@Slf4j
 @Configuration
 public class BeanConf {
 
@@ -23,6 +25,7 @@ public class BeanConf {
     public EconomicConf economicConf(
             @Value("${ECONOMIC_AST}") String secret,
             @Value("${ECONOMIC_AGT}") String grant) {
+        log.info("Economic Customer Configured...");
         return new EconomicConf(secret, grant);
     }
 
@@ -31,6 +34,7 @@ public class BeanConf {
     public FacebookConf facebookConf(
             @Value("${FACEBOOK_AID}") String appId,
             @Value("${FACEBOOK_SECRET}") String secret) {
+        log.info("Facebook Configured...");
         return new FacebookConf(appId, secret);
     }
 
@@ -39,6 +43,7 @@ public class BeanConf {
     public GoogleConf googleConf(
             @Value("${GOOGLE_AID}") String appId,
             @Value("${GOOGLE_SECRET}") String secret) {
+        log.info("Google Configured...");
         return new GoogleConf(appId, secret);
     }
 
@@ -47,6 +52,7 @@ public class BeanConf {
     public LinkedInConf linkedInConf(
             @Value("${LINKED_IN_AID}") String appId,
             @Value("${LINKED_IN_SECRET}") String secret) {
+        log.info("LinkedIn Configured...");
         return new LinkedInConf(appId, secret);
     }
 
@@ -58,6 +64,7 @@ public class BeanConf {
             @Value("${UL_WS_USER}") String wsUser,
             @Value("${UL_WS_PASS}") String wsPass,
             @Value("${UL_SSO:false}") boolean sso) {
+        log.info("UniLogin Configured...");
         return new UniLoginConf(appId, secret, wsUser, wsPass, sso);
     }
 
@@ -73,6 +80,7 @@ public class BeanConf {
     @Bean
     @ConditionalOnProperty(name = "TEST_ENABLED")
     public TestConf testConf() {
+        log.info("Test Configured...");
         return new TestConf(true);
     }
 
