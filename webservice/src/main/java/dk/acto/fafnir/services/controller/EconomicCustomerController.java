@@ -1,5 +1,6 @@
 package dk.acto.fafnir.services.controller;
 
+import dk.acto.fafnir.model.conf.EconomicConf;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.EconomicCustomerProvider;
 import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@ConditionalOnBean(EconomicCustomerProvider.class)
+@ConditionalOnBean(EconomicConf.class)
 @RequestMapping("economic")
 public class EconomicCustomerController{
     private final EconomicCustomerProvider provider;

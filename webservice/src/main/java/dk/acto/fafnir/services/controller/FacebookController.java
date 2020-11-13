@@ -1,5 +1,6 @@
 package dk.acto.fafnir.services.controller;
 
+import dk.acto.fafnir.model.conf.FacebookConf;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.FacebookProvider;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping("facebook")
 @AllArgsConstructor
-@ConditionalOnBean(FacebookProvider.class)
+@ConditionalOnBean(FacebookConf.class)
 public class FacebookController {
 	private final FacebookProvider provider;
 	private final FafnirConf fafnirConf;
