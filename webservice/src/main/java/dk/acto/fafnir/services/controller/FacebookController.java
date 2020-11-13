@@ -1,6 +1,5 @@
 package dk.acto.fafnir.services.controller;
 
-import dk.acto.fafnir.model.conf.FacebookConf;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.FacebookProvider;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
@@ -13,13 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @Slf4j
 @RequestMapping("facebook")
 @AllArgsConstructor
-@ConditionalOnBean(FacebookConf.class)
+@ConditionalOnBean(FacebookProvider.class)
 public class FacebookController {
 	private final FacebookProvider provider;
 	private final FafnirConf fafnirConf;
@@ -35,4 +35,12 @@ public class FacebookController {
 				.token(code)
 				.build()).getUrl(fafnirConf));
 	}
+
+	@PostConstruct
+	private void postConstruct() {
+		log.info("Exposing Facebook Endpoint...");
+	}
+
 }
+
+
