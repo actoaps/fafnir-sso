@@ -38,6 +38,18 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
+      - name: Release to Docker
+        run: |
+          docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+          docker build -t actoaps/fafnir-sso:$BUILD_ID ./webservice
+          docker tag actoaps/fafnir-sso:$BUILD_ID actoaps/fafnir-sso:latest
+          docker push actoaps/fafnir-sso:$BUILD_ID
+          docker push actoaps/fafnir-sso:latest
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
+
       - name: Release client to Maven Central
         run: |
           gpg --export-secret-keys > secring.gpg
@@ -47,16 +59,4 @@ jobs:
           KEY_ID: ${{ secrets.MAVEN_GPG_KEY_ID }}
           USERNAME: ${{ secrets.OSSRH_USERNAME }}
           PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          BUILD_ID: ${{ steps.spell.outputs.version }}
-
-      - name: Release to Docker
-        run: |
-          docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
-          docker build -t actoaps/fafnir-sso:$BUILD_ID ./auth
-          docker tag actoaps/fafnir-sso:$BUILD_ID actoaps/fafnir-sso:latest
-          docker push actoaps/fafnir-sso:$BUILD_ID
-          docker push actoaps/fafnir-sso:latest
-        env:
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
