@@ -401,7 +401,6 @@ button:focus, button:active {
 form {
   position: relative;
   padding: 8px;
-  min-width: 288px;
 }
 form label {
   float: left;
