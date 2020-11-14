@@ -5,15 +5,14 @@ import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.model.conf.FafnirConf;
-import dk.acto.fafnir.model.conf.TestConf;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-@ConditionalOnBean(TestConf.class)
+@Lazy
 public class TestProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
 	private final TokenFactory tokenFactory;
 	private final FafnirConf fafnirConf;
