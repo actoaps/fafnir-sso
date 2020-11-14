@@ -9,10 +9,9 @@ import dk.acto.fafnir.model.conf.*;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 
 @Slf4j
@@ -20,7 +19,7 @@ import org.springframework.context.annotation.Primary;
 public class BeanConf {
 
     @Bean
-    @ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
+    @Lazy
     public EconomicConf economicConf(
             @Value("${ECONOMIC_AST}") String secret,
             @Value("${ECONOMIC_AGT}") String grant) {
@@ -29,7 +28,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnProperty(name = {"FACEBOOK_AID", "FACEBOOK_SECRET"})
+    @Lazy
     public FacebookConf facebookConf(
             @Value("${FACEBOOK_AID}") String appId,
             @Value("${FACEBOOK_SECRET}") String secret) {
@@ -38,7 +37,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnProperty(name = {"GOOGLE_AID", "GOOGLE_SECRET"})
+    @Lazy
     public GoogleConf googleConf(
             @Value("${GOOGLE_AID}") String appId,
             @Value("${GOOGLE_SECRET}") String secret) {
@@ -47,7 +46,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnProperty(name = {"LINKED_IN_AID", "LINKED_IN_SECRET"})
+    @Lazy
     public LinkedInConf linkedInConf(
             @Value("${LINKED_IN_AID}") String appId,
             @Value("${LINKED_IN_SECRET}") String secret) {
@@ -56,7 +55,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
+    @Lazy
     public UniLoginConf uniLoginConf(
             @Value("${UL_AID}") String appId,
             @Value("${UL_SECRET}") String secret,
@@ -77,7 +76,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "TEST_ENABLED")
+    @Lazy
     public TestConf testConf() {
         log.info("Test Configured...");
         return new TestConf(true);
@@ -92,7 +91,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnBean(GoogleConf.class)
+    @Lazy
     public OAuth20Service googleOAuth (GoogleConf googleConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(googleConf.getAppId())
                 .apiSecret(googleConf.getSecret())
@@ -102,7 +101,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnBean(FacebookConf.class)
+    @Lazy
     public OAuth20Service facebookOAuth (FacebookConf facebookConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(facebookConf.getAppId())
                 .apiSecret(facebookConf.getSecret())
@@ -112,7 +111,7 @@ public class BeanConf {
     }
 
     @Bean
-    @ConditionalOnBean(LinkedInConf.class)
+    @Lazy
     public OAuth20Service linkedInOAuth(LinkedInConf linkedInConf, FafnirConf fafnirConf ) {
         return Try.of(() -> new ServiceBuilder(linkedInConf.getAppId())
                 .apiSecret(linkedInConf.getSecret())

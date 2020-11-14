@@ -9,17 +9,16 @@ import dk.acto.fafnir.FailureReason;
 import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
-import dk.acto.fafnir.model.conf.GoogleConf;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@ConditionalOnBean(GoogleConf.class)
+@Lazy
 public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;

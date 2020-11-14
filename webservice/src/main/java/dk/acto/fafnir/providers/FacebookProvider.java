@@ -9,18 +9,17 @@ import dk.acto.fafnir.FailureReason;
 import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
-import dk.acto.fafnir.model.conf.FacebookConf;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@ConditionalOnBean(FacebookConf.class)
+@Lazy
 public class FacebookProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;

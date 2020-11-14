@@ -1,12 +1,10 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.model.conf.FafnirConf;
-import dk.acto.fafnir.model.conf.HazelcastConf;
 import dk.acto.fafnir.providers.HazelcastProvider;
 import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @Slf4j
 @RequestMapping("hazelcast")
-@ConditionalOnBean(HazelcastProvider.class)
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;
