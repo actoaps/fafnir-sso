@@ -53,6 +53,7 @@ These are (Environment variables marked with :heavy_check_mark: are **required**
     * HAZELCAST_USERNAME_IS_EMAIL - Determines if usernames are stored in lowercase only, so that look ups can be performed case-insensitively, default is false.
     * HAZELCAST_PASSWORD_IS_ENCRYPTED - Determines if username are encrypted using RSA encryption, or hashed with bcrypt, default is false.
     * HAZELCAST_MAP_NAME - The name of the Hazelcast Map to use for storing user data. Default is `fafnir-users`
+    * HAZELCAST_TCP_IP_ADDRESS - Makes Fafnir connect to hazelcast using TCP/IP instead of Multicast, to the specified address.
 * Fafnir
     * FAFNIR_URL - The url used to access this instance of fafnir, default is  http://localhost:8080
     * FAFNIR_SUCCESS - The url to redirect to after successful authentication, default is http://localhost:8080/success
