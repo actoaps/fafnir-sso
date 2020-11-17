@@ -35,7 +35,6 @@ public class FafnirClient {
         userMap.put(key, user);
     }
 
-
     public void deleteFromFafnir (FafnirUser user) {
         IMap<String, String> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
         userMap.remove(user.getSubject());

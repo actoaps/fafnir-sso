@@ -6,6 +6,7 @@ import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.hazelcast.client.config.ClientConfig;
 import dk.acto.fafnir.model.conf.*;
 import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
@@ -15,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
+
+import java.util.Optional;
 
 @Slf4j
 @Configuration
@@ -75,6 +78,18 @@ public class BeanConf {
             @Value("${HAZELCAST_USERNAME_IS_EMAIL:false}") boolean userNameIsEmail,
             @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted) {
         return new HazelcastConf(userNameIsEmail, passwordIsEncrypted, mapName);
+    }
+
+    @Bean
+    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS:#{null}}") Optional<String> address) {
+        if (address.isPresent()) {
+            log.info("Hazelcast TCP/IP Connection Configured...");
+            var config = new ClientConfig();
+            config.getNetworkConfig().addAddress("hazelcast");
+            return config;
+        }
+
+        return new ClientConfig();
     }
 
     @Bean
