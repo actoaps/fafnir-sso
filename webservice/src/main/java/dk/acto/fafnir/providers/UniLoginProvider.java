@@ -18,6 +18,7 @@ import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -26,8 +27,8 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
-@ConditionalOnBean(UniLoginConf.class)
 @AllArgsConstructor
+@Lazy
 public class UniLoginProvider {
     private final FafnirConf fafnirConf;
     private final UniLoginHelper uniloginHelper;

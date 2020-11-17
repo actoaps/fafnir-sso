@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-@ConditionalOnBean(HazelcastConf.class)
 @AllArgsConstructor
 public class HazelcastProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;

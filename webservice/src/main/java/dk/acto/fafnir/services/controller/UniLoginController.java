@@ -1,17 +1,17 @@
 package dk.acto.fafnir.services.controller;
 
 import dk.acto.fafnir.FailureReason;
-import dk.acto.fafnir.model.conf.UniLoginConf;
 import dk.acto.fafnir.providers.UniLoginProvider;
 import dk.acto.fafnir.services.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Map;
@@ -21,8 +21,8 @@ import static dk.acto.fafnir.providers.UniLoginHelper.*;
 @Controller
 @Slf4j
 @RequestMapping("unilogin")
-@ConditionalOnBean(UniLoginConf.class)
 @AllArgsConstructor
+@ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
 public class UniLoginController {
 	private final UniLoginProvider provider;
 
@@ -59,5 +59,10 @@ public class UniLoginController {
 	@ResponseBody
 	public void postOrg(HttpServletResponse response, @RequestParam String user, @RequestParam String timestamp, @RequestParam String auth, @RequestParam String institution) {
 		Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callbackWithInstitution(user, timestamp, auth, institution)));
+	}
+
+	@PostConstruct
+	private void postConstruct() {
+		log.info("Exposing UniLogin Endpoint...");
 	}
 }

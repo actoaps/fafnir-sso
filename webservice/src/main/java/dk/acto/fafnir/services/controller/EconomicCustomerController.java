@@ -1,24 +1,24 @@
 package dk.acto.fafnir.services.controller;
 
-import dk.acto.fafnir.model.conf.EconomicConf;
 import dk.acto.fafnir.model.conf.FafnirConf;
 import dk.acto.fafnir.providers.EconomicCustomerProvider;
 import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
 @AllArgsConstructor
-@ConditionalOnBean(EconomicConf.class)
 @RequestMapping("economic")
+@ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
 public class EconomicCustomerController{
     private final EconomicCustomerProvider provider;
     private final FafnirConf fafnirConf;
@@ -40,4 +40,10 @@ public class EconomicCustomerController{
     public ModelAndView loginView() {
         return new ModelAndView("thymeleaf/Credentials.thymeleaf.html");
     }
+
+    @PostConstruct
+    private void postConstruct() {
+        log.info("Exposing Economic Endpoint...");
+    }
+
 }
