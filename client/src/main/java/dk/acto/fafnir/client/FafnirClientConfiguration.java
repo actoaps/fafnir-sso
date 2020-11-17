@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class FafnirClientConfiguration {
 
     @Bean
-    public FafnirClient fafnirClient(@Qualifier("hazelcastInstance") HazelcastInstance hazelcastInstance, PublicKeyProvider publicKeyProvider, HazelcastConf hazelcastConf) {
+    public FafnirClient fafnirClient(@Qualifier("hazelcastInstance") HazelcastInstance hazelcastInstance,
+                                     PublicKeyProvider publicKeyProvider, HazelcastConf hazelcastConf) {
         return new FafnirClient(hazelcastInstance, publicKeyProvider, hazelcastConf);
     }
 
