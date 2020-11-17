@@ -8,8 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Value
 @AllArgsConstructor
 public class EconomicConf {
-    @NotBlank
     String appSecretToken;
-    @NotBlank
     String agreementGrantToken;
 }

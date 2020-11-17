@@ -45,5 +45,4 @@ public class EconomicCustomerController{
     private void postConstruct() {
         log.info("Exposing Economic Endpoint...");
     }
-
 }
