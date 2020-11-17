@@ -10,7 +10,7 @@ import dk.acto.fafnir.providers.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.providers.economic.EconomicCustomer;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Component
 @AllArgsConstructor
-@ConditionalOnBean(EconomicConf.class)
+@Lazy
 public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
