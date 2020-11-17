@@ -26,13 +26,6 @@ public class AppleController {
     }
 
     @PostMapping("callback")
-    public String dump(@RequestBody String code) {
-        log.info(code);
-        return  code;
-    }
-
-
-    @GetMapping("callback")
     public RedirectView callback(@RequestParam String code) {
         return new RedirectView(provider.callback(TokenCredentials.builder()
                 .token(code)
