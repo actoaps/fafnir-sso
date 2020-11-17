@@ -4,8 +4,10 @@ import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.model.conf.*;
+import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +85,15 @@ public class BeanConf {
     }
 
     @Bean
+    @Lazy
+    public AppleConf appleConf(
+            @Value("${APPLE_AID}") String appId,
+            @Value("${APPLE_SECRET}") String secret) {
+        log.info("Apple Configured...");
+        return new AppleConf(appId, secret);
+    }
+
+    @Bean
     public FafnirConf fafnirConf(
             @Value("${FAFNIR_URL:http://localhost:8080}") String url,
             @Value("${FAFNIR_SUCCESS:http://localhost:8080/success}") String success,
@@ -118,5 +129,16 @@ public class BeanConf {
                 .callback(fafnirConf.getUrl() + "/linkedin/callback")
                 .defaultScope("r_liteprofile r_emailaddress") //r_fullprofile
                 .build(LinkedInApi20.instance())).getOrNull();
+    }
+
+    @Bean
+    @Lazy
+    public OAuth20Service appleOAuth(AppleConf appleConf, FafnirConf fafnirConf ) {
+        return Try.of(() -> new ServiceBuilder(appleConf.getAppId())
+                .apiSecret(appleConf.getSecret())
+                .callback(fafnirConf.getUrl() + "/apple/callback")
+                .defaultScope("openid name email")
+                .responseType("code id_token")
+                .build(new AppleApi())).getOrNull();
     }
 }

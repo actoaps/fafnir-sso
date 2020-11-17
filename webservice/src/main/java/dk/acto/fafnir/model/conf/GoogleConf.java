@@ -8,8 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Value
 @AllArgsConstructor
 public class GoogleConf {
-    @NotBlank
     String appId;
-    @NotBlank
     String secret;
 }
