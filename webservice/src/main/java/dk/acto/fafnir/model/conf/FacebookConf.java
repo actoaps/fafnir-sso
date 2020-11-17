@@ -8,8 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Value
 @AllArgsConstructor
 public class FacebookConf {
-    @NotBlank
     String appId;
-    @NotBlank
     String secret;
 }
