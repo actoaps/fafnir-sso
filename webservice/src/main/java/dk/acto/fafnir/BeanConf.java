@@ -4,9 +4,13 @@ import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.MapConfig;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import dk.acto.fafnir.model.conf.*;
 import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
@@ -81,15 +85,19 @@ public class BeanConf {
     }
 
     @Bean
-    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS:#{null}}") Optional<String> address) {
+    public HazelcastInstance hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS:#{null}}") Optional<String> address) {
         if (address.isPresent()) {
             log.info("Hazelcast TCP/IP Connection Configured...");
             var config = new ClientConfig();
             config.getNetworkConfig().addAddress("hazelcast");
-            return config;
+
+            return HazelcastClient.getOrCreateHazelcastClient(config);
         }
 
-        return new ClientConfig();
+        var config = new Config();
+        config.addMapConfig(new MapConfig("fafnir-users"));
+
+        return Hazelcast.getOrCreateHazelcastInstance(config);
     }
 
     @Bean
