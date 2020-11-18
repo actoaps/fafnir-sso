@@ -4,7 +4,6 @@ import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.hazelcast.client.config.ClientConfig;
 import dk.acto.fafnir.model.conf.*;
@@ -12,6 +11,7 @@ import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -81,15 +81,12 @@ public class BeanConf {
     }
 
     @Bean
-    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS:#{null}}") Optional<String> address) {
-        if (address.isPresent()) {
-            log.info("Hazelcast TCP/IP Connection Configured...");
-            var config = new ClientConfig();
-            config.getNetworkConfig().addAddress("hazelcast");
-            return config;
-        }
-
-        return new ClientConfig();
+    @ConditionalOnProperty(name = "HAZELCAST_TCP_IP_ADDRESS")
+    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
+        log.info("Hazelcast TCP/IP Connection Configured...");
+        var config = new ClientConfig();
+        config.getNetworkConfig().addAddress(address);
+        return config;
     }
 
     @Bean
