@@ -26,7 +26,7 @@ public class AppleController {
     }
 
     @PostMapping("callback")
-    public RedirectView callback(@RequestParam String code) {
+    public RedirectView callback(@RequestParam("id_token") String code) {
         return new RedirectView(provider.callback(TokenCredentials.builder()
                 .token(code)
                 .build()).getUrl(fafnirConf));
