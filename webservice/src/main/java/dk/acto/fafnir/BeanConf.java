@@ -5,17 +5,13 @@ import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 import dk.acto.fafnir.model.conf.*;
 import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -85,19 +81,12 @@ public class BeanConf {
     }
 
     @Bean
-    public HazelcastInstance hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS:#{null}}") Optional<String> address) {
-        if (address.isPresent()) {
-            log.info("Hazelcast TCP/IP Connection Configured...");
-            var config = new ClientConfig();
-            config.getNetworkConfig().addAddress("hazelcast");
-
-            return HazelcastClient.getOrCreateHazelcastClient(config);
-        }
-
-        var config = new Config();
-        config.addMapConfig(new MapConfig("fafnir-users"));
-
-        return Hazelcast.getOrCreateHazelcastInstance(config);
+    @ConditionalOnProperty(name = "HAZELCAST_TCP_IP_ADDRESS")
+    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
+        log.info("Hazelcast TCP/IP Connection Configured...");
+        var config = new ClientConfig();
+        config.getNetworkConfig().addAddress(address);
+        return config;
     }
 
     @Bean
