@@ -2,15 +2,11 @@ package dk.acto.fafnir.providers;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.FailureReason;
 import dk.acto.fafnir.TokenFactory;
 import dk.acto.fafnir.model.CallbackResult;
 import dk.acto.fafnir.model.FafnirUser;
 import dk.acto.fafnir.providers.credentials.TokenCredentials;
-import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -31,30 +27,22 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
     }
 
     public String authenticate() {
-        log.info(appleOauth.getCallback());
         return appleOauth.getAuthorizationUrl(Map.of("response_mode", "form_post"));
     }
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
         var code = data.getToken();
-        final OAuth2AccessToken token = Option.of(code)
-                .toTry()
-                .mapTry(appleOauth::getAccessToken)
-                .onFailure(x -> log.error("Authentication failed", x))
-                .getOrNull();
-        if (token == null) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
-        }
 
-        DecodedJWT jwtToken = JWT.decode(((OpenIdOAuth2AccessToken) token).getOpenIdToken());
-        String subject = jwtToken.getClaims().get("email").asString();
-        String displayName = jwtToken.getClaims().get("name").asString();
+        DecodedJWT jwtToken = JWT.decode(code);
+        String subject = jwtToken.getClaims().get("sub").asString();
+        String displayName = jwtToken.getClaims().get("email").asString();
 
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
                 .subject(subject)
                 .provider("apple")
                 .name(displayName)
+                .metaId(subject)
                 .build());
         return CallbackResult.success(jwt);
     }
