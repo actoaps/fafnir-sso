@@ -2,7 +2,7 @@ package dk.acto.fafnir.client;
 
 import com.hazelcast.core.HazelcastInstance;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import dk.acto.fafnir.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

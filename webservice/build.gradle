@@ -34,13 +34,13 @@ repositories {
 	mavenCentral()
 }
 
-mainClassName = 'dk.acto.fafnir.Main'
+mainClassName = 'dk.acto.fafnir.server.Main'
 
 dependencies {
     implementation 'junit:junit:4.12'
 	compileOnly 'org.projectlombok:lombok:1.18.10'
 
-	implementation project(':api')
+	implementation project(':client')
 
     implementation 'io.vavr:vavr:0.10.3'
     implementation 'com.google.guava:guava:28.2-jre'
