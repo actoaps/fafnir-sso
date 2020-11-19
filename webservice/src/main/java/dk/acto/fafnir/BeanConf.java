@@ -5,14 +5,19 @@ import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.hazelcast.client.config.ClientConfig;
 import dk.acto.fafnir.model.conf.*;
+import dk.acto.fafnir.services.AppleApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
+
+import java.util.Optional;
 
 @Slf4j
 @Configuration
@@ -76,10 +81,28 @@ public class BeanConf {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "HAZELCAST_TCP_IP_ADDRESS")
+    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
+        log.info("Hazelcast TCP/IP Connection Configured...");
+        var config = new ClientConfig();
+        config.getNetworkConfig().addAddress(address);
+        return config;
+    }
+
+    @Bean
     @Lazy
     public TestConf testConf() {
         log.info("Test Configured...");
         return new TestConf(true);
+    }
+
+    @Bean
+    @Lazy
+    public AppleConf appleConf(
+            @Value("${APPLE_AID}") String appId,
+            @Value("${APPLE_SECRET}") String secret) {
+        log.info("Apple Configured...");
+        return new AppleConf(appId, secret);
     }
 
     @Bean
@@ -118,5 +141,16 @@ public class BeanConf {
                 .callback(fafnirConf.getUrl() + "/linkedin/callback")
                 .defaultScope("r_liteprofile r_emailaddress") //r_fullprofile
                 .build(LinkedInApi20.instance())).getOrNull();
+    }
+
+    @Bean
+    @Lazy
+    public OAuth20Service appleOAuth(AppleConf appleConf, FafnirConf fafnirConf ) {
+        return Try.of(() -> new ServiceBuilder(appleConf.getAppId())
+                .apiSecret(appleConf.getSecret())
+                .callback(fafnirConf.getUrl() + "/apple/callback")
+                .defaultScope("openid name email")
+                .responseType("code id_token")
+                .build(new AppleApi())).getOrNull();
     }
 }
