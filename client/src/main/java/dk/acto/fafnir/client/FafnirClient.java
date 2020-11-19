@@ -3,9 +3,9 @@ package dk.acto.fafnir.client;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import dk.acto.fafnir.model.FafnirUser;
-import dk.acto.fafnir.model.conf.HazelcastConf;
-import dk.acto.fafnir.util.CryptoUtil;
+import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.util.CryptoUtil;
 import io.vavr.control.Try;
 import lombok.Value;
 

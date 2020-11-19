@@ -1,6 +1,6 @@
 package dk.acto.fafnir.client;
 
-import dk.acto.fafnir.model.FafnirUser;
+import dk.acto.fafnir.api.model.FafnirUser;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;

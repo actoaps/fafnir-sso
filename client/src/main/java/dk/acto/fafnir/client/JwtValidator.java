@@ -2,7 +2,7 @@ package dk.acto.fafnir.client;
 
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import dk.acto.fafnir.model.FafnirUser;
+import dk.acto.fafnir.api.model.FafnirUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
