@@ -1,5 +1,6 @@
 package dk.acto.fafnir.server.providers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -47,15 +50,25 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
 			return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
 		}
 
-		// Url not working try:
-		//  https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))
-		final OAuthRequest linkedInRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/me");
-		linkedInOAuth.signRequest(token, linkedInRequest);
-		var result = Try.of(() -> linkedInOAuth.execute(linkedInRequest).getBody())
+		final OAuthRequest profileRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/me");
+		final OAuthRequest emailRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))");
+		linkedInOAuth.signRequest(token, profileRequest);
+		linkedInOAuth.signRequest(token, emailRequest);
+		var profileResult = Try.of(() -> linkedInOAuth.execute(profileRequest).getBody())
 				.mapTry(objectMapper::readTree)
 				.getOrNull();
-		String subject = result.get("email").asText();
-		String name = result.get("name").asText();
+		var emailResult = Try.of(() -> linkedInOAuth.execute(emailRequest).getBody())
+				.mapTry(objectMapper::readTree)
+				.getOrNull();
+		String firstName = profileResult.get("localizedFirstName").asText();
+		String lastName = profileResult.get("localizedLastName").asText();
+		String subject = Optional.ofNullable(emailResult.get("elements"))
+				.map(x -> x.get(0))
+				.map(x -> x.get("handle~"))
+				.map(x -> x.get("emailAddress"))
+				.map(JsonNode::asText)
+				.orElse(null);
+
 		if (subject == null || subject.isEmpty()) {
 			return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
 		}
@@ -63,7 +76,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
 		String jwt = tokenFactory.generateToken(FafnirUser.builder()
 				.subject(subject)
 				.provider("linkedin")
-				.name(name)
+				.name(String.format("%s %s", firstName, lastName))
 				.build());
 		return CallbackResult.success(jwt);
 	}
