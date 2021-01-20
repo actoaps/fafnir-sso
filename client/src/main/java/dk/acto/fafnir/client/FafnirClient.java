@@ -8,25 +8,25 @@ import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.util.CryptoUtil;
 import io.vavr.control.Try;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Optional;
 
 @Value
 public class FafnirClient {
     HazelcastInstance hazelcastInstance;
     HazelcastConf hazelcastConf;
-    PublicKey publicKey;
+    @NonFinal PublicKey publicKey;
+    PublicKeyProvider publicKeyProvider;
 
     public FafnirClient(HazelcastInstance hazelcastInstance, PublicKeyProvider publicKeyProvider, HazelcastConf hazelcastConf) {
         this.hazelcastInstance = hazelcastInstance;
         this.hazelcastConf = hazelcastConf;
-        this.publicKey = Try.of(publicKeyProvider::getPublicKey)
-                .map(x -> Base64.getDecoder().decode(x))
-                .mapTry(x -> KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(x)))
-                .get();
+        this.publicKeyProvider = publicKeyProvider;
     }
 
     public void exportToFafnir(FafnirUser user) {
@@ -43,10 +43,20 @@ public class FafnirClient {
     public FafnirUser toSecureUser(FafnirUser source) {
         return hazelcastConf.isPasswordIsEncrypted() ?
                 source.toBuilder()
-                        .password(CryptoUtil.encryptPassword(source.getPassword(), publicKey))
+                        .password(CryptoUtil.encryptPassword(source.getPassword(), this.getPublicKey()))
                         .build() :
                 source.toBuilder()
                         .password(CryptoUtil.hashPassword(source.getPassword()))
                         .build();
+    }
+
+    public PublicKey getPublicKey () {
+        return Optional.ofNullable(this.publicKey)
+                .or(() -> Try.of(publicKeyProvider::getPublicKey)
+                        .map(x -> Base64.getDecoder().decode(x))
+                        .mapTry(x -> KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(x)))
+                        .onSuccess(x -> this.publicKey = x)
+                        .toJavaOptional())
+                .orElse(null);
     }
 }

@@ -26,5 +26,4 @@ public class FafnirClientConfiguration {
             @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted) {
         return new HazelcastConf(userNameIsEmail, passwordIsEncrypted, mapName);
     }
-
 }

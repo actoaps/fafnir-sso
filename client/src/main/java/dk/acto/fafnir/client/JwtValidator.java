@@ -23,13 +23,11 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class JwtValidator {
     private static final Pattern auth = Pattern.compile("^([Bb]earer\\s+)?(.+)$");
-    private final PublicKeyProvider pkp;
+    private final FafnirClient fafnirClient;
     private final AuthoritiesProvider ap;
 
     public JwtAuthentication decodeToken(String authHeader) {
-        JwtParser decoder = Try.of(pkp::getPublicKey)
-            .map(x -> Base64.getDecoder().decode(x))
-            .mapTry(x -> KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(x)))
+        JwtParser decoder = Try.of(fafnirClient::getPublicKey)
             .map(x -> Jwts.parser().setSigningKey(x))
             .get();
 
