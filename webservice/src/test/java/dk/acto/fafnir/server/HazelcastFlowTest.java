@@ -1,18 +1,18 @@
 package dk.acto.fafnir.server;
 
+import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.client.FafnirClient;
 import dk.acto.fafnir.client.FafnirClientConfiguration;
 import dk.acto.fafnir.client.JwtValidator;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 import dk.acto.fafnir.server.providers.HazelcastProvider;
 import dk.acto.fafnir.server.providers.credentials.UsernamePasswordCredentials;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Import(FafnirClientConfiguration.class)
 public class HazelcastFlowTest {
