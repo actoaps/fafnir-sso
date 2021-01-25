@@ -27,7 +27,9 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     }
 
     public CallbackResult callback(final UsernamePasswordCredentials data) {
-        var username = data.getUsername();
+        var username = hazelcastConf.isTrimUsername()
+                ? data.getUsername().stripTrailing()
+                : data.getUsername();
         var password = data.getPassword();
 
         IMap<String, FafnirUser> map = hazelcastInstance.getMap(hazelcastConf.getMapName());
