@@ -23,7 +23,7 @@ public class FafnirClientConfiguration {
     public HazelcastConf hazelcastConf(
             @Value("${HAZELCAST_MAP_NAME:fafnir-users}") String mapName,
             @Value("${HAZELCAST_USERNAME_IS_EMAIL:false}") boolean userNameIsEmail,
-            @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted),
+            @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted,
             @Value("${HAZELCAST_TRIM_USERNAME:false}") boolean trimUsername) {
         return new HazelcastConf(userNameIsEmail, passwordIsEncrypted, trimUsername, mapName);
     }
