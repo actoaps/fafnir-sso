@@ -4,8 +4,8 @@ plugins {
 	id 'no.nils.wsdl2java' version '0.12'
 	id 'de.undercouch.download' version '4.1.1'
     id 'org.springframework.boot' version '2.4.0'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-    id 'com.palantir.docker-run' version '0.24.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.palantir.docker-run' version '0.25.0'
 	id "name.remal.check-updates" version "1.1.4"
 }
 
@@ -37,13 +37,12 @@ repositories {
 mainClassName = 'dk.acto.fafnir.server.Main'
 
 dependencies {
-    implementation 'junit:junit:4.12'
 	compileOnly 'org.projectlombok:lombok:1.18.10'
 
 	implementation project(':client')
 
     implementation 'io.vavr:vavr:0.10.3'
-    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'com.google.guava:guava:30.1-jre'
 
 	implementation 'org.apache.commons:commons-lang3:3.11'
 	implementation 'commons-codec:commons-codec:1.15'
@@ -69,8 +68,8 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:6.1.1.Final'
     implementation 'org.glassfish:javax.el:3.0.1-b11'
 
-	implementation 'com.github.scribejava:scribejava-apis:8.0.0'
-	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.0.0'
+	implementation 'com.github.scribejava:scribejava-apis:8.1.0'
+	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.1.0'
 
 	implementation 'com.auth0:java-jwt:3.9.0'
 
