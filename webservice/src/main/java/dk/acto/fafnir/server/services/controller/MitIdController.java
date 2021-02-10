@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("mitid")
-@ConditionalOnProperty(name = {"MITID_AID", "MITID_SECRET"})
+@ConditionalOnProperty(name = {"MITID_AID", "MITID_SECRET", "MITID_AUTHORITY_URL"})
 public class MitIdController {
     private final MitIdProvider provider;
     private final FafnirConf fafnirConf;
