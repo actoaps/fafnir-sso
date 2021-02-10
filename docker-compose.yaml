@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  fafnir-sso:
+    build: webservice
+    container_name: fafnir-sso
+    ports:
+      - 8080:8080
+    environment:
+      - FAFNIR_SUCCESS=http://localhost:8080/loginredirect
+      - FAFNIR_FAILURE=http://localhost:8080/loginerror
+      - FAFNIR_URL=http://localhost:8080
+      - TEST_ENABLED=true
+      - MITID_AID=c831a44a-81c4-4ca7-97aa-21f4c5e15b4a
+      - MITID_SECRET=a6MJQNl2d5nPdplyLz0JPOI3kvnp2sP6Mr5dBOLfmxSnuZ/Z/ZdHfwu0QLHzkI/6UPWOo/RuQjsTHlKoXmSuaQ==
+      - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
