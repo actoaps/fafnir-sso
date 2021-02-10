@@ -9,8 +9,10 @@ import com.hazelcast.client.config.ClientConfig;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.server.model.conf.*;
 import dk.acto.fafnir.server.services.AppleApi;
+import dk.acto.fafnir.server.services.MitIdApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.test.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -91,9 +93,9 @@ public class BeanConf {
 
     @Bean
     @Lazy
-    public TestConf testConf() {
+    public TestConf testConf(@Value("${TEST_ENABLED:false}") boolean testEnabled) {
         log.info("Test Configured...");
-        return new TestConf(true);
+        return new TestConf(testEnabled);
     }
 
     @Bean
@@ -103,6 +105,16 @@ public class BeanConf {
             @Value("${APPLE_SECRET}") String secret) {
         log.info("Apple Configured...");
         return new AppleConf(appId, secret);
+    }
+
+    @Bean
+    @Lazy
+    public MitIdConf mitIdConf(
+            @Value("${MITID_AUTHORITY_URL}") String authorityUrl,
+            @Value("${MITID_AID}") String clientId,
+            @Value("${MITID_SECRET}") String secret) {
+        log.info("MitID Configured...");
+        return new MitIdConf(authorityUrl, clientId, secret);
     }
 
     @Bean
@@ -152,5 +164,16 @@ public class BeanConf {
                 .defaultScope("openid name email")
                 .responseType("code id_token")
                 .build(new AppleApi())).getOrNull();
+    }
+
+    @Bean
+    @Lazy
+    public OAuth20Service mitIdOauth(MitIdConf mitIdConf, TestConf testConf, FafnirConf fafnirConf) {
+        return Try.of(() -> new ServiceBuilder(mitIdConf.getClientId())
+                .apiSecret(mitIdConf.getSecret())
+                .callback(fafnirConf.getUrl() + "/mitid/callback")
+                .defaultScope(String.format("openid ssn %s", testConf.isEnabled() ? "mitid_demo" : "mitid"))
+                .build(new MitIdApi(mitIdConf.getAuthorityUrl())))
+                .getOrNull();
     }
 }
