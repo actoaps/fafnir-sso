@@ -23,7 +23,7 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
 				FafnirUser.builder()
 						.subject("test")
 						.provider("test")
-						.name("TEsty McTestface")
+						.name("Testy McTestface")
 						.build());
 		return fafnirConf.getSuccessRedirect() + "#" + jwt;
 	}

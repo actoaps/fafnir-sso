@@ -14,6 +14,7 @@ Fafnir-SSO supports the following Authentication providers:
 * Economic customers
 * LinkedIn
 * Hazelcast (Username/Password)
+* MitID
 
 Authentication Tokens
 ===
@@ -54,6 +55,13 @@ These are (Environment variables marked with :heavy_check_mark: are **required**
     * HAZELCAST_PASSWORD_IS_ENCRYPTED - Determines if passwords are encrypted using RSA encryption, or hashed with bcrypt, default is false.
     * HAZELCAST_MAP_NAME - The name of the Hazelcast Map to use for storing user data. Default is `fafnir-users`
     * HAZELCAST_TCP_IP_ADDRESS - Makes Fafnir connect to hazelcast using TCP/IP instead of Multicast, to the specified address.
+* MitID
+    * MITID_AID - The MitID ClientID :heavy_check_mark:
+    * MITID_SECRET - The MitID Client-Secret :heavy_check_mark:
+    * MITID_AUTHORITY_URL - The URL to the MitID broker authority (for example `https://brokertest.signaturgruppen.dk/op`) :heavy_check_mark:  
+  
+  If Fafnirs test mode is enabled, the MitID provider will use the `mitid_demo` scope instead of `mitid`.  
+  Fafnir uses the `ssn` scope in order to add the users name to the resulting JWT.
 * Fafnir
     * FAFNIR_URL - The url used to access this instance of fafnir, default is  http://localhost:8080
     * FAFNIR_SUCCESS - The url to redirect to after successful authentication, default is http://localhost:8080/success
