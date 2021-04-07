@@ -4,18 +4,26 @@ import dk.acto.fafnir.api.exception.CouldNotGenerateCertificate;
 import dk.acto.fafnir.api.exception.CouldNotLoadKeyStore;
 import dk.acto.fafnir.api.exception.NoSuchSignatureAlgorithm;
 import io.vavr.control.Try;
-import lombok.Value;
+import lombok.Data;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -24,23 +32,27 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-@Value
+@Slf4j
+@Data
 @Component
+@Primary
 @ConditionalOnProperty(name = {"KEYSTORE_PASS", "KEY_PASS"})
 public class KeyStoreKeyManager implements RsaKeyManager {
-    X509Certificate certificate;
-    RSAPrivateKey privateKey;
-    String keyStorePassword;
-    String keyPassword;
+    private final static String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks;" : "./fafnir.jks";
+    private final X509Certificate certificate;
+    private final RSAPrivateKey privateKey;
+    private final String keyStorePassword;
+    private final String keyPassword;
 
-    public KeyStoreKeyManager(String keyStorePassword, String keyPassword) {
+    public KeyStoreKeyManager(@Value("KEYSTORE_PASS") String keyStorePassword, @Value("KEY_PASS") String keyPassword) {
         this.keyStorePassword = keyStorePassword;
         this.keyPassword = keyPassword;
-        var keyStore = Try.withResources(() -> new FileInputStream("fafnir.jks"))
+        var keyStore = Try.withResources(() -> new FileInputStream(KEYSTORE_FILENAME))
                 .of(is -> {
                     var ks = KeyStore.getInstance("jks");
                     ks.load(is, "password".toCharArray());
@@ -50,12 +62,8 @@ public class KeyStoreKeyManager implements RsaKeyManager {
             privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey("FAFNIR", this.keyPassword.toCharArray()))
                     .getOrElseThrow(CouldNotLoadKeyStore::new);
 
-            certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate("FAFNIR"));
-        })
-
-
-
-
+            certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate("FAFNIR"))
+                    .getOrElseThrow(CouldNotLoadKeyStore::new);
     }
 
     private KeyStore createKeyStore() {
@@ -67,10 +75,10 @@ public class KeyStoreKeyManager implements RsaKeyManager {
 
         var keystore = Try.of(() -> KeyStore.getInstance("jks"))
                 .andThenTry(x -> x.load(null))
-                .andThenTry(x -> x.setKeyEntry("FAFNIR", privateKey, keyPassword.toCharArray(), new Certificate[]{certificate}))
+                .andThenTry(x -> x.setKeyEntry("FAFNIR", keyPair.getPrivate(), keyPassword.toCharArray(), new Certificate[]{cert}))
                 .get();
 
-        return Try.withResources(() -> new FileOutputStream("fafnir.jks"))
+        return Try.withResources(() -> new FileOutputStream(KEYSTORE_FILENAME))
                 .of(out ->
                 {
                     keystore.store(out, keyStorePassword.toCharArray());
@@ -88,11 +96,12 @@ public class KeyStoreKeyManager implements RsaKeyManager {
                 owner,
                 new BigInteger(64, new SecureRandom()),
                 Date.from(Instant.now()),
-                Date.from(Instant.now().plus(10, ChronoUnit.YEARS)),
+                Date.from(Instant.now().plus(1000, ChronoUnit.DAYS)),
                 owner,
                 keyPair.getPublic()))
                 .map(builder -> builder.build(signer))
                 .mapTry(holder -> new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(holder))
+                .onFailure(x -> log.error("Error:", x))
                 .getOrElseThrow(CouldNotGenerateCertificate::new);
     }
 
