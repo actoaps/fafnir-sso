@@ -7,30 +7,20 @@ import dk.acto.fafnir.api.exception.NoIssuer;
 import dk.acto.fafnir.api.exception.NoSubject;
 import dk.acto.fafnir.api.exception.NoUser;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.server.crypto.RsaKeyManager;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class TokenFactory {
-
-	private final KeyPair keys;
-
-	public TokenFactory() {
-		this.keys = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
-				.andThen(x -> x.initialize(1024, new SecureRandom()))
-				.map(KeyPairGenerator::generateKeyPair)
-				.get();
-	}
+	private final RsaKeyManager keyManager;
 
 	public String generateToken (final FafnirUser fafnirUser) {
 		var jwt = JWT.create();
@@ -63,22 +53,22 @@ public class TokenFactory {
 				.ifPresent(orgName -> jwt.withClaim("org_name", orgName));
 
 		Optional.ofNullable(temp.getRoles())
-				.filter(x -> !x.isEmpty())
-				.ifPresent(roles -> jwt.withArrayClaim("role", roles.toArray(String[]::new)));
+				.filter(x -> x.length > 0)
+				.ifPresent(roles -> jwt.withArrayClaim("role", roles));
 
-		return Try.of(() -> Algorithm.RSA512((RSAPublicKey) keys.getPublic(), (RSAPrivateKey) keys.getPrivate()))
+
+		return Try.of(() -> Algorithm.RSA512(keyManager.getPublicKey(), keyManager.getPrivateKey()))
 				.map(jwt::sign)
 				.get();
 	}
 
 	public String getPublicKey() {
 		return BaseEncoding.base64().omitPadding().encode(
-				keys.getPublic().getEncoded()
+				keyManager.getPublicKey().getEncoded()
 		);
 	}
 
 
 	public PrivateKey getPrivateKey() {
-		return keys.getPrivate();
-	}
+		return keyManager.getPrivateKey();	}
 }

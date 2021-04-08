@@ -58,7 +58,7 @@ public class JwtValidator {
                 .build();
     }
 
-    private LinkedList<String> mapRoles (Object roles) {
+    private String[] mapRoles (Object roles) {
         var builder = Stream.<String>builder();
 
         Optional.ofNullable(roles)
@@ -67,6 +67,6 @@ public class JwtValidator {
                                 .forEach(each -> Try.of(() -> (String) each)
                                         .forEach(builder))));
 
-        return builder.build().collect(Collectors.toCollection(LinkedList::new));
+        return builder.build().toArray(String[]::new);
     }
 }

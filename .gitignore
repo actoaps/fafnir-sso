@@ -16,3 +16,5 @@ generated/
 node_modules/
 
 *.hprof
+
+fafnir.jks
