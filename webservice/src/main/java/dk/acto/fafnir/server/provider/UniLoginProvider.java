@@ -1,8 +1,8 @@
 package dk.acto.fafnir.server.provider;
 
+import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 import dk.acto.fafnir.server.model.conf.TestConf;
 import dk.acto.fafnir.server.provider.unilogin.Institution;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @Log4j2
