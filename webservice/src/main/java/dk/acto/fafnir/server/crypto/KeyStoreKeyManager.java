@@ -42,27 +42,23 @@ public class KeyStoreKeyManager implements RsaKeyManager {
     private final static String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks;" : "./fafnir.jks";
     private final X509Certificate certificate;
     private final RSAPrivateKey privateKey;
-    private final String keyStorePassword;
-    private final String keyPassword;
 
     public KeyStoreKeyManager(@Value("KEYSTORE_PASS") String keyStorePassword, @Value("KEY_PASS") String keyPassword) {
-        this.keyStorePassword = keyStorePassword;
-        this.keyPassword = keyPassword;
         var keyStore = Try.withResources(() -> new FileInputStream(KEYSTORE_FILENAME))
                 .of(is -> {
                     var ks = KeyStore.getInstance("jks");
-                    ks.load(is, "password".toCharArray());
+                    ks.load(is, keyStorePassword.toCharArray());
                     return ks;
-                }).getOrElse(createKeyStore());
+                }).getOrElse(createKeyStore(keyStorePassword, keyPassword));
 
-            privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey("FAFNIR", this.keyPassword.toCharArray()))
+            privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey("FAFNIR", keyPassword.toCharArray()))
                     .getOrElseThrow(CouldNotLoadKeyStore::new);
 
             certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate("FAFNIR"))
                     .getOrElseThrow(CouldNotLoadKeyStore::new);
     }
 
-    private KeyStore createKeyStore() {
+    private KeyStore createKeyStore(String keyStorePassword, String keyPassword) {
         var keyPair = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
                 .andThen(x -> x.initialize(1024, new SecureRandom()))
                 .map(KeyPairGenerator::generateKeyPair)
