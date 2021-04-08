@@ -28,7 +28,7 @@ Fafnir-SSO issues JWT RSA-512 tokens, which can be validated using the exposed p
 Usage
 ===
 
-Version 2.0
+Version 2.x
 ---
 In version 2 onward, configuration happens through individual environment variables.
 These are (Environment variables marked with :heavy_check_mark: are **required** if you want a specific login provider to be available):
@@ -68,6 +68,15 @@ These are (Environment variables marked with :heavy_check_mark: are **required**
     * FAFNIR_FAILURE - The url to redirect to after authentication failure, default is http://localhost:8080/fail
 * Testing
     * TEST_ENABLED - enables the `/test` endpoint which will always return a valid jwt for a test user.
+
+Persistent Key Storage 
+---
+In some cases you may want to store the generated keypair (or use one you generated manually). In this case you should
+mount a docker volume on `/var/lib/fafnir` and add the `KEYSTORE_PASS` and `KEY_PASS` ENV variables.
+
+If a keystore does not already exist, one will be automatically created at startup.
+
+The keystore is a standard JKS keystore, the key alias is "FAFNIR".
 
 Version 1.x (Deprecated)
 ---
@@ -111,9 +120,9 @@ The different fields mean:
 How It Works
 ---
 On startup the server will generate a new secure RSA private key. This private key is kept in memory, so will be
-destroyed when the service shuts down, invalidating all existing JWT's. It will also expose the public key on the
-`/public-key` endpoint. This key is in X509 certificate format (aka. Base64 encoded raw data). You can use this to
-validate your JWT.
+destroyed when the service shuts down (unless you've explicitly enabled persistent key storage as described above),
+invalidating all existing JWT's. It will also expose the public key on the `/public-key` endpoint. This key is in
+X509 certificate format (aka. Base64 encoded raw data). You can use this to validate your JWT.
 
 Your JWT is returned to the success url as a fragment, as browsers do not ordinarily send this part to the server,
 so the JWT will not bleed through to server access logs. This means that the browser is responsible for storing the JWT
