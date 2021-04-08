@@ -53,8 +53,8 @@ public class TokenFactory {
 				.ifPresent(orgName -> jwt.withClaim("org_name", orgName));
 
 		Optional.ofNullable(temp.getRoles())
-				.filter(x -> !x.isEmpty())
-				.ifPresent(roles -> jwt.withArrayClaim("role", roles.toArray(String[]::new)));
+				.filter(x -> x.length > 0)
+				.ifPresent(roles -> jwt.withArrayClaim("role", roles));
 
 
 		return Try.of(() -> Algorithm.RSA512(keyManager.getPublicKey(), keyManager.getPrivateKey()))

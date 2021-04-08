@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @Log4j2
@@ -144,7 +145,7 @@ public class UniLoginProvider {
                     .name(name)
                     .organisationId(orgId)
                     .organisationName(orgName)
-                    .roles(roles.stream().map(UserRole::getName).collect(Collectors.toCollection(LinkedList::new)))
+                    .roles(roles.stream().map(UserRole::getName).toArray(String[]::new))
                     .build());
             return fafnirConf.getSuccessRedirect() + "#" + jwt;
         } else {

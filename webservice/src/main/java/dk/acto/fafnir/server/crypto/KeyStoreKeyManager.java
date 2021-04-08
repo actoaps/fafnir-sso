@@ -39,7 +39,8 @@ import java.util.Date;
 @Primary
 @ConditionalOnProperty(name = {"KEYSTORE_PASS", "KEY_PASS"})
 public class KeyStoreKeyManager implements RsaKeyManager {
-    private final static String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks;" : "./fafnir.jks";
+    private static final String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks;" : "./fafnir.jks";
+    private static final String KEY_ALIAS = "FAFNIR";
     private final X509Certificate certificate;
     private final RSAPrivateKey privateKey;
 
@@ -51,10 +52,10 @@ public class KeyStoreKeyManager implements RsaKeyManager {
                     return ks;
                 }).getOrElse(createKeyStore(keyStorePassword, keyPassword));
 
-            privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey("FAFNIR", keyPassword.toCharArray()))
+            privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey(KEY_ALIAS, keyPassword.toCharArray()))
                     .getOrElseThrow(CouldNotLoadKeyStore::new);
 
-            certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate("FAFNIR"))
+            certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate(KEY_ALIAS))
                     .getOrElseThrow(CouldNotLoadKeyStore::new);
     }
 
@@ -67,7 +68,7 @@ public class KeyStoreKeyManager implements RsaKeyManager {
 
         var keystore = Try.of(() -> KeyStore.getInstance("jks"))
                 .andThenTry(x -> x.load(null))
-                .andThenTry(x -> x.setKeyEntry("FAFNIR", keyPair.getPrivate(), keyPassword.toCharArray(), new Certificate[]{cert}))
+                .andThenTry(x -> x.setKeyEntry(KEY_ALIAS, keyPair.getPrivate(), keyPassword.toCharArray(), new Certificate[]{cert}))
                 .get();
 
         return Try.withResources(() -> new FileOutputStream(KEYSTORE_FILENAME))

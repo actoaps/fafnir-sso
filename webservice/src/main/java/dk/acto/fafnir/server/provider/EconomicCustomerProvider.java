@@ -58,12 +58,4 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .recoverWith(Throwable.class,Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
                 .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
-
-    private HttpHeaders getHeaders (EconomicConf economicConf) {
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
-        headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
-        return headers;
-    }
 }

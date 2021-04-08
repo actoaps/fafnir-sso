@@ -23,6 +23,6 @@ public class FafnirUser implements Serializable {
     Locale locale;
     String organisationId;
     String organisationName;
-    LinkedList<String> roles;
+    String[] roles;
     Instant created;
 }
