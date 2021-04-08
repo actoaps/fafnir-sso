@@ -1,8 +1,8 @@
 package dk.acto.fafnir.client;
 
+import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import dk.acto.fafnir.api.model.FafnirUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component

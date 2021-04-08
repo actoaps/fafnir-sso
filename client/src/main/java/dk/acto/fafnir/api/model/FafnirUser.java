@@ -6,7 +6,6 @@ import lombok.Value;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.LinkedList;
 import java.util.Locale;
 
 @Value
