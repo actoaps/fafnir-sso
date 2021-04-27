@@ -44,19 +44,20 @@ public class KeyStoreKeyManager implements RsaKeyManager {
     private final X509Certificate certificate;
     private final RSAPrivateKey privateKey;
 
-    public KeyStoreKeyManager(@Value("KEYSTORE_PASS") String keyStorePassword, @Value("KEY_PASS") String keyPassword) {
+    public KeyStoreKeyManager(@Value("${KEYSTORE_PASS}") String keyStorePassword, @Value("${KEY_PASS}") String keyPassword) {
         var keyStore = Try.withResources(() -> new FileInputStream(KEYSTORE_FILENAME))
                 .of(is -> {
                     var ks = KeyStore.getInstance("jks");
                     ks.load(is, keyStorePassword.toCharArray());
                     return ks;
-                }).getOrElse(createKeyStore(keyStorePassword, keyPassword));
+                })
+                .getOrElseGet(x -> createKeyStore(keyStorePassword, keyPassword));
 
-            privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey(KEY_ALIAS, keyPassword.toCharArray()))
-                    .getOrElseThrow(CouldNotLoadKeyStore::new);
+        privateKey = (RSAPrivateKey) Try.of(() -> keyStore.getKey(KEY_ALIAS, keyPassword.toCharArray()))
+                .getOrElseThrow(CouldNotLoadKeyStore::new);
 
-            certificate = (X509Certificate) Try.of(() ->keyStore.getCertificate(KEY_ALIAS))
-                    .getOrElseThrow(CouldNotLoadKeyStore::new);
+        certificate = (X509Certificate) Try.of(() -> keyStore.getCertificate(KEY_ALIAS))
+                .getOrElseThrow(CouldNotLoadKeyStore::new);
     }
 
     private KeyStore createKeyStore(String keyStorePassword, String keyPassword) {
