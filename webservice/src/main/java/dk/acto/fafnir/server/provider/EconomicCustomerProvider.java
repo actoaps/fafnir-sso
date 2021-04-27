@@ -1,11 +1,10 @@
 package dk.acto.fafnir.server.provider;
 
 import com.google.common.net.UrlEscapers;
+import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
-import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.server.model.conf.EconomicConf;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.server.provider.economic.EconomicCustomer;
 import io.vavr.control.Try;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
