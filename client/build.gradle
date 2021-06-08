@@ -36,7 +36,7 @@ dependencies {
 
     implementation "io.vavr:vavr:0.10.2"
     implementation "io.jsonwebtoken:jjwt:0.9.1"
-    implementation 'com.hazelcast:hazelcast:4.0.1'
+    implementation 'com.hazelcast:hazelcast:4.2'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
 
