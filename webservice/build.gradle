@@ -58,7 +58,7 @@ dependencies {
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
 	implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-    implementation 'com.hazelcast:hazelcast:4.0.1'
+    implementation 'com.hazelcast:hazelcast:4.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security'
