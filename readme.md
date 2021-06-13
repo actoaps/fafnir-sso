@@ -15,6 +15,7 @@ Fafnir-SSO supports the following Authentication providers:
 * LinkedIn
 * Hazelcast (Username/Password)
 * MitID
+* Microsoft Identity
 
 Authentication Tokens
 ===
@@ -41,6 +42,10 @@ These are (Environment variables marked with :heavy_check_mark: are **required**
 * Google
     * GOOGLE_AID - The Google Application Id :heavy_check_mark:
     * GOOGLE_SECRET - The Google Secret :heavy_check_mark:
+* Microsoft Identity
+    * MSID_AID - The Azure App Application ID :heavy_check_mark:
+    * MSID_SECRET - The Azure App Client Secret :heavy_check_mark:
+    * MSID_TENANT - The Azure App's chosen [tenancy](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints) :heavy_check_mark:
 * LinkedIn
     * LINKED_IN_AID - The LinkedIn Application Id :heavy_check_mark:
     * LINKED_IN_SECRET - The LinkedIn Secret :heavy_check_mark:
