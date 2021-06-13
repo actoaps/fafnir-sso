@@ -9,6 +9,7 @@ import com.hazelcast.client.config.ClientConfig;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.server.model.conf.*;
 import dk.acto.fafnir.server.service.AppleApi;
+import dk.acto.fafnir.server.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.server.service.MitIdApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
@@ -117,6 +118,16 @@ public class BeanConf {
     }
 
     @Bean
+    @Lazy
+    public MicrosoftIdentityConf msIdentityConf(
+            @Value("${MSID_AID}") String appId,
+            @Value("${MSID_SECRET}") String secret,
+            @Value("${MSID_TENANT}") String tenant) {
+        log.info("Microsoft Identity Configured...");
+        return new MicrosoftIdentityConf(appId, secret, tenant);
+    }
+
+    @Bean
     public FafnirConf fafnirConf(
             @Value("${FAFNIR_URL:http://localhost:8080}") String url,
             @Value("${FAFNIR_SUCCESS:http://localhost:8080/success}") String success,
@@ -174,5 +185,15 @@ public class BeanConf {
                 .defaultScope(String.format("openid ssn %s", testConf.isEnabled() ? "mitid_demo" : "mitid"))
                 .build(new MitIdApi(mitIdConf.getAuthorityUrl())))
                 .getOrNull();
+    }
+
+    @Bean
+    @Lazy
+    public OAuth20Service microsoftIdentityOauth (MicrosoftIdentityConf msIdentityConf, FafnirConf fafnirConf) {
+        return Try.of(() -> new ServiceBuilder(msIdentityConf.getAppId())
+                .apiSecret(msIdentityConf.getSecret())
+                .callback(fafnirConf.getUrl() + "/msidentity/callback")
+                .defaultScope("user.read")
+                .build(new MicrosoftIdentityApi(msIdentityConf.getTenant()))).getOrNull();
     }
 }
