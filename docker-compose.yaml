@@ -5,6 +5,7 @@ services:
     container_name: fafnir-sso
     ports:
       - 8080:8080
+      - 6001:6001
     environment:
       - FAFNIR_SUCCESS=http://localhost:8080/loginredirect
       - FAFNIR_FAILURE=http://localhost:8080/loginerror
