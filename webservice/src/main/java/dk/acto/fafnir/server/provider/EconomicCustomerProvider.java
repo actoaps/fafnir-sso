@@ -5,6 +5,7 @@ import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
+import dk.acto.fafnir.server.model.conf.EconomicConf;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.server.provider.economic.EconomicCustomer;
 import io.vavr.control.Try;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +27,7 @@ import java.util.Map;
 public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final HttpHeaders httpHeaders;
+    private final EconomicConf economicConf;
     private final Map<String, Locale> localeMap = Map.of(
             "NOK", Locale.forLanguageTag("no-NO"),
             "SEK", Locale.forLanguageTag("sv-SE"),
@@ -41,8 +43,13 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         var email = data.getUsername();
         var customerNumber = data.getPassword();
 
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
+        headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
+
         return Try.of(() -> "https://restapi.e-conomic.com/customers/"  + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
-                        .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(httpHeaders), EconomicCustomer.class))
+                        .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(headers), EconomicCustomer.class))
                         .map(HttpEntity::getBody)
                 .filter(x -> x.getEmail() != null)
                 .filter(x -> x.getEmail().equals(email))
