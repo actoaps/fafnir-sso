@@ -60,7 +60,7 @@ jobs:
           context: ./webservice
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: actoaps/fafnir-sso:${{ steps.spell.outputs.version }}
+          tags: actoaps/fafnir-sso:${{ steps.spell.outputs.version }},actoaps/fafnir-sso:latest
 
       - name: Release client to Maven Central
         run: |
