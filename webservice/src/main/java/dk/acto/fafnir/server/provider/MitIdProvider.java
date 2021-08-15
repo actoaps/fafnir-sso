@@ -42,7 +42,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
-        var code = data.getToken();
+        var code = data.getCode();
         final OAuth2AccessToken token = Option.of(code)
                 .toTry()
                 .mapTry(mitIdOauth::getAccessToken)
