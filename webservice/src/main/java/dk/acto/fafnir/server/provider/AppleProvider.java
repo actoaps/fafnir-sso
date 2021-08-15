@@ -32,7 +32,7 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
-        var code = data.getToken();
+        var code = data.getIdToken();
 
         DecodedJWT jwtToken = JWT.decode(code);
         String subject = jwtToken.getClaims().get("sub").asString();

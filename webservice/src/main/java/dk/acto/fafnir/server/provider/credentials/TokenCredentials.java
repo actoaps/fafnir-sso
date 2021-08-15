@@ -8,5 +8,6 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 public class TokenCredentials {
-    String token;
+    String code;
+    String idToken;
 }
