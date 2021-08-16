@@ -1,5 +1,7 @@
 package dk.acto.fafnir.server.provider;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -17,6 +19,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
+import java.util.Map;
+
 @Log4j2
 @Lazy
 @Component
@@ -27,17 +32,21 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
     private final OAuth20Service microsoftIdentityOauth;
 
     private static final String MS_GRAPH_ME = "https://graph.microsoft.com/v1.0/me";
+    // From: https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
+    private static final String PERSONAL_TENANT_GUID = "9188040d-6c67-4c5b-b112-36a304b66dad";
+    private final SecureRandom random = new SecureRandom();
 
     @Override
     public String authenticate() {
-        return microsoftIdentityOauth.getAuthorizationUrl();
+        return microsoftIdentityOauth.getAuthorizationUrl(Map.of(
+                "nonce", String.valueOf(random.nextInt()),
+                "response_mode", "form_post"
+        ));
     }
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
-        log.info("CODE ::: " + data.getToken());
-
-        var code = data.getToken();
+        var code = data.getCode();
         OAuth2AccessToken token = Option.of(code)
                 .toTry()
                 .mapTry(microsoftIdentityOauth::getAccessToken)
@@ -63,10 +72,14 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
             return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
+        var id = JWT.decode(data.getIdToken());
+        var tenantId = id.getClaim("tid").asString();
+
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
                 .subject(subject)
                 .provider("msidentity")
                 .name(name)
+                .organisationId(tenantId.equals(PERSONAL_TENANT_GUID) ? null : tenantId)
                 .build());
 
         return CallbackResult.success(jwt);
