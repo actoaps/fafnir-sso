@@ -92,4 +92,10 @@ public class JwtAuthentication implements Authentication, UserDetails {
         return Optional.ofNullable(details)
                 .map(FafnirUser::getMetaId).isPresent();
     }
+
+    public boolean isInOrganisation() {
+        return Optional.ofNullable(details)
+                .map(FafnirUser::getOrganisationId)
+                .isPresent();
+    }
 }
