@@ -46,8 +46,6 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
-        log.info("CODE ::: " + data.getCode());
-
         var code = data.getCode();
         OAuth2AccessToken token = Option.of(code)
                 .toTry()
