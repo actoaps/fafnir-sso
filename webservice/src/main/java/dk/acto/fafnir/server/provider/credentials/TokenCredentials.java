@@ -9,5 +9,4 @@ import lombok.Value;
 @AllArgsConstructor
 public class TokenCredentials {
     String code;
-    String idToken;
 }
