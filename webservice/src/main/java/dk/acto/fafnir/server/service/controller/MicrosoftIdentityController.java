@@ -30,10 +30,9 @@ public class MicrosoftIdentityController {
 	}
 
 	@PostMapping("callback")
-	public RedirectView callback(@RequestParam String code, @RequestParam("id_token") String idToken) {
+	public RedirectView callback(@RequestParam("id_token") String idToken) {
 		return new RedirectView(provider.callback(TokenCredentials.builder()
-				.code(code)
-				.idToken(idToken)
+				.code(idToken)
 				.build()).getUrl(fafnirConf));
 	}
 
