@@ -34,7 +34,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
 
     @Override
     public CallbackResult callback(TokenCredentials data) {
-        var code = data.getToken();
+        var code = data.getCode();
         final OAuth2AccessToken token = Option.of(code)
                 .toTry()
                 .mapTry(googleOauth::getAccessToken)
@@ -52,6 +52,9 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .subject(subject)
                 .provider("google")
                 .name(displayName)
+                .organisationId(!jwtToken.getClaim("hd").isNull()
+                        ? jwtToken.getClaim("hd").asString()
+                        : null)
                 .build());
         return CallbackResult.success(jwt);
     }

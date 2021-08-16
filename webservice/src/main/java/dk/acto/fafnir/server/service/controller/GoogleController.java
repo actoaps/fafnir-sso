@@ -31,7 +31,7 @@ public class GoogleController {
 	@GetMapping("callback")
 	public RedirectView callback(@RequestParam String code) {
 		return new RedirectView(provider.callback(TokenCredentials.builder()
-				.token(code)
+				.code(code)
 				.build()).getUrl(fafnirConf));
 	}
 

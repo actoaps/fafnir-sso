@@ -42,7 +42,8 @@ These are (Environment variables marked with :heavy_check_mark: are **required**
 * Google
     * GOOGLE_AID - The Google Application Id :heavy_check_mark:
     * GOOGLE_SECRET - The Google Secret :heavy_check_mark:
-* Microsoft Identity
+* Microsoft Identity  
+    As Fafnir is using OpenID Connect to authenticate, you need to check the "ID tokens" box under "Implicit grant and hybrid flows" in the Authentication menu. If this box is not checked, you will receive an error upon authentication.
     * MSID_AID - The Azure App Application ID :heavy_check_mark:
     * MSID_SECRET - The Azure App Client Secret :heavy_check_mark:
     * MSID_TENANT - The Azure App's chosen [tenancy](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols#endpoints) :heavy_check_mark:

@@ -32,7 +32,7 @@ public class LinkedInController {
 	@GetMapping("callback")
 	public RedirectView callback(HttpServletResponse response, @RequestParam String code) {
 		return new RedirectView(provider.callback(TokenCredentials.builder()
-				.token(code)
+				.code(code)
 				.build()).getUrl(fafnirConf));
 	}
 

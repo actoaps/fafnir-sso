@@ -193,7 +193,8 @@ public class BeanConf {
         return Try.of(() -> new ServiceBuilder(msIdentityConf.getAppId())
                 .apiSecret(msIdentityConf.getSecret())
                 .callback(fafnirConf.getUrl() + "/msidentity/callback")
-                .defaultScope("user.read")
+                .responseType("id_token")
+                .defaultScope("openid email profile")
                 .build(new MicrosoftIdentityApi(msIdentityConf.getTenant()))).getOrNull();
     }
 }
