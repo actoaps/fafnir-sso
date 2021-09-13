@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/client"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sso"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/sso"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
