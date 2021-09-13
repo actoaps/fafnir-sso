@@ -50,6 +50,8 @@ dependencies {
 apply plugin: 'com.bmuschko.nexus'
 
 modifyPom {
+    artifact = 'fafnir-client'
+
     project {
         name 'Fafnir SSO Client'
         description 'Client library for the Fafnir SSO solution, for use with Spring Boot'
