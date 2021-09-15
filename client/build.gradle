@@ -31,20 +31,23 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.10"
+    compileOnly "org.projectlombok:lombok:1.18.20"
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
+
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
     implementation "io.vavr:vavr:0.10.2"
+    annotationProcessor "io.vavr:vavr:0.10.2"
+
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation 'com.hazelcast:hazelcast:4.2'
+    implementation 'com.google.guava:guava:30.1-jre'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
 
     implementation 'org.springframework:spring-context:5.2.8.RELEASE'
     implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
 
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
-    annotationProcessor "io.vavr:vavr:0.10.2"
 }
 
 apply plugin: 'com.bmuschko.nexus'

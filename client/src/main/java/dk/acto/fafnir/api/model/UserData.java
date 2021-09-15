@@ -3,21 +3,24 @@ package dk.acto.fafnir.api.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import lombok.experimental.Delegate;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.Locale;
 
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class FafnirUser implements Serializable {
+public class UserData  implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Delegate(excludes = Builder.class)
-    UserData data;
-    String organisationId;
-    String organisationName;
-    String[] roles;
+    String subject;
+    String password;
+    String provider;
+    String name;
+    String metaId;
+    Locale locale;
+    Instant created;
 }

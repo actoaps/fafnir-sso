@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -49,9 +50,11 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
         String displayName = jwtToken.getClaims().get("name").asString();
 
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .subject(subject)
-                .provider("google")
-                .name(displayName)
+                .data(UserData.builder()
+                        .subject(subject)
+                        .provider("google")
+                        .name(displayName)
+                        .build())
                 .organisationId(!jwtToken.getClaim("hd").isNull()
                         ? jwtToken.getClaim("hd").asString()
                         : null)

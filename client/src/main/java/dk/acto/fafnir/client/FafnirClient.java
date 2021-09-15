@@ -2,6 +2,7 @@ package dk.acto.fafnir.client;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
@@ -20,7 +21,8 @@ import java.util.Optional;
 public class FafnirClient {
     HazelcastInstance hazelcastInstance;
     HazelcastConf hazelcastConf;
-    @NonFinal PublicKey publicKey;
+    @NonFinal
+    PublicKey publicKey;
     PublicKeyProvider publicKeyProvider;
 
     public FafnirClient(HazelcastInstance hazelcastInstance, PublicKeyProvider publicKeyProvider, HazelcastConf hazelcastConf) {
@@ -31,26 +33,26 @@ public class FafnirClient {
 
     public void exportToFafnir(FafnirUser user) {
         IMap<String, FafnirUser> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
-        var key= hazelcastConf.isUsernameIsEmail() ? user.getSubject().toLowerCase() : user.getSubject();
+        var key = hazelcastConf.isUsernameIsEmail() ? user.getSubject().toLowerCase() : user.getSubject();
         userMap.put(key, user);
     }
 
-    public void deleteFromFafnir (FafnirUser user) {
+    public void deleteFromFafnir(FafnirUser user) {
         IMap<String, String> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
         userMap.remove(user.getSubject());
     }
 
     public FafnirUser toSecureUser(FafnirUser source) {
-        return hazelcastConf.isPasswordIsEncrypted() ?
-                source.toBuilder()
-                        .password(CryptoUtil.encryptPassword(source.getPassword(), this.getPublicKey()))
-                        .build() :
-                source.toBuilder()
-                        .password(CryptoUtil.hashPassword(source.getPassword()))
-                        .build();
+        var crypto = hazelcastConf.isPasswordIsEncrypted() ? CryptoUtil.encryptPassword(source.getPassword(), this.getPublicKey()) : CryptoUtil.hashPassword(source.getPassword());
+        return source.toBuilder()
+                .data(source.getData().toBuilder()
+                        .password(crypto)
+                        .build()
+                ).build();
+
     }
 
-    public PublicKey getPublicKey () {
+    public PublicKey getPublicKey() {
         return Optional.ofNullable(this.publicKey)
                 .or(() -> Try.of(publicKeyProvider::getPublicKey)
                         .map(x -> Base64.getDecoder().decode(x))
