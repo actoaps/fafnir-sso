@@ -1,6 +1,7 @@
 package dk.acto.fafnir.server;
 
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.client.FafnirClient;
 import dk.acto.fafnir.client.FafnirClientConfiguration;
 import dk.acto.fafnir.client.JwtValidator;
@@ -15,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -43,16 +43,18 @@ class HazelcastFlowTest {
     @Test
     void testFullSuccessFlow() {
         var me = FafnirUser.builder()
-                .subject("om@acto.dk")
-                .password("omom")
-                .name("Oscar Mike")
-                .provider("test")
+                .data(UserData.builder()
+                        .subject("om@acto.dk")
+                        .password("omom")
+                        .name("Oscar Mike")
+                        .provider("test")
+                        .metaId("meta")
+                        .locale(Locale.forLanguageTag("da-DK"))
+                        .created(Instant.MIN)
+                        .build())
                 .organisationId("acto")
                 .organisationName("Acto ApS")
-                .metaId("meta")
-                .locale(Locale.forLanguageTag("da-DK"))
                 .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
-                .created(Instant.MIN)
                 .build();
         fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
@@ -81,14 +83,16 @@ class HazelcastFlowTest {
     @Test
     void testNoSecurityFailsFlow() {
         var me = FafnirUser.builder()
-                .subject("om@acto.dk")
-                .password("omom")
-                .name("Oscar Mike")
-                .provider("test")
+                .data(UserData.builder()
+                        .subject("om@acto.dk")
+                        .password("omom")
+                        .name("Oscar Mike")
+                        .provider("test")
+                        .metaId("meta")
+                        .locale(Locale.forLanguageTag("da-DK"))
+                        .build())
                 .organisationId("acto")
                 .organisationName("Acto ApS")
-                .metaId("meta")
-                .locale(Locale.forLanguageTag("da-DK"))
                 .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
                 .build();
         fafnirClient.exportToFafnir(me);
@@ -103,16 +107,18 @@ class HazelcastFlowTest {
     @Test
     void testWrongPasswordFailsFlow() {
         var me = FafnirUser.builder()
-                .subject("om@acto.dk")
-                .password("omom")
-                .name("Oscar Mike")
-                .provider("test")
+                .data(UserData.builder()
+                        .subject("om@acto.dk")
+                        .password("omom")
+                        .name("Oscar Mike")
+                        .provider("test")
+                        .metaId("meta")
+                        .locale(Locale.forLanguageTag("da-DK"))
+                        .created(Instant.MIN)
+                        .build())
                 .organisationId("acto")
                 .organisationName("Acto ApS")
-                .metaId("meta")
-                .locale(Locale.forLanguageTag("da-DK"))
                 .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
-                .created(Instant.MIN)
                 .build();
         fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
@@ -126,9 +132,11 @@ class HazelcastFlowTest {
     @Test
     void testMinimalistSuccessFlow() {
         var me = FafnirUser.builder()
-                .subject("om@acto.dk")
-                .password("omom")
-                .name("Oscar Mike")
+                .data(UserData.builder()
+                        .subject("om@acto.dk")
+                        .password("omom")
+                        .name("Oscar Mike")
+                        .build())
                 .build();
         fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()

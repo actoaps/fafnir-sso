@@ -10,14 +10,12 @@ import java.io.Serializable;
 
 @Value
 @AllArgsConstructor
-@Builder(toBuilder = true)
-public class FafnirUser implements Serializable {
+@Builder
+public class FafnirOrganisation implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Delegate(excludes = Builder.class)
-    UserData data;
-    String organisationId;
-    String organisationName;
-    String[] roles;
+    @Delegate
+    OrganisationData data;
+    String[] subjects;
 }

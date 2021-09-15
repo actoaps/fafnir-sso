@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -60,14 +61,16 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
         }
 
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .subject(userInfo.getLeft())
-                .provider("mitid")
-                .name(userInfo.getRight())
+                .data(UserData.builder()
+                        .subject(userInfo.getLeft())
+                        .provider("mitid")
+                        .name(userInfo.getRight())
+                        .build())
                 .build());
         return CallbackResult.success(jwt);
     }
 
-    private Pair<String, String> getUserInfo (String token) {
+    private Pair<String, String> getUserInfo(String token) {
         var url = mitIdConf.getAuthorityUrl() + "/connect/userinfo";
         var rest = new RestTemplate();
         var headers = new HttpHeaders();

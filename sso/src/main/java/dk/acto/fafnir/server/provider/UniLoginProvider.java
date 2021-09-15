@@ -1,6 +1,7 @@
 package dk.acto.fafnir.server.provider;
 
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
@@ -139,9 +140,11 @@ public class UniLoginProvider {
         if (validAccess) {
             Set<UserRole> roles = this.getUserRoles(institutionId, userId);
             String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                    .subject(sub)
-                    .provider(postfixIss)
-                    .name(name)
+                    .data(UserData.builder()
+                            .subject(sub)
+                            .provider(postfixIss)
+                            .name(name)
+                            .build())
                     .organisationId(orgId)
                     .organisationName(orgName)
                     .roles(roles.stream().map(UserRole::getName).toArray(String[]::new))

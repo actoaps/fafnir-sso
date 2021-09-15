@@ -3,6 +3,7 @@ package dk.acto.fafnir.server.provider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
 import dk.acto.fafnir.api.model.FafnirUser;
@@ -17,7 +18,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @Lazy
-public class AppleProvider implements RedirectingAuthenticationProvider<TokenCredentials>{
+public class AppleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final OAuth20Service appleOauth;
     private final TokenFactory tokenFactory;
 
@@ -39,10 +40,12 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
         String displayName = jwtToken.getClaims().get("email").asString();
 
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .subject(subject)
-                .provider("apple")
-                .name(displayName)
-                .metaId(subject)
+                .data(UserData.builder()
+                        .subject(subject)
+                        .provider("apple")
+                        .name(displayName)
+                        .metaId(subject)
+                        .build())
                 .build());
         return CallbackResult.success(jwt);
     }

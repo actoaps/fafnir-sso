@@ -2,6 +2,7 @@ package dk.acto.fafnir.server.provider;
 
 import com.google.common.net.UrlEscapers;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -48,19 +49,21 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
         headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
 
-        return Try.of(() -> "https://restapi.e-conomic.com/customers/"  + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
-                        .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(headers), EconomicCustomer.class))
-                        .map(HttpEntity::getBody)
+        return Try.of(() -> "https://restapi.e-conomic.com/customers/" + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
+                .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(headers), EconomicCustomer.class))
+                .map(HttpEntity::getBody)
                 .filter(x -> x.getEmail() != null)
                 .filter(x -> x.getEmail().equals(email))
                 .map(x -> tokenFactory.generateToken(FafnirUser.builder()
-                        .subject(x.getCustomerNumber())
-                        .provider("economic")
-                        .name(x.getName())
-                        .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
-                                .build()))
+                        .data(UserData.builder()
+                                .subject(x.getCustomerNumber())
+                                .provider("economic")
+                                .name(x.getName())
+                                .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
+                                .build())
+                        .build()))
                 .map(CallbackResult::success)
-                .recoverWith(Throwable.class,Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
+                .recoverWith(Throwable.class, Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
                 .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 }

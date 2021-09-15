@@ -5,6 +5,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -59,10 +60,12 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         }
 
         String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .subject(subject)
-                .provider("facebook")
-                .name(name)
-                .metaId(id)
+                .data(UserData.builder()
+                        .subject(subject)
+                        .provider("facebook")
+                        .name(name)
+                        .metaId(id)
+                        .build())
                 .build());
         return CallbackResult.success(jwt);
     }

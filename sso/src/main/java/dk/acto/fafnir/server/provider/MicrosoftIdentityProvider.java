@@ -3,6 +3,7 @@ package dk.acto.fafnir.server.provider;
 import com.auth0.jwt.JWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -52,10 +53,13 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
         var displayName = token.getClaims().get("name").asString();
         var tenantId = token.getClaim("tid").asString();
 
-        String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .subject(subject)
-                .provider("msidentity")
-                .name(displayName)
+        String jwt = tokenFactory.generateToken(FafnirUser.builder().
+                        data(UserData.builder()
+                                        .subject(subject)
+                                        .provider("msidentity")
+                                        .name(displayName)
+                                        .build()
+                        )
                 .organisationId(tenantId.equals(PERSONAL_TENANT_GUID) ? null : tenantId)
                 .build());
 
