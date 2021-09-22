@@ -10,4 +10,5 @@ import lombok.Value;
 public class UsernamePasswordCredentials {
     String username;
     String password;
+    String organisation;
 }
