@@ -9,5 +9,5 @@ public class HazelcastConf {
     boolean usernameIsEmail;
     boolean passwordIsEncrypted;
     boolean trimUsername;
-    String mapName;
+    String setName;
 }
