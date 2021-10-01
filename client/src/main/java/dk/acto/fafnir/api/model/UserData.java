@@ -12,7 +12,7 @@ import java.util.Locale;
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserData  implements Serializable {
+public class UserData implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
