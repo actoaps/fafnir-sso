@@ -1,6 +1,5 @@
 package dk.acto.fafnir.server.provider;
 
-import dk.acto.fafnir.api.model.AuthorizationTable;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
