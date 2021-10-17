@@ -2,7 +2,6 @@ package dk.acto.fafnir.client;
 
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
-import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
@@ -11,9 +10,6 @@ import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyFactory;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;

@@ -2,7 +2,6 @@ package dk.acto.fafnir.server;
 
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import dk.acto.fafnir.server.TokenFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
