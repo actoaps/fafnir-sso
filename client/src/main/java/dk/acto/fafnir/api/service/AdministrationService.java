@@ -5,7 +5,7 @@ import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 
-public interface AuthorisationService {
+public interface AdministrationService {
     /**
      * Creates a new user. Fails if user already exists.
      * @param source
@@ -44,8 +44,6 @@ public interface AuthorisationService {
     ClaimData updateClaims(ClaimData source);
     ClaimData deleteClaims(ClaimData source);
 
-    UserData authenticate(String userName, String password);
-    FafnirUser authorize (UserData user, String orgId);
     OrganisationData[] getOrganisationsForUser(UserData user);
     UserData[] getUsersForOrganisation(String orgId);
     OrganisationData[] getOrganisations();

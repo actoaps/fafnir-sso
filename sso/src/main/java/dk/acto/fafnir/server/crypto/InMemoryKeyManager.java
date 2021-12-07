@@ -1,5 +1,6 @@
 package dk.acto.fafnir.server.crypto;
 
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import io.vavr.control.Try;
 import lombok.Value;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import java.security.interfaces.RSAPublicKey;
 
 @Value
 @Component
-public class InMemoryKeyManager implements RsaKeyManager{
+public class InMemoryKeyManager implements RsaKeyManager {
     RSAPublicKey publicKey;
     RSAPrivateKey privateKey;
 
