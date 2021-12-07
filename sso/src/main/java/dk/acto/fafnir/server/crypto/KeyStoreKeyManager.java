@@ -1,5 +1,6 @@
 package dk.acto.fafnir.server.crypto;
 
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.exception.CouldNotGenerateCertificate;
 import dk.acto.fafnir.api.exception.CouldNotLoadKeyStore;
 import dk.acto.fafnir.api.exception.NoSuchSignatureAlgorithm;

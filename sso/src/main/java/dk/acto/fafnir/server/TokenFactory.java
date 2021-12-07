@@ -7,7 +7,7 @@ import dk.acto.fafnir.api.exception.NoIssuer;
 import dk.acto.fafnir.api.exception.NoSubject;
 import dk.acto.fafnir.api.exception.NoUser;
 import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.server.crypto.RsaKeyManager;
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

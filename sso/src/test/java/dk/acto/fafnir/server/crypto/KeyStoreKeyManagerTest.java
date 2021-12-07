@@ -1,5 +1,6 @@
 package dk.acto.fafnir.server.crypto;
 
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.client.FafnirClientConfiguration;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
