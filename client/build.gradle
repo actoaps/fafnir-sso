@@ -31,7 +31,7 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.10"
+    compileOnly "org.projectlombok:lombok:1.18.22"
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
     implementation "io.vavr:vavr:0.10.2"
@@ -43,7 +43,7 @@ dependencies {
     implementation 'org.springframework:spring-context:5.2.8.RELEASE'
     implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
 
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
+    annotationProcessor "org.projectlombok:lombok:1.18.22"
     annotationProcessor "io.vavr:vavr:0.10.2"
 }
 

@@ -38,7 +38,7 @@ repositories {
 mainClassName = 'dk.acto.fafnir.server.Main'
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.10'
+	compileOnly 'org.projectlombok:lombok:1.18.22'
 
 	implementation project(':client')
 
@@ -66,7 +66,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 	testImplementation project(':client')
 
-	annotationProcessor "org.projectlombok:lombok:1.18.10"
+	annotationProcessor "org.projectlombok:lombok:1.18.22"
     annotationProcessor 'io.vavr:vavr:0.10.3'
 
 	implementation 'org.hibernate.validator:hibernate-validator:6.1.1.Final'

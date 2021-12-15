@@ -1,5 +1,6 @@
 package dk.acto.fafnir.server.service.controller;
 
+import dk.acto.fafnir.server.model.DataUrl;
 import dk.acto.fafnir.server.model.UserData;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 import dk.acto.fafnir.server.provider.JwtProvider;
@@ -23,7 +24,9 @@ public class FacebookJwtController {
     private final FafnirConf fafnirConf;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getFacebookLoginJwt(@RequestBody UserData userData) {
-        return provider.callback(userData).getUrl(fafnirConf);
+    public DataUrl getFacebookLoginJwt(@RequestBody UserData userData) {
+        return DataUrl.builder()
+                .dataUrl(provider.callback(userData).getUrl(fafnirConf))
+                .build();
     }
 }
