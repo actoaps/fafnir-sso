@@ -25,7 +25,7 @@ public class EconomicCustomerController{
 
     @GetMapping
     public RedirectView authenticate(HttpServletResponse response) {
-        return new RedirectView(provider.authenticate());
+        return new RedirectView(fafnirConf.getUrl() + provider.authenticate());
     }
 
     @PostMapping("login")
