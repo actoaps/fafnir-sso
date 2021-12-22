@@ -144,7 +144,7 @@ public class UniLoginProvider {
                     .name(name)
                     .organisationId(orgId)
                     .organisationName(orgName)
-                    .roles(roles.stream().map(UserRole::getName).toArray(String[]::new))
+                    .roles(roles.stream().map(UserRole::toString).toArray(String[]::new))
                     .build());
             return fafnirConf.getSuccessRedirect() + "#" + jwt;
         } else {
@@ -170,7 +170,7 @@ public class UniLoginProvider {
                 } catch (https.wsiinst_unilogin_dk.ws.AuthentificationFault authentificationFault) {
                     log.error(authentificationFault.getMessage(), authentificationFault);
                 }
-                List<String> roleNames = toUserRoles(institutionstilknytninger).stream().map(UserRole::getName).collect(Collectors.toList());
+                List<String> roleNames = toUserRoles(institutionstilknytninger).stream().map(UserRole::toString).collect(Collectors.toList());
                 return new Institution(institutionstilknytning.getInstnr(), instName, roleNames);
             })).distinct().collect(Collectors.toList());
         } catch (https.wsibruger_unilogin_dk.ws.AuthentificationFault authentificationFault) {
