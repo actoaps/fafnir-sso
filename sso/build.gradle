@@ -91,24 +91,24 @@ dependencies {
 }
 
 task downloadWSDLWsaGruppe(type: Download) {
-	src 'https://wsagruppe.uni-login.dk/wsagruppe-v1/ws?WSDL'
-	dest 'src/main/resources/wsdl/wsagruppe_v1.wsdl'
+	src 'https://wsagruppe.uni-login.dk/wsagruppe-v3/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsagruppe_v3.wsdl'
 }
 task downloadWSDLWsiBruger(type: Download) {
-	src 'https://wsibruger.uni-login.dk/wsibruger-v3/ws?WSDL'
-	dest 'src/main/resources/wsdl/wsibruger_v3.wsdl'
+	src 'https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsibruger_v6.wsdl'
 }
 task downloadWSDLWsiInst(type: Download) {
-	src 'https://wsiinst.uni-login.dk/wsiinst-v2/ws?WSDL'
-	dest 'src/main/resources/wsdl/wsiinst_v2.wsdl'
+	src 'https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL'
+	dest 'src/main/resources/wsdl/wsiinst_v5.wsdl'
 }
 
 wsdl2java {
 	encoding = 'utf-8'
 	wsdlsToGenerate = [
-			['-wsdlLocation', 'classpath:wsdl/wsagruppe_v1.wsdl', project.file('src/main/resources/wsdl/wsagruppe_v1.wsdl')],
-			['-wsdlLocation', 'classpath:wsdl/wsibruger_v3.wsdl', project.file('src/main/resources/wsdl/wsibruger_v3.wsdl')],
-			['-wsdlLocation', 'classpath:wsdl/wsiinst_v2.wsdl', project.file('src/main/resources/wsdl/wsiinst_v2.wsdl')],
+			['-wsdlLocation', 'classpath:wsdl/wsagruppe_v3.wsdl', project.file('src/main/resources/wsdl/wsagruppe_v3.wsdl')],
+			['-wsdlLocation', 'classpath:wsdl/wsibruger_v6.wsdl', project.file('src/main/resources/wsdl/wsibruger_v6.wsdl')],
+			['-wsdlLocation', 'classpath:wsdl/wsiinst_v5.wsdl', project.file('src/main/resources/wsdl/wsiinst_v5.wsdl')],
 	]
 	cxfVersion = "3.3.1"
 }
