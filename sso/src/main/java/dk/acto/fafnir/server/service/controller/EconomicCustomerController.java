@@ -24,12 +24,12 @@ public class EconomicCustomerController{
     private final FafnirConf fafnirConf;
 
     @GetMapping
-    public RedirectView authenticate(HttpServletResponse response) {
+    public RedirectView authenticate() {
         return new RedirectView(fafnirConf.getUrl() + provider.authenticate());
     }
 
     @PostMapping("login")
-    public RedirectView callback(HttpServletResponse response, @RequestParam String email, @RequestParam String customerNumber) {
+    public RedirectView callback(@RequestParam String email, @RequestParam String customerNumber) {
         return new RedirectView(provider.callback(UsernamePasswordCredentials.builder()
                 .username(email)
                 .password(customerNumber)

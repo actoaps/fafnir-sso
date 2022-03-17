@@ -49,4 +49,9 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
                 .build());
         return CallbackResult.success(jwt);
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
 }

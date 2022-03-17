@@ -1,7 +1,6 @@
 package dk.acto.fafnir.api.service;
 
 import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 
@@ -19,6 +18,8 @@ public interface AdministrationService {
      * @return
      */
     UserData readUser(final String subject);
+
+    UserData[] readUsers();
 
     /**
      * ,Updates a user. Fails if user does not exist.
@@ -46,5 +47,5 @@ public interface AdministrationService {
 
     OrganisationData[] getOrganisationsForUser(UserData user);
     UserData[] getUsersForOrganisation(String orgId);
-    OrganisationData[] getOrganisations();
+    OrganisationData[] readOrganisations();
 }

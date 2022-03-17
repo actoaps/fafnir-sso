@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan
+@Deprecated(forRemoval = true, since = "3.0")
 public class FafnirClientConfiguration {
 
     @Bean

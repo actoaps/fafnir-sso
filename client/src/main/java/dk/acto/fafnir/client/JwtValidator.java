@@ -3,6 +3,7 @@ package dk.acto.fafnir.client;
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
@@ -22,11 +23,11 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class JwtValidator {
     private static final Pattern auth = Pattern.compile("^([Bb]earer\\s+)?(.+)$");
-    private final FafnirClient fafnirClient;
+    private final PublicKeyProvider publicKeyProvider;
     private final AuthoritiesProvider ap;
 
     public JwtAuthentication decodeToken(String authHeader) {
-        JwtParser decoder = Try.of(fafnirClient::getPublicKey)
+        JwtParser decoder = Try.of(publicKeyProvider::getPublicKey)
             .map(x -> Jwts.parser().setSigningKey(x))
             .get();
 

@@ -1,14 +1,11 @@
 package dk.acto.fafnir.client;
 
-import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.map.IMap;
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.UserData;
-import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.util.CryptoUtil;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import io.vavr.control.Try;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -20,6 +17,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Value
+@Deprecated(forRemoval = true, since = "3.0")
 public class FafnirClient {
     HazelcastInstance hazelcastInstance;
     HazelcastConf hazelcastConf;
@@ -33,29 +31,12 @@ public class FafnirClient {
         this.publicKeyProvider = publicKeyProvider;
     }
 
-    @Deprecated
     public void exportToFafnir(FafnirUser user) {
-
-        IMap<String, FafnirUser> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
-        var key = hazelcastConf.isUsernameIsEmail() ? user.getSubject().toLowerCase() : user.getSubject();
-        userMap.put(key, user);
+//        IMap<String, FafnirUser> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
+//        var key = hazelcastConf.isUsernameIsEmail() ? user.getSubject().toLowerCase() : user.getSubject();
+//        userMap.put(key, user);
     }
 
-    @Deprecated
-    public void exportToFafnir(FafnirUser user) {
-        ISet<ClaimData> userSet  = hazelcastInstance.getSet(hazelcastConf.getSetName());
-
-        var key = hazelcastConf.isUsernameIsEmail() ? user.getSubject().toLowerCase() : user.getSubject();
-        userMap.put(key, user);
-    }
-
-    @Deprecated
-    public void deleteFromFafnir(FafnirUser user) {
-        IMap<String, String> userMap = hazelcastInstance.getMap(hazelcastConf.getMapName());
-        userMap.remove(user.getSubject());
-    }
-
-    @Deprecated
     public FafnirUser toSecureUser(FafnirUser source) {
         return source.toBuilder()
                 .data(secureUser(source.getData()))

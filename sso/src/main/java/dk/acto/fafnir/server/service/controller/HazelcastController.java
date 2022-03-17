@@ -26,12 +26,12 @@ public class HazelcastController {
     private final FafnirConf fafnirConf;
 
     @GetMapping
-    public RedirectView authenticate(HttpServletResponse response) {
+    public RedirectView authenticate() {
         return new RedirectView(provider.authenticate());
     }
 
     @PostMapping("login")
-    public RedirectView callback(HttpServletResponse response, @RequestParam String email, @RequestParam String password) {
+    public RedirectView callback(@RequestParam String email, @RequestParam String password) {
         return new RedirectView(provider.callback(UsernamePasswordCredentials.builder()
                 .username(email)
                 .password(password)

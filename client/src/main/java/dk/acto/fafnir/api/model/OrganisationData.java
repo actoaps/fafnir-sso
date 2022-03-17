@@ -12,6 +12,12 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class OrganisationData implements Serializable {
+    public final static OrganisationData DEFAULT = OrganisationData.builder()
+            .created(Instant.now())
+            .organisationId("default")
+            .organisationName("Default Organisation")
+            .build();
+
     @Serial
     private static final long serialVersionUID = 1L;
 
