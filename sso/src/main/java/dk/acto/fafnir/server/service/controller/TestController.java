@@ -21,7 +21,7 @@ public class TestController {
 	private final TestProvider provider;
 
 	@GetMapping
-	public RedirectView authenticate(HttpServletResponse response) {
+	public RedirectView authenticate() {
 		return new RedirectView(provider.authenticate());
 	}
 

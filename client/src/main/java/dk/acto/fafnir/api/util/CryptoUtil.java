@@ -3,6 +3,7 @@ package dk.acto.fafnir.api.util;
 import dk.acto.fafnir.api.exception.PasswordDecryptionFailed;
 import dk.acto.fafnir.api.exception.PasswordEncryptionFailed;
 import dk.acto.fafnir.api.exception.PasswordHashingFailed;
+import dk.acto.fafnir.api.model.UserData;
 import io.vavr.control.Try;
 import org.bouncycastle.crypto.generators.BCrypt;
 

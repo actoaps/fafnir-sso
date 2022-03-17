@@ -61,4 +61,9 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .build());
         return CallbackResult.success(jwt);
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
 }

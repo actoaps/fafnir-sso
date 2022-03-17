@@ -66,4 +66,9 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .recoverWith(Throwable.class, Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
                 .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
 }

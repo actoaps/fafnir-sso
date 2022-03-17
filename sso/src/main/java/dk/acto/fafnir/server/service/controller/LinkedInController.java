@@ -25,12 +25,12 @@ public class LinkedInController {
 	private final FafnirConf fafnirConf;
 
 	@GetMapping
-	public RedirectView authenticate(HttpServletResponse response) {
+	public RedirectView authenticate() {
 		return new RedirectView(provider.authenticate());
 	}
 
 	@GetMapping("callback")
-	public RedirectView callback(HttpServletResponse response, @RequestParam String code) {
+	public RedirectView callback(@RequestParam String code) {
 		return new RedirectView(provider.callback(TokenCredentials.builder()
 				.code(code)
 				.build()).getUrl(fafnirConf));

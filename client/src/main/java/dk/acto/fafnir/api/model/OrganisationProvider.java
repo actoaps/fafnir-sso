@@ -10,5 +10,4 @@ import lombok.Value;
 public class OrganisationProvider {
     String thirdPartyId;
     String thirdPartyProvider;
-    String defaultClaim;
 }

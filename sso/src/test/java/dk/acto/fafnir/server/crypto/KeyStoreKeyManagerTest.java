@@ -2,6 +2,7 @@ package dk.acto.fafnir.server.crypto;
 
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.client.FafnirClientConfiguration;
+import dk.acto.fafnir.server.TestConfig;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,7 @@ import java.security.Security;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"KEYSTORE_PASS=keystorepassword", "KEY_PASS=keypassword"})
-@Import(FafnirClientConfiguration.class)
+@SpringBootTest(properties = {"KEYSTORE_PASS=keystorepassword", "KEY_PASS=keypassword"}, classes = TestConfig.class)
 class KeyStoreKeyManagerTest {
     @Autowired
     private RsaKeyManager rsaKeyManager;

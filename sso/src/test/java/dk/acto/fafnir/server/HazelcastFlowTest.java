@@ -1,13 +1,24 @@
 package dk.acto.fafnir.server;
 
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
+import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.AuthenticationService;
 import dk.acto.fafnir.client.FafnirClient;
 import dk.acto.fafnir.client.FafnirClientConfiguration;
 import dk.acto.fafnir.client.JwtValidator;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 import dk.acto.fafnir.server.provider.HazelcastProvider;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
+import io.vavr.collection.Array;
+import io.vavr.control.Try;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -23,16 +35,21 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Import(FafnirClientConfiguration.class)
+@SpringBootTest(classes = TestConfig.class)
 class HazelcastFlowTest {
     private static final Pattern JWT_MATCHER = Pattern.compile("/success#(.+)$");
 
     @Autowired
-    private FafnirClient fafnirClient;
+    private AdministrationService administrationService;
+
+    @Autowired
+    private RsaKeyManager rsaKeyManager;
 
     @Autowired
     private HazelcastProvider hazelcastProvider;
+
+    @Autowired
+    private HazelcastConf hazelcastConf;
 
     @Autowired
     private FafnirConf fafnirConf;
@@ -40,23 +57,28 @@ class HazelcastFlowTest {
     @Autowired
     private JwtValidator jwtValidator;
 
-    @Test
-    void testFullSuccessFlow() {
-        var me = FafnirUser.builder()
-                .data(UserData.builder()
+    @BeforeEach
+    void setUp() {
+
+        Try.run(() -> administrationService.createOrganisation(OrganisationData.DEFAULT));
+        Try.run(() -> administrationService.createUser(UserData.builder()
+                .created(Instant.MIN)
                         .subject("om@acto.dk")
                         .password("omom")
-                        .name("Oscar Mike")
-                        .provider("test")
                         .metaId("meta")
-                        .locale(Locale.forLanguageTag("da-DK"))
-                        .created(Instant.MIN)
-                        .build())
-                .organisationId("acto")
-                .organisationName("Acto ApS")
-                .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
-                .build();
-        fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
+                        .provider("test")
+                        .name("Oscar Mike")
+                .build()
+                .secure(hazelcastConf.isPasswordIsEncrypted() ? rsaKeyManager.getPublicKey() : null)));
+        Try.run(() -> administrationService.createClaim(ClaimData.builder()
+                        .subject("om@acto.dk")
+                        .organisationId("DEFAULT")
+                        .claims(List.of("User", "Admin", "Site God").toArray(String[]::new))
+                .build()));
+    }
+
+    @Test
+    void testFullSuccessFlow() {
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("omom")
@@ -73,8 +95,8 @@ class HazelcastFlowTest {
         assertThat(auth.hasMetaId()).isTrue();
         assertThat(auth.getPassword()).isNull();
         assertThat(auth.getDetails().getLocale()).isEqualTo(Locale.forLanguageTag("da-DK"));
-        assertThat(auth.getDetails().getOrganisationId()).isEqualTo("acto");
-        assertThat(auth.getDetails().getOrganisationName()).isEqualTo("Acto ApS");
+        assertThat(auth.getDetails().getOrganisationId()).isEqualTo("DEFAULT");
+        assertThat(auth.getDetails().getOrganisationName()).isEqualTo("Default Organisation");
         assertThat(auth.getDetails().getRoles()).contains("User", "Admin", "Site God");
         assertThat(auth.getDetails().getCreated()).isNotNull();
         assertThat(auth.getDetails().getCreated()).isNotEqualTo(Instant.MIN);
@@ -82,20 +104,6 @@ class HazelcastFlowTest {
 
     @Test
     void testNoSecurityFailsFlow() {
-        var me = FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject("om@acto.dk")
-                        .password("omom")
-                        .name("Oscar Mike")
-                        .provider("test")
-                        .metaId("meta")
-                        .locale(Locale.forLanguageTag("da-DK"))
-                        .build())
-                .organisationId("acto")
-                .organisationName("Acto ApS")
-                .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
-                .build();
-        fafnirClient.exportToFafnir(me);
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("omom")
@@ -106,21 +114,6 @@ class HazelcastFlowTest {
 
     @Test
     void testWrongPasswordFailsFlow() {
-        var me = FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject("om@acto.dk")
-                        .password("omom")
-                        .name("Oscar Mike")
-                        .provider("test")
-                        .metaId("meta")
-                        .locale(Locale.forLanguageTag("da-DK"))
-                        .created(Instant.MIN)
-                        .build())
-                .organisationId("acto")
-                .organisationName("Acto ApS")
-                .roles(List.of("User", "Admin", "Site God").toArray(String[]::new))
-                .build();
-        fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("momo")
@@ -131,14 +124,6 @@ class HazelcastFlowTest {
 
     @Test
     void testMinimalistSuccessFlow() {
-        var me = FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject("om@acto.dk")
-                        .password("omom")
-                        .name("Oscar Mike")
-                        .build())
-                .build();
-        fafnirClient.exportToFafnir(fafnirClient.toSecureUser(me));
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("omom")
