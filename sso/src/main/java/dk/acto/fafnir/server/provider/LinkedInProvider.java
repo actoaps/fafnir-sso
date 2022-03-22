@@ -83,4 +83,9 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
                 .build());
         return CallbackResult.success(jwt);
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
 }

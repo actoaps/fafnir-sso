@@ -70,6 +70,11 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
         return CallbackResult.success(jwt);
     }
 
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
+
     private Pair<String, String> getUserInfo(String token) {
         var url = mitIdConf.getAuthorityUrl() + "/connect/userinfo";
         var rest = new RestTemplate();

@@ -61,14 +61,4 @@ public class TokenFactory {
 				.map(jwt::sign)
 				.get();
 	}
-
-	public String getPublicKey() {
-		return BaseEncoding.base64().omitPadding().encode(
-				keyManager.getPublicKey().getEncoded()
-		);
-	}
-
-
-	public PrivateKey getPrivateKey() {
-		return keyManager.getPrivateKey();	}
 }

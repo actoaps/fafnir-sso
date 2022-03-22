@@ -1,6 +1,8 @@
 package dk.acto.fafnir.server.service;
 
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
+import dk.acto.fafnir.api.model.ClaimData;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.server.TestConfig;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +31,35 @@ class HazelcastAdministrationServiceTest {
                         .metaId("meta")
                         .name("Alpha Bravo")
                         .password("abob")
-                        .subject("ab@Acto.dk")
+                        .subject("ab@acto.dk")
                 .build().secure(rsaKeyManager.getPublicKey()));
 
         assertThat(result).isNotNull();
         assertThat(administrationService.readUsers().length).isGreaterThan(0);
+        assertThat(administrationService.readUsers()).contains(result);
     }
+
+    @Test
+    void testCreateOrganisation() {
+        var result = administrationService.createOrganisation(OrganisationData.builder()
+                        .organisationName("Acto ApS")
+                        .organisationId("acto-aps")
+                .build());
+        assertThat(result).isNotNull();
+        assertThat(administrationService.readOrganisations().length).isGreaterThan(0);
+        assertThat(administrationService.readOrganisations()).contains(result);
+    }
+
+    @Test
+    void testCreateClaim() {
+        var result = administrationService.createClaim(ClaimData.builder()
+                        .subject("cd@acto.dk")
+                        .organisationId("acto")
+                        .claims(List.of("Ninja").toArray(String[]::new))
+                .build());
+        assertThat(result).isNotNull();
+        assertThat(administrationService.readClaims("acto", "cd@acto.dk")).isNotNull();
+        assertThat(administrationService.readClaims("acto", "cd@acto.dk").getClaims()).contains("Ninja");
+    }
+
 }

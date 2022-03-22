@@ -35,4 +35,9 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
     public CallbackResult callback(TokenCredentials data) {
         return CallbackResult.failure(FailureReason.CONNECTION_FAILED);
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return true;
+    }
 }

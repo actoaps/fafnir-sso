@@ -16,10 +16,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 
 @Controller
 @Slf4j
-@RequestMapping("hazelcast")
+@RequestMapping("hazelcast/{orgId}")
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;
@@ -31,11 +32,12 @@ public class HazelcastController {
     }
 
     @PostMapping("login")
-    public RedirectView callback(@RequestParam String email, @RequestParam String password) {
+    public RedirectView callback(@RequestParam String email, @RequestParam String password, @PathParam("orgId") String orgId) {
         return new RedirectView(provider.callback(UsernamePasswordCredentials.builder()
                 .username(email)
                 .password(password)
-                        .build()).getUrl(fafnirConf));
+                .organisation(orgId)
+                .build()).getUrl(fafnirConf));
     }
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
