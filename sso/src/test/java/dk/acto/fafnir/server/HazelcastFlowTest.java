@@ -59,21 +59,21 @@ class HazelcastFlowTest {
 
     @BeforeEach
     void setUp() {
-
         Try.run(() -> administrationService.createOrganisation(OrganisationData.DEFAULT));
         Try.run(() -> administrationService.createUser(UserData.builder()
                 .created(Instant.MIN)
-                        .subject("om@acto.dk")
-                        .password("omom")
-                        .metaId("meta")
-                        .provider("test")
-                        .name("Oscar Mike")
+                .subject("om@acto.dk")
+                .password("omom")
+                .metaId("meta")
+                .provider("test")
+                .name("Oscar Mike")
+                .locale(Locale.forLanguageTag("da-DK"))
                 .build()
                 .secure(hazelcastConf.isPasswordIsEncrypted() ? rsaKeyManager.getPublicKey() : null)));
         Try.run(() -> administrationService.createClaim(ClaimData.builder()
-                        .subject("om@acto.dk")
-                        .organisationId("DEFAULT")
-                        .claims(List.of("User", "Admin", "Site God").toArray(String[]::new))
+                .subject("om@acto.dk")
+                .organisationId("default")
+                .claims(List.of("User", "Admin", "Site God").toArray(String[]::new))
                 .build()));
     }
 
@@ -82,6 +82,7 @@ class HazelcastFlowTest {
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("omom")
+                .organisation("default")
                 .build());
         var url = result.getUrl(fafnirConf);
         assertThat(url).contains("/success#");
@@ -95,7 +96,7 @@ class HazelcastFlowTest {
         assertThat(auth.hasMetaId()).isTrue();
         assertThat(auth.getPassword()).isNull();
         assertThat(auth.getDetails().getLocale()).isEqualTo(Locale.forLanguageTag("da-DK"));
-        assertThat(auth.getDetails().getOrganisationId()).isEqualTo("DEFAULT");
+        assertThat(auth.getDetails().getOrganisationId()).isEqualTo("default");
         assertThat(auth.getDetails().getOrganisationName()).isEqualTo("Default Organisation");
         assertThat(auth.getDetails().getRoles()).contains("User", "Admin", "Site God");
         assertThat(auth.getDetails().getCreated()).isNotNull();
@@ -120,30 +121,5 @@ class HazelcastFlowTest {
                 .build());
         var url = result.getUrl(fafnirConf);
         assertThat(url).contains("/fail#");
-    }
-
-    @Test
-    void testMinimalistSuccessFlow() {
-        var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
-                .username("om@acto.dk")
-                .password("omom")
-                .build());
-        var url = result.getUrl(fafnirConf);
-        assertThat(url).contains("/success#");
-        var matcher = JWT_MATCHER.matcher(url);
-        assertThat(matcher.find()).isTrue();
-        var jwt = matcher.group(1);
-        var auth = jwtValidator.decodeToken(jwt);
-        assertThat(auth.getUsername()).isEqualTo("om@acto.dk");
-        assertThat(auth.getName()).isEqualTo("Oscar Mike");
-        assertThat(auth.getMetaId()).isNull();
-        assertThat(auth.hasMetaId()).isFalse();
-        assertThat(auth.getPassword()).isNull();
-        assertThat(auth.getDetails().getLocale()).isNull();
-        assertThat(auth.getDetails().getOrganisationId()).isNull();
-        assertThat(auth.getDetails().getOrganisationName()).isNull();
-        assertThat(auth.getDetails().getRoles()).isEmpty();
-        assertThat(auth.getDetails().getCreated()).isNotNull();
-        assertThat(auth.getDetails().getCreated()).isNotEqualTo(Instant.MIN);
     }
 }

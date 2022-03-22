@@ -116,7 +116,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     @Override
     public ClaimData readClaims(String orgId, String subject) {
         ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
-        return claimSet.stream().filter(data -> !(data.getSubject().equals(subject) && data.getOrganisationId().equals(orgId)))
+        return claimSet.stream().filter(data -> (data.getSubject().equals(subject) && data.getOrganisationId().equals(orgId)))
                 .findAny()
                 .orElseThrow(NoSuchClaim::new);
     }

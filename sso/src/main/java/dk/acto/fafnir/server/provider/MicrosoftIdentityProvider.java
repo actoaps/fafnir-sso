@@ -65,4 +65,9 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
 
         return CallbackResult.success(jwt);
     }
+
+    @Override
+    public boolean supportsOrganisationUrls() {
+        return false;
+    }
 }
