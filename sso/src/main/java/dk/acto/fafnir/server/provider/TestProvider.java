@@ -6,14 +6,16 @@ import dk.acto.fafnir.server.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
+import dk.acto.fafnir.server.model.conf.TestConf;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-@Lazy
+@ConditionalOnBean(TestConf.class)
 public class TestProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final FafnirConf fafnirConf;
@@ -39,5 +41,10 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
     @Override
     public boolean supportsOrganisationUrls() {
         return true;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "test";
     }
 }

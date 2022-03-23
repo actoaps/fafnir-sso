@@ -14,12 +14,13 @@ import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@Lazy
+@ConditionalOnBean(name = "googleOAuth")
 public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;
@@ -65,5 +66,10 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "google";
     }
 }

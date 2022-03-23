@@ -5,7 +5,7 @@ import dk.acto.fafnir.server.provider.AppleProvider;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("apple")
-@ConditionalOnProperty(name = {"APPLE_AID", "APPLE_SECRET"})
+@ConditionalOnBean(AppleProvider.class)
 public class AppleController {
     private final AppleProvider provider;
     private final FafnirConf fafnirConf;

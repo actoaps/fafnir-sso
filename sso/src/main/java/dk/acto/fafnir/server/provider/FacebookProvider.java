@@ -15,12 +15,13 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@Lazy
+@ConditionalOnBean(name = "facebookOAuth")
 public class FacebookProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
@@ -73,5 +74,10 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "facebook";
     }
 }

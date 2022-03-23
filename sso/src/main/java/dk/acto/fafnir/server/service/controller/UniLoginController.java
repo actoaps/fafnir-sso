@@ -6,6 +6,7 @@ import dk.acto.fafnir.server.service.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,7 @@ import static dk.acto.fafnir.server.provider.UniLoginHelper.*;
 @Slf4j
 @RequestMapping("unilogin")
 @AllArgsConstructor
-@ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
+@ConditionalOnBean(UniLoginProvider.class)
 public class UniLoginController {
 	private final UniLoginProvider provider;
 

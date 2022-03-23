@@ -14,6 +14,7 @@ import dk.acto.fafnir.server.service.MitIdApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ import org.springframework.context.annotation.Primary;
 public class BeanConf {
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
     public EconomicConf economicConf(
             @Value("${ECONOMIC_AST}") String secret,
             @Value("${ECONOMIC_AGT}") String grant) {
@@ -34,7 +35,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"FACEBOOK_AID", "FACEBOOK_SECRET"})
     public FacebookConf facebookConf(
             @Value("${FACEBOOK_AID}") String appId,
             @Value("${FACEBOOK_SECRET}") String secret) {
@@ -43,7 +44,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"GOOGLE_AID", "GOOGLE_SECRET"})
     public GoogleConf googleConf(
             @Value("${GOOGLE_AID}") String appId,
             @Value("${GOOGLE_SECRET}") String secret) {
@@ -52,7 +53,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"LINKED_IN_AID", "LINKED_IN_SECRET"})
     public LinkedInConf linkedInConf(
             @Value("${LINKED_IN_AID}") String appId,
             @Value("${LINKED_IN_SECRET}") String secret) {
@@ -61,7 +62,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
     public UniLoginConf uniLoginConf(
             @Value("${UL_AID}") String appId,
             @Value("${UL_SECRET}") String secret,
@@ -92,14 +93,14 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = "TEST_ENABLED")
     public TestConf testConf(@Value("${TEST_ENABLED:false}") boolean testEnabled) {
         log.info("Test Configured...");
         return new TestConf(testEnabled);
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"APPLE_AID", "APPLE_SECRET"})
     public AppleConf appleConf(
             @Value("${APPLE_AID}") String appId,
             @Value("${APPLE_SECRET}") String secret) {
@@ -108,7 +109,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"MITID_AID", "MITID_SECRET", "MITID_AUTHORITY_URL"})
     public MitIdConf mitIdConf(
             @Value("${MITID_AUTHORITY_URL}") String authorityUrl,
             @Value("${MITID_AID}") String clientId,
@@ -118,7 +119,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnProperty(name = {"MSID_AID", "MSID_SECRET", "MSID_TENANT"})
     public MicrosoftIdentityConf msIdentityConf(
             @Value("${MSID_AID}") String appId,
             @Value("${MSID_SECRET}") String secret,
@@ -136,7 +137,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(GoogleConf.class)
     public OAuth20Service googleOAuth (GoogleConf googleConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(googleConf.getAppId())
                 .apiSecret(googleConf.getSecret())
@@ -146,7 +147,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(FacebookConf.class)
     public OAuth20Service facebookOAuth (FacebookConf facebookConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(facebookConf.getAppId())
                 .apiSecret(facebookConf.getSecret())
@@ -156,7 +157,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(LinkedInConf.class)
     public OAuth20Service linkedInOAuth(LinkedInConf linkedInConf, FafnirConf fafnirConf ) {
         return Try.of(() -> new ServiceBuilder(linkedInConf.getAppId())
                 .apiSecret(linkedInConf.getSecret())
@@ -166,7 +167,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(AppleConf.class)
     public OAuth20Service appleOAuth(AppleConf appleConf, FafnirConf fafnirConf ) {
         return Try.of(() -> new ServiceBuilder(appleConf.getAppId())
                 .apiSecret(appleConf.getSecret())
@@ -177,7 +178,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(MitIdConf.class)
     public OAuth20Service mitIdOauth(MitIdConf mitIdConf, TestConf testConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(mitIdConf.getClientId())
                 .apiSecret(mitIdConf.getSecret())
@@ -188,7 +189,7 @@ public class BeanConf {
     }
 
     @Bean
-    @Lazy
+    @ConditionalOnBean(MicrosoftIdentityConf.class)
     public OAuth20Service microsoftIdentityOauth (MicrosoftIdentityConf msIdentityConf, FafnirConf fafnirConf) {
         return Try.of(() -> new ServiceBuilder(msIdentityConf.getAppId())
                 .apiSecret(msIdentityConf.getSecret())

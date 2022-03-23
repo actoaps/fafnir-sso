@@ -5,6 +5,7 @@ import dk.acto.fafnir.server.provider.GoogleProvider;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @RequestMapping("google")
 @AllArgsConstructor
-@ConditionalOnProperty(name = {"GOOGLE_AID", "GOOGLE_SECRET"})
+@ConditionalOnBean(GoogleProvider.class)
 public class GoogleController {
 	private final GoogleProvider provider;
 	private final FafnirConf fafnirConf;

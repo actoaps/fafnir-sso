@@ -5,6 +5,7 @@ import dk.acto.fafnir.server.provider.EconomicCustomerProvider;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("economic")
-@ConditionalOnProperty(name = {"ECONOMIC_AST", "ECONOMIC_AGT"})
+@ConditionalOnBean(EconomicCustomerProvider.class)
 public class EconomicCustomerController{
     private final EconomicCustomerProvider provider;
     private final FafnirConf fafnirConf;
