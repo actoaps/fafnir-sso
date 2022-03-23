@@ -6,8 +6,8 @@ plugins {
     id "name.remal.check-updates" version "1.1.4"
 }
 
-sourceCompatibility = 15
-targetCompatibility = 15
+sourceCompatibility = 17
+targetCompatibility = 17
 compileJava.options.encoding = 'UTF-8'
 
 def myVersion = System.properties['versionOverride']

@@ -5,6 +5,7 @@ import dk.acto.fafnir.server.provider.MicrosoftIdentityProvider;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @RequestMapping("msidentity")
 @AllArgsConstructor
-@ConditionalOnProperty(name = {"MSID_AID", "MSID_SECRET", "MSID_TENANT"})
+@ConditionalOnBean(MicrosoftIdentityProvider.class)
 public class MicrosoftIdentityController {
 	private final MicrosoftIdentityProvider provider;
 	private final FafnirConf fafnirConf;

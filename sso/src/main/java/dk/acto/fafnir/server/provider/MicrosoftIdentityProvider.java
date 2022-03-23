@@ -11,16 +11,18 @@ import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.util.Map;
 
-@Log4j2
-@Lazy
+@Slf4j
 @Component
 @AllArgsConstructor
+@ConditionalOnBean(name = "microsoftIdentityOauth")
 public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final OAuth20Service microsoftIdentityOauth;
@@ -69,5 +71,10 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "msidentity";
     }
 }

@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,9 +26,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@Lazy
 @Component
 @AllArgsConstructor
+@ConditionalOnBean(name = "mitIdOauth")
 public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     @Qualifier("mitIdOauth")
     private final OAuth20Service mitIdOauth;
@@ -73,6 +74,11 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "mitid";
     }
 
     private Pair<String, String> getUserInfo(String token) {

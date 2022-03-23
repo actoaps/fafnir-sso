@@ -11,6 +11,7 @@ import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.server.provider.economic.EconomicCustomer;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 @Component
 @AllArgsConstructor
-@Lazy
+@ConditionalOnBean(EconomicConf.class)
 public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -70,5 +71,10 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "economic";
     }
 }

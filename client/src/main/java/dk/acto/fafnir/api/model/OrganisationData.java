@@ -24,7 +24,7 @@ public class OrganisationData implements Serializable {
     String organisationId;
     String organisationName;
     String contactEmail;
-    OrganisationProvider provider;
+    String provider;
     Instant created;
 
 }

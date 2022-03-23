@@ -5,6 +5,7 @@ import dk.acto.fafnir.server.provider.MitIdProvider;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -15,7 +16,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("mitid")
-@ConditionalOnProperty(name = {"MITID_AID", "MITID_SECRET", "MITID_AUTHORITY_URL"})
+@ConditionalOnBean(MitIdProvider.class)
 public class MitIdController {
     private final MitIdProvider provider;
     private final FafnirConf fafnirConf;

@@ -10,6 +10,7 @@ import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@Lazy
+@ConditionalOnBean(name = "appleOAuth")
 public class AppleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final OAuth20Service appleOauth;
     private final TokenFactory tokenFactory;
@@ -53,5 +54,10 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
     @Override
     public boolean supportsOrganisationUrls() {
         return false;
+    }
+
+    @Override
+    public String entryPoint() {
+        return "apple";
     }
 }

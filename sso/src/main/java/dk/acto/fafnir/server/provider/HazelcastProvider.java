@@ -44,4 +44,9 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     public boolean supportsOrganisationUrls() {
         return true;
     }
+
+    @Override
+    public String entryPoint() {
+        return "hazelcast";
+    }
 }

@@ -5,6 +5,7 @@ import dk.acto.fafnir.server.provider.LinkedInProvider;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping("linkedin")
 @AllArgsConstructor
-@ConditionalOnProperty(name = {"LINKED_IN_AID", "LINKED_IN_SECRET"})
+@ConditionalOnBean(LinkedInProvider.class)
 public class LinkedInController {
 	private final LinkedInProvider provider;
 	private final FafnirConf fafnirConf;
