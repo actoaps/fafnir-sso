@@ -1,7 +1,4 @@
 buildscript {
-    repositories {
-        jcenter()
-    }
     dependencies {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
@@ -9,12 +6,12 @@ buildscript {
 
 plugins {
     id "java-library"
-//    id "org.springframework.boot" version "2.2.4.RELEASE"
-//    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id "maven-publish"
+    id 'signing'
 }
 
-sourceCompatibility = 15
-targetCompatibility = 15
+sourceCompatibility = 17
+targetCompatibility = 17
 compileJava.options.encoding = "UTF-8"
 
 repositories {
@@ -31,54 +28,59 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.20"
-    annotationProcessor "org.projectlombok:lombok:1.18.20"
+    compileOnly "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.projectlombok:lombok:1.18.22"
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
-    implementation "io.vavr:vavr:0.10.2"
-    annotationProcessor "io.vavr:vavr:0.10.2"
+    implementation "io.vavr:vavr:0.10.4"
+    annotationProcessor "io.vavr:vavr:0.10.4"
 
     implementation "io.jsonwebtoken:jjwt:0.9.1"
-    implementation 'com.hazelcast:hazelcast:4.2'
-    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'com.hazelcast:hazelcast:5.1.1'
+    implementation 'com.google.guava:guava:31.1-jre'
 
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     implementation 'org.springframework:spring-context:5.2.8.RELEASE'
     implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
 
 }
 
-apply plugin: 'com.bmuschko.nexus'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
 
-modifyPom {
-    artifact = 'fafnir-client'
-
-    project {
-        name 'Fafnir SSO Client'
-        description 'Client library for the Fafnir SSO solution, for use with Spring Boot'
-        url 'https://github.com/actoaps/fafnir-sso'
-
-        scm {
-            url 'https://github.com/actoaps/fafnir-sso'
-            connection 'scm:https://github.com/actoaps/fafnir-sso.git'
-            developerConnection 'scm:git://github.com/actoaps/fafnir-sso.git'
-        }
-
-        licenses {
-            license {
-                name 'MIT'
-                url 'https://opensource.org/licenses/MIT'
-                distribution 'repo'
+            pom {
+                name = "Fafnir SSO Client"
+                description = "Client library for the Fafnir SSO solution, for use with Spring Boot"
+                url = "https://github.com/actoaps/fafnir-sso"
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://opensource.org/licenses/MIT"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'EliasJorgensen'
+                        name = 'Elias Jørgensen'
+                        email = 'ej@acto.dk'
+                    }
+                }
+                scm {
+                    url ='https://github.com/actoaps/fafnir-sso'
+                    connection = 'scm:https://github.com/actoaps/fafnir-sso.git'
+                    developerConnection = 'scm:git://github.com/actoaps/fafnir-sso.git'
+                }
             }
-        }
 
-        developers {
-            developer {
-                id 'EliasJorgensen'
-                name 'Elias Jørgensen'
-                email 'ej@acto.dk'
+            repositories {
+                maven {
+                    url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                }
             }
         }
     }
@@ -88,17 +90,4 @@ javadoc {
     if(JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption("html5", true)
     }
-}
-
-nexus {
-    sign = true
-    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-}
-
-nexusStaging {
-    packageGroup = group
-    stagingProfileId = "1648366e1c864"
-    numberOfRetries = 50
-    delayBetweenRetriesInMillis = 5000
 }

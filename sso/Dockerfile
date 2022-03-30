@@ -1,4 +1,4 @@
-FROM openjdk:15-jdk-oraclelinux8
+FROM openjdk:17.0.1-jdk-oraclelinux8
 
 ADD build/distributions/auth.tar ./
 WORKDIR ./auth
