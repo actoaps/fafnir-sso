@@ -1,9 +1,9 @@
 plugins {
 	id 'java'
 	id 'application'
-	id "com.github.bjornvester.wsdl2java" version "1.2"
+	id 'com.github.bjornvester.wsdl2java' version '1.2'
 	id 'de.undercouch.download' version '4.1.1'
-    id 'org.springframework.boot' version '2.4.0'
+    id 'org.springframework.boot' version '2.6.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
@@ -75,8 +75,8 @@ dependencies {
 	implementation 'com.auth0:java-jwt:3.19.0'
 
 	//WSDL / Apache-cxf stuff
-	runtimeOnly 'org.apache.cxf:cxf-rt-frontend-jaxws:3.5.0'
-	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.5.0'
+	runtimeOnly 'org.apache.cxf:cxf-rt-frontend-jaxws:3.5.1'
+	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.5.1'
 }
 
 task downloadWSDLWsaGruppe(type: Download) {
@@ -94,12 +94,13 @@ task downloadWSDLWsiInst(type: Download) {
 
 wsdl2java {
 	wsdlDir = layout.projectDirectory.dir("src/main/resources/wsdl")
-	cxfVersion = "3.5.0"
+	cxfVersion = "3.5.1"
 	includesWithOptions = [
 			"**/wsagruppe_v3.wsdl" : ["-wsdlLocation", "https://wsagruppe.uni-login.dk/wsagruppe-v3/ws?WSDL"],
 			"**/wsibruger_v6.wsdl" : ["-wsdlLocation", "https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL"],
 			"**/wsiinst_v5.wsdl" : ["-wsdlLocation", "https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL"]
 	]
+	options = ["-encoding", "UTF-8"]
 }
 
 tasks.wsdl2java.dependsOn tasks.downloadWSDLWsaGruppe, tasks.downloadWSDLWsiBruger, tasks.downloadWSDLWsiInst
