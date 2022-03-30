@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   fafnir-sso:
-    build: webservice
+    build: sso
     container_name: fafnir-sso
     ports:
       - 8080:8080

@@ -3,16 +3,14 @@ package dk.acto.fafnir.server.service;
 import dk.acto.fafnir.api.exception.NoSuchProvider;
 import dk.acto.fafnir.server.provider.ProviderInformation;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Value
 @AllArgsConstructor
 @Service
 public class ProviderService {
-    Set<ProviderInformation> providerInformationSet;
+    private final Set<ProviderInformation> providerInformationSet;
 
     public String[] getAcceptedProviders() {
         return providerInformationSet.stream()
