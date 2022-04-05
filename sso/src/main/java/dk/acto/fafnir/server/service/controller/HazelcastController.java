@@ -15,12 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
 
 @Controller
 @Slf4j
-@RequestMapping("hazelcast/{orgId}")
+@RequestMapping("/{orgId}/hazelcast")
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;
