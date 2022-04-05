@@ -11,7 +11,7 @@ import dk.acto.fafnir.server.model.conf.*;
 import dk.acto.fafnir.server.service.AppleApi;
 import dk.acto.fafnir.server.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.server.service.MitIdApi;
-import dk.acto.fafnir.server.util.DemoDataGenerator;
+import dk.acto.fafnir.server.util.generator.DemoDataGenerator;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -202,10 +202,9 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnBean(DemoDataGenerator.class)
-    public CommandLineRunner commandLineRunner( DemoDataGenerator demoDataGenerator) {
+    public CommandLineRunner commandLineRunner(DemoDataGenerator demoDataGenerator) {
         return args -> {
-            // User Dummy Data
-            demoDataGenerator.createDemoData();
+            demoDataGenerator.generateData();
         };
     }
 }
