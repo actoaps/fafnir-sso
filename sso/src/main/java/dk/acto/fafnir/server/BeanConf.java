@@ -14,6 +14,7 @@ import dk.acto.fafnir.server.service.MitIdApi;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -197,5 +198,14 @@ public class BeanConf {
                 .responseType("id_token")
                 .defaultScope("openid email profile")
                 .build(new MicrosoftIdentityApi(msIdentityConf.getTenant()))).getOrNull();
+    }
+
+    @Bean
+    @ConditionalOnBean(DemoDataGenerator.class)
+    public CommandLineRunner commandLineRunner( DemoDataGenerator demoDataGenerator) {
+        return args -> {
+            // User Dummy Data
+            demoDataGenerator.createDemoData();
+        };
     }
 }
