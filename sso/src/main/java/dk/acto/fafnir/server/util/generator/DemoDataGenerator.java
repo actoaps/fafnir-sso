@@ -1,22 +1,23 @@
-package dk.acto.fafnir.server.util;
+package dk.acto.fafnir.server.util.generator;
 
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.util.DataGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
 
-@Service
+@Component
 @AllArgsConstructor
 @Profile("demo")
-public class DemoDataGenerator {
+public class DemoDataGenerator implements DataGenerator {
+    private final AdministrationService administrationService;
 
-    private AdministrationService administrationService;
-
-    public void createDemoData(){
+    @Override
+    public void generateData(){
         var actoTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("1")
