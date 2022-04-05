@@ -1,7 +1,6 @@
 package dk.acto.fafnir.server.provider;
 
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
-import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.AuthenticationService;
 import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.TokenFactory;
@@ -12,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -24,7 +22,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
 
     @Override
     public String authenticate() {
-        return "/hazelcast/login";
+        return "/{orgId}/hazelcast/login";
     }
 
     public CallbackResult callback(final UsernamePasswordCredentials data) {
