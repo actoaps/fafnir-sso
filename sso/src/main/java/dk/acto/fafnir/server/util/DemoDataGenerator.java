@@ -1,4 +1,4 @@
-package dk.acto.fafnir.server;
+package dk.acto.fafnir.server.util;
 
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.service.AdministrationService;

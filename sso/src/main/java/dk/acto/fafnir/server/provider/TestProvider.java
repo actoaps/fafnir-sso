@@ -1,8 +1,8 @@
 package dk.acto.fafnir.server.provider;
 
 import dk.acto.fafnir.api.model.UserData;
-import dk.acto.fafnir.server.FailureReason;
-import dk.acto.fafnir.server.TokenFactory;
+import dk.acto.fafnir.server.model.FailureReason;
+import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
@@ -10,7 +10,6 @@ import dk.acto.fafnir.server.model.conf.TestConf;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
