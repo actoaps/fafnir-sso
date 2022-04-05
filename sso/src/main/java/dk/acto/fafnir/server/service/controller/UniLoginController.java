@@ -1,13 +1,12 @@
 package dk.acto.fafnir.server.service.controller;
 
-import dk.acto.fafnir.server.FailureReason;
+import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.provider.UniLoginProvider;
 import dk.acto.fafnir.server.service.ServiceHelper;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

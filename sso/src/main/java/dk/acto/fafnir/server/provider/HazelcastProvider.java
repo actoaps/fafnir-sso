@@ -2,8 +2,8 @@ package dk.acto.fafnir.server.provider;
 
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AuthenticationService;
-import dk.acto.fafnir.server.FailureReason;
-import dk.acto.fafnir.server.TokenFactory;
+import dk.acto.fafnir.server.model.FailureReason;
+import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
 import io.vavr.control.Try;

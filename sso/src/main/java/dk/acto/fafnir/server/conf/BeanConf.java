@@ -1,4 +1,4 @@
-package dk.acto.fafnir.server;
+package dk.acto.fafnir.server.conf;
 
 import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GoogleApi20;
@@ -11,6 +11,7 @@ import dk.acto.fafnir.server.model.conf.*;
 import dk.acto.fafnir.server.service.AppleApi;
 import dk.acto.fafnir.server.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.server.service.MitIdApi;
+import dk.acto.fafnir.server.util.DemoDataGenerator;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 
 @Slf4j

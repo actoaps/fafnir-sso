@@ -1,6 +1,5 @@
 package dk.acto.fafnir.server.model;
 
-import dk.acto.fafnir.server.FailureReason;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 
 import java.util.Optional;
