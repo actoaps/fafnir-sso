@@ -14,21 +14,11 @@ import java.security.Security;
 @SpringBootApplication
 @AllArgsConstructor
 @Slf4j
-@Profile("demo")
+@Profile("!test")
 public class Main {
-    private final DemoDataGenerator demoDataGenerator;
 
     public static void main(String[] args) {
         Security.addProvider(new BouncyCastleProvider());
         SpringApplication.run(Main.class, args);
-    }
-
-    @Bean
-    public CommandLineRunner commandLineRunner( ) {
-        return args -> {
-            // User Dummy Data
-            demoDataGenerator.createDemoData();
-
-        };
     }
 }
