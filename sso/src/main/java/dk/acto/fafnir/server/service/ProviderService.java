@@ -14,14 +14,13 @@ public class ProviderService {
 
     public String[] getAcceptedProviders() {
         return providerInformationSet.stream()
-                .map(ProviderInformation::entryPoint)
+                .map(ProviderInformation::providerId)
                 .toArray(String[]::new);
     }
 
-    public boolean providerSupportsOrganisations(String providerId) {
+    public ProviderInformation getProviderInformation(String providerId) {
         return providerInformationSet.stream()
-                .filter(x -> x.entryPoint().equals(providerId))
-                .map(ProviderInformation::supportsOrganisationUrls)
+                .filter(x -> x.providerId().equals(providerId))
                 .findAny()
                 .orElseThrow(NoSuchProvider::new);
     }

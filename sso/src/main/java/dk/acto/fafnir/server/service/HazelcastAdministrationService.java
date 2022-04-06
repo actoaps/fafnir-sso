@@ -6,6 +6,7 @@ import com.hazelcast.map.IMap;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
@@ -81,6 +82,26 @@ public class HazelcastAdministrationService implements AdministrationService {
     public OrganisationData readOrganisation(String orgId) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
         return Optional.ofNullable(orgMap.get(orgId))
+                .orElseThrow(NoSuchOrganisation::new);
+    }
+
+    @Override
+    public OrganisationData readOrganisation(String providerKey, String providerValue) {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+        return orgMap.values().stream()
+                .filter(x -> x.getProviderConfigurations().stream()
+                        .filter(y -> y.hasValue(providerKey, providerValue)).findAny().isEmpty())
+                .findAny()
+                .orElseThrow(NoSuchOrganisation::new);
+    }
+
+    @Override
+    public OrganisationData readOrganisation(ProviderMetaData providerMetaData) {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+        return orgMap.values().stream()
+                .filter(x -> x.getProviderConfigurations().stream()
+                        .filter(y -> providerMetaData.getProviderId().equals(y.getProviderId())).findFirst().isEmpty())
+                .findAny()
                 .orElseThrow(NoSuchOrganisation::new);
     }
 

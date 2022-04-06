@@ -6,35 +6,33 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Component
 @ConditionalOnBean(name = "linkedInOAuth")
+@AllArgsConstructor
 public class LinkedInProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
+    @Qualifier("linkedInOAuth")
     private final OAuth20Service linkedInOAuth;
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
-
-    public LinkedInProvider(@Qualifier("linkedInOAuth") OAuth20Service linkedInOAuth, TokenFactory tokenFactory, ObjectMapper objectMapper) {
-        this.linkedInOAuth = linkedInOAuth;
-        this.tokenFactory = tokenFactory;
-        this.objectMapper = objectMapper;
-    }
-
+    private final AdministrationService administrationService;
 
     public String authenticate() {
         return linkedInOAuth.getAuthorizationUrl();
@@ -74,13 +72,15 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
             return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-        String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject(subject)
-                        .provider("linkedin")
-                        .name(String.format("%s %s", firstName, lastName))
-                        .build())
-                .build());
+        var subjectActual = UserData.builder()
+                .subject(subject)
+                .name(String.format("%s %s", firstName, lastName))
+                .build();
+        var orgActual = administrationService.readOrganisation(getMetaData());
+        var claimsActual = ClaimData.empty(subjectActual.getSubject(), orgActual.getOrganisationId());
+
+        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+
         return CallbackResult.success(jwt);
     }
 
@@ -90,7 +90,17 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
     }
 
     @Override
-    public String entryPoint() {
+    public String providerId() {
         return "linkedin";
+    }
+
+    @Override
+    public ProviderMetaData getMetaData() {
+        return ProviderMetaData.builder()
+                .providerId(providerId())
+                .providerName("LinkedIn")
+                .organisationSupport(OrganisationSupport.SINGLE)
+                .inputs(List.of())
+                .build();
     }
 }

@@ -26,8 +26,8 @@ class ProviderServiceTest {
     }
 
     @Test
-    void providerSupportsOrganisations() {
-        var result = providerService.providerSupportsOrganisations("hazelcast");
-        assertThat(result).isTrue();
+    void getProviderInformation() {
+        var result = providerService.getProviderInformation("hazelcast");
+        assertThat(result).isNotNull();
     }
 }

@@ -27,7 +27,6 @@ class HazelcastAdministrationServiceTest {
     @Test
     void testCreateUser() {
         var result = administrationService.createUser(UserData.builder()
-                        .provider("test")
                         .metaId("meta")
                         .name("Alpha Bravo")
                         .password("abob")

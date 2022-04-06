@@ -23,7 +23,6 @@ public class UserData implements Serializable {
 
     String subject;
     String password;
-    String provider;
     String name;
     String metaId;
     Locale locale;

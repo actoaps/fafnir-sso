@@ -2,8 +2,8 @@ package dk.acto.fafnir.server.provider;
 
 import com.auth0.jwt.JWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -24,6 +25,7 @@ import java.util.Map;
 public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final OAuth20Service microsoftIdentityOauth;
+    private final AdministrationService administrationService;
 
     // From: https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
     private static final String PERSONAL_TENANT_GUID = "9188040d-6c67-4c5b-b112-36a304b66dad";
@@ -53,26 +55,30 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
         var displayName = token.getClaims().get("name").asString();
         var tenantId = token.getClaim("tid").asString();
 
-        String jwt = tokenFactory.generateToken(FafnirUser.builder().
-                        data(UserData.builder()
-                                        .subject(subject)
-                                        .provider("msidentity")
-                                        .name(displayName)
-                                        .build()
-                        )
-                .organisationId(tenantId.equals(PERSONAL_TENANT_GUID) ? null : tenantId)
-                .build());
+        var subjectActual = UserData.builder()
+                .subject(subject)
+                .name(displayName)
+                .build();
+        var orgActual = administrationService.readOrganisation("TenantId", tenantId);
+        var claimsActual = ClaimData.empty(subjectActual.getSubject(), orgActual.getOrganisationId());
+
+        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return CallbackResult.success(jwt);
     }
 
     @Override
-    public boolean supportsOrganisationUrls() {
-        return false;
+    public String providerId() {
+        return "msidentity";
     }
 
     @Override
-    public String entryPoint() {
-        return "msidentity";
+    public ProviderMetaData getMetaData() {
+        return ProviderMetaData.builder()
+                .providerName(String.format("Microsoft (Personal TenantId is : %s)", PERSONAL_TENANT_GUID))
+                .providerId(providerId())
+                .organisationSupport(OrganisationSupport.NATIVE)
+                .inputs(List.of("TenantId"))
+                .build();
     }
 }
