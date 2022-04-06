@@ -56,7 +56,6 @@ class HazelcastFlowTest {
                 .subject("om@acto.dk")
                 .password("omom")
                 .metaId("meta")
-                .provider("test")
                 .name("Oscar Mike")
                 .locale(Locale.forLanguageTag("da-DK"))
                 .build()

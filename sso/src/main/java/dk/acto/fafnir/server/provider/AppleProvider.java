@@ -3,29 +3,29 @@ package dk.acto.fafnir.server.provider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 @ConditionalOnBean(name = "appleOAuth")
 public class AppleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
+    @Qualifier("appleOAuth")
     private final OAuth20Service appleOauth;
     private final TokenFactory tokenFactory;
-
-    public AppleProvider(@Qualifier("appleOAuth") OAuth20Service appleOauth, TokenFactory tokenFactory) {
-        this.appleOauth = appleOauth;
-        this.tokenFactory = tokenFactory;
-    }
+    private final AdministrationService administrationService;
 
     public String authenticate() {
         return appleOauth.getAuthorizationUrl(Map.of("response_mode", "form_post"));
@@ -39,24 +39,30 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
         String subject = jwtToken.getClaims().get("sub").asString();
         String displayName = jwtToken.getClaims().get("email").asString();
 
-        String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject(subject)
-                        .provider("apple")
-                        .name(displayName)
-                        .metaId(subject)
-                        .build())
-                .build());
+        var subjectActual = UserData.builder()
+                .subject(subject)
+                .name(displayName)
+                .build();
+        var orgActual = OrganisationData.DEFAULT;
+        var claimsActual = ClaimData.empty(subjectActual.getSubject(), orgActual.getOrganisationId());
+
+        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+
         return CallbackResult.success(jwt);
     }
 
     @Override
-    public boolean supportsOrganisationUrls() {
-        return false;
+    public String providerId() {
+        return "apple";
     }
 
     @Override
-    public String entryPoint() {
-        return "apple";
+    public ProviderMetaData getMetaData() {
+        return ProviderMetaData.builder()
+                .inputs(List.of())
+                .organisationSupport(OrganisationSupport.NONE)
+                .providerName("Apple")
+                .providerId(providerId())
+                .build();
     }
 }

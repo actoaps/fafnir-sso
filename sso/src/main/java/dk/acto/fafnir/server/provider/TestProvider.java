@@ -1,16 +1,17 @@
 package dk.acto.fafnir.server.provider;
 
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
-import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
 import dk.acto.fafnir.server.model.conf.TestConf;
 import dk.acto.fafnir.server.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -21,14 +22,13 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
 
     @Override
     public String authenticate() {
-        String jwt = tokenFactory.generateToken(
-                FafnirUser.builder()
-                        .data(UserData.builder()
+        String jwt = tokenFactory.generateToken(UserData.builder()
                                 .subject("test")
-                                .provider("test")
                                 .name("Testy McTestface")
-                                .build())
-                        .build());
+                                .build(),
+                OrganisationData.DEFAULT,
+                ClaimData.empty("test", OrganisationData.DEFAULT.getOrganisationId()),
+                getMetaData());
         return fafnirConf.getSuccessRedirect() + "#" + jwt;
     }
 
@@ -38,12 +38,17 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
     }
 
     @Override
-    public boolean supportsOrganisationUrls() {
-        return true;
+    public String providerId() {
+        return "test";
     }
 
     @Override
-    public String entryPoint() {
-        return "test";
+    public ProviderMetaData getMetaData() {
+        return ProviderMetaData.builder()
+                .providerId(providerId())
+                .providerName("Test Provider (Do not use in production)")
+                .inputs(List.of())
+                .organisationSupport(OrganisationSupport.FAFNIR)
+                .build();
     }
 }

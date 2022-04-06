@@ -61,12 +61,12 @@ public class JwtValidator {
                         .subject(claims.getSubject())
                         .name(claims.get("name", String.class))
                         .locale(Optional.ofNullable(claims.get("locale", String.class)).map(Locale::forLanguageTag).orElse(null))
-                        .provider(claims.getIssuer())
                         .metaId(claims.get("mId", String.class))
                         .created(claims.getIssuedAt().toInstant())
                         .build())
                 .organisationId(claims.get("org_id", String.class))
                 .organisationName(claims.get("org_name", String.class))
+                .provider(claims.getIssuer())
                 .roles(mapRoles(claims.get("role")))
                 .build();
     }

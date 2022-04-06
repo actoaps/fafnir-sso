@@ -2,6 +2,7 @@ package dk.acto.fafnir.api.service;
 
 import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.UserData;
 
 public interface AdministrationService {
@@ -37,6 +38,11 @@ public interface AdministrationService {
 
     OrganisationData createOrganisation(OrganisationData source);
     OrganisationData readOrganisation(String orgId);
+
+    OrganisationData readOrganisation(String providerKey, String providerValue);
+
+    OrganisationData readOrganisation(ProviderMetaData providerMetaData);
+
     OrganisationData updateOrganisation(OrganisationData source);
     OrganisationData deleteOrganisation(String source);
 
