@@ -4,6 +4,7 @@ import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.server.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

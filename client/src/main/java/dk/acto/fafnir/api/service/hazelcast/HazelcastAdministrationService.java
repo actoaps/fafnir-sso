@@ -1,4 +1,4 @@
-package dk.acto.fafnir.server.service;
+package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;

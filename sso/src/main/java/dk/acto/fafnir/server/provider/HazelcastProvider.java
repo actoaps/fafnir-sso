@@ -5,7 +5,7 @@ import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AuthenticationService;
 import dk.acto.fafnir.server.model.FailureReason;
-import dk.acto.fafnir.server.service.HazelcastAdministrationService;
+import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
 import dk.acto.fafnir.server.provider.credentials.UsernamePasswordCredentials;
