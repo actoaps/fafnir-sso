@@ -14,23 +14,23 @@ import java.util.Map;
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("iam/usr")
-public class UserController {
+@RequestMapping("iam/org")
+public class OrganisationController {
     private final AdministrationService administrationService;
 
     @GetMapping("all/{pageNumber}")
-    public ModelAndView getUserOverview(@PathVariable Long pageNumber) {
-        var result = administrationService.readUsers(pageNumber);
+    public ModelAndView getOrganisationOverview(@PathVariable Long pageNumber) {
+        var result = administrationService.readOrganisations(pageNumber);
         var model = Map.of("page", pageNumber,
                 "pages", result.getTotalPages(),
                 "tableData", result.getPageData());
-        return new ModelAndView("user_overview", model);
+        return new ModelAndView("organisation_overview", model);
     }
 
-    @GetMapping("{subject}")
-    public ModelAndView getUserDetail(@PathVariable String subject) {
-        var result = administrationService.readUser(subject);
+    @GetMapping("{orgId}")
+    public ModelAndView getOrganisationDetail(@PathVariable String orgId) {
+        var result = administrationService.readOrganisation(orgId);
         var model = Map.of("tableData", result);
-        return new ModelAndView("user_detail", model);
+        return new ModelAndView("organisation_detail", model);
     }
 }

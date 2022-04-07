@@ -47,8 +47,8 @@ class HazelcastAdministrationServiceTest {
                         .organisationId("acto-aps")
                 .build());
         assertThat(result).isNotNull();
-        assertThat(administrationService.readOrganisations().length).isGreaterThan(0);
-        assertThat(administrationService.readOrganisations()).contains(result);
+        assertThat(administrationService.readOrganisations(0L).getTotalPages()).isGreaterThan(BigInteger.ZERO);
+        assertThat(administrationService.readOrganisations(0L).getPageData()).contains(result);
     }
 
     @Test
@@ -62,5 +62,4 @@ class HazelcastAdministrationServiceTest {
         assertThat(administrationService.readClaims("acto", "cd@acto.dk")).isNotNull();
         assertThat(administrationService.readClaims("acto", "cd@acto.dk").getClaims()).contains("Ninja");
     }
-
 }

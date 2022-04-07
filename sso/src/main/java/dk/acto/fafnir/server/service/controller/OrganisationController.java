@@ -24,9 +24,9 @@ public class OrganisationController {
     AdministrationService administrationService;
     ProviderService providerService;
 
-    @GetMapping
-    public ModelAndView organisationPicker() {
-        var orgs = administrationService.readOrganisations();
+    @GetMapping("{page}")
+    public ModelAndView organisationPicker(Long page) {
+        var orgs = administrationService.readOrganisations(page);
         return new ModelAndView("organisation_picker.html", Map.of("orgs", orgs));
     }
 

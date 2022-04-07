@@ -50,5 +50,5 @@ public interface AdministrationService {
 
     OrganisationData[] getOrganisationsForUser(UserData user);
     UserData[] getUsersForOrganisation(String orgId);
-    OrganisationData[] readOrganisations();
+    Slice<OrganisationData> readOrganisations(Long page);
 }
