@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +35,8 @@ class HazelcastAdministrationServiceTest {
                 .build().secure(rsaKeyManager.getPublicKey()));
 
         assertThat(result).isNotNull();
-        assertThat(administrationService.readUsers().length).isGreaterThan(0);
-        assertThat(administrationService.readUsers()).contains(result);
+        assertThat(administrationService.readUsers(0L).getTotalPages()).isGreaterThan(BigInteger.ZERO);
+        assertThat(administrationService.readUsers(0L).getPageData()).contains(result);
     }
 
     @Test
