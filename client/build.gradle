@@ -41,7 +41,7 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
 
     implementation 'org.springframework:spring-context:5.2.8.RELEASE'
-    implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
+    implementation 'org.springframework.security:spring-security-web:5.6.2'
 
     annotationProcessor "org.projectlombok:lombok:1.18.10"
     annotationProcessor "io.vavr:vavr:0.10.2"
