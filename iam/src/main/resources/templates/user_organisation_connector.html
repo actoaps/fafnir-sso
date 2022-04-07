@@ -35,23 +35,23 @@
         <button class="submitButton" type="submit">
             Connect
         </button>
+        </form>
 
-                <label for="date">Date</label>
-                <input th:field="*{date}">
+        <form th:object="${order}" method="post">
 
-                <fieldset id="items">
-                    <div th:each=", stat : ${order.items}">
-                        <label th:for="|order.items[${stat.index}].name|">Name</label>
-                        <!-- This construct will render field name like this: "items[0].name" -->
-                        <input th:field="${order.items[__${stat.index}__].name}">
+            <fieldset id="items">
+                <div th:each=", stat : ${order.items}">
+                    <label th:for="|order.items[${stat.index}].name|">Name</label>
+                    <!-- This construct will render field name like this: "items[0].name" -->
+                    <input th:field="${order.items[__${stat.index}__].name}">
 
-                        <button type="button" name="removeItem" th:value="${stat.index}">Remove item</button>
-                    </div>
-                </fieldset>
+                    <button type="button" name="removeItem" th:value="${stat.index}">Remove item</button>
+                </div>
+            </fieldset>
 
-                <button type="button" name="addItem">Add item</button>
+            <button type="button" name="addItem">Add item</button>
 
-                <input type="submit" name="save" value="Save">
+            <input type="submit" name="save" value="Save">
         </form>
     </div>
 </div>
