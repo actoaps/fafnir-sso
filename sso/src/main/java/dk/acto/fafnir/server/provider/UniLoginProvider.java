@@ -1,7 +1,6 @@
 package dk.acto.fafnir.server.provider;
 
-import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.conf.FafnirConf;
@@ -130,24 +129,32 @@ public class UniLoginProvider {
     }
 
     public String callbackWithInstitution(String userId, String timestamp, String auth, String institutionId) {
-        final String sub = userId; // jwt:sub == UniLogin username
-        final String postfixIss = "unilogin"; // jwt:iss ends as prefix-postfix, example fafnir-unilogin
         String name = getUserFullNameFromId(userId); //jwt:name, full name of user
-        final String orgId = institutionId; // jwt:org_id, the organisation id of the user
         final String orgName = getInstitutionFromId(institutionId).map(Institution::getName).orElseThrow(() -> new RuntimeException("No institution")); // jwt:org_name, the organisation name of the user
 
         boolean validAccess = uniloginHelper.isValidAccess(userId, timestamp, auth);
         if (validAccess) {
             Set<UserRole> roles = this.getUserRoles(institutionId, userId);
-            String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                    .data(UserData.builder()
-                            .subject(sub)
-                            .provider(postfixIss)
-                            .name(name)
-                            .build())
-                    .organisationId(orgId)
+
+            var subjectActual = UserData.builder()
+                    .subject(userId)
+                    .name(name)
+                    .build();
+            var orgActual = OrganisationData.builder()
+                    .organisationId(institutionId)
                     .organisationName(orgName)
-                    .roles(roles.stream().map(UserRole::toString).toArray(String[]::new))
+                    .build();
+            var claimsActual = ClaimData.builder()
+                    .claims(roles.stream()
+                            .map(UserRole::toString)
+                            .toArray(String[]::new))
+                    .build();
+
+            String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, ProviderMetaData.builder()
+                            .providerName("UniLogin")
+                            .providerId("unilogin")
+                            .organisationSupport(OrganisationSupport.NATIVE)
+                            .inputs(List.of())
                     .build());
             return fafnirConf.getSuccessRedirect() + "#" + jwt;
         } else {
