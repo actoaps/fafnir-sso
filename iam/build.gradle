@@ -34,28 +34,29 @@ repositories {
 mainClassName = 'dk.acto.fafnir.server.Main'
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.10'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
     implementation project(':client')
 
-    implementation 'io.vavr:vavr:0.10.3'
-    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'io.vavr:vavr:0.10.4'
+    implementation 'com.google.guava:guava:31.1-jre'
 
-    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'commons-codec:commons-codec:1.15'
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 
-    implementation 'com.hazelcast:hazelcast:4.2'
+    implementation 'com.hazelcast:hazelcast:5.1.1'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation project(':client')
 
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
-    annotationProcessor 'io.vavr:vavr:0.10.3'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'io.vavr:vavr:0.10.4'
 }
 
 distributions {

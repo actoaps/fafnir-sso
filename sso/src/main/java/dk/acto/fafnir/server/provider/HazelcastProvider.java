@@ -53,11 +53,6 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     }
 
     @Override
-    public boolean supportsOrganisationUrls() {
-        return true;
-    }
-
-    @Override
     public String providerId() {
         return "hazelcast";
     }

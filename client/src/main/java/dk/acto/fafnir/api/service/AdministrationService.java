@@ -1,9 +1,6 @@
 package dk.acto.fafnir.api.service;
 
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.ProviderMetaData;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 
 public interface AdministrationService {
     /**
@@ -20,7 +17,7 @@ public interface AdministrationService {
      */
     UserData readUser(final String subject);
 
-    UserData[] readUsers();
+    Slice<UserData> readUsers(Long page);
 
     /**
      * ,Updates a user. Fails if user does not exist.
