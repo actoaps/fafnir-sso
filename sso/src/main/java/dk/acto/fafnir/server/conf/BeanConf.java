@@ -6,7 +6,10 @@ import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.core.HazelcastInstance;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.server.model.conf.*;
 import dk.acto.fafnir.server.service.AppleApi;
 import dk.acto.fafnir.server.service.MicrosoftIdentityApi;
@@ -92,6 +95,12 @@ public class BeanConf {
         config.getNetworkConfig().addAddress(address);
         return config;
     }
+
+    @Bean
+    public HazelcastAdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf) {
+        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf);
+    }
+
 
     @Bean
     @ConditionalOnProperty(name = "TEST_ENABLED")

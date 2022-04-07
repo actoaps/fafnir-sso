@@ -4,12 +4,9 @@ import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
-import dk.acto.fafnir.api.exception.NoSuchOrganisation;
 import dk.acto.fafnir.api.exception.NoSuchUser;
 import dk.acto.fafnir.api.exception.PasswordMismatch;
 import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AuthenticationService;
@@ -17,10 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Optional;
 
-import static dk.acto.fafnir.server.service.HazelcastAdministrationService.*;
+import static dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService.CLAIM_POSTFIX;
+import static dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService.USER_POSTFIX;
 
 @Value
 @AllArgsConstructor
