@@ -39,7 +39,7 @@ public class EconomicCustomerController{
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginView() {
-        return new ModelAndView("thymeleaf/Credentials.thymeleaf.html");
+        return new ModelAndView("Credentials.thymeleaf.html");
     }
 
     @PostConstruct

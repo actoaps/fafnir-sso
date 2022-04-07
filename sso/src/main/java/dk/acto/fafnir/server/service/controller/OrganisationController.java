@@ -27,7 +27,7 @@ public class OrganisationController {
     @GetMapping
     public ModelAndView organisationPicker() {
         var orgs = administrationService.readOrganisations();
-        return new ModelAndView("thymeleaf/Organisation.thymeleaf.html", Map.of("orgs", orgs));
+        return new ModelAndView("Organisation.thymeleaf.html", Map.of("orgs", orgs));
     }
 
     @PostMapping

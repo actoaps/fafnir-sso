@@ -41,7 +41,7 @@ public class HazelcastController {
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginView() {
-        return new ModelAndView("thymeleaf/Hazelcast.thymeleaf.html");
+        return new ModelAndView("Hazelcast.thymeleaf.html");
     }
 
     @PostConstruct

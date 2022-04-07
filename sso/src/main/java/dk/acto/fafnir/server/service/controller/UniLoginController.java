@@ -52,7 +52,7 @@ public class UniLoginController {
 		if (institutionList.isEmpty()) {
 			Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.getFailureUrl(FailureReason.CONNECTION_FAILED)));
 		}
-		return "thymeleaf/ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf";
+		return "ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf";
 	}
 
 	@PostMapping("org")
