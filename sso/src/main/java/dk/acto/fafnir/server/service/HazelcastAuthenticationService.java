@@ -20,8 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static dk.acto.fafnir.server.service.HazelcastAdministrationService.ORG_POSTFIX;
-import static dk.acto.fafnir.server.service.HazelcastAdministrationService.USER_POSTFIX;
+import static dk.acto.fafnir.server.service.HazelcastAdministrationService.*;
 
 @Value
 @AllArgsConstructor
@@ -34,7 +33,7 @@ public class HazelcastAuthenticationService implements AuthenticationService {
     @Override
     public ClaimData authenticate(final String orgId, final String username, final String password) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
 
         var pk = hazelcastConf.isPasswordIsEncrypted() ? rsaKeyManager.getPrivateKey() : null;
 

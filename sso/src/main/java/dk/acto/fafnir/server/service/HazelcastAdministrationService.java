@@ -4,27 +4,24 @@ import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import dk.acto.fafnir.api.exception.*;
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.ProviderMetaData;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
-@Value
 @AllArgsConstructor
 @Service
 public class HazelcastAdministrationService implements AdministrationService {
     public final static String USER_POSTFIX = "-fafnir-user";
     public final static String ORG_POSTFIX = "-fafnir-organisation";
     public final static String CLAIM_POSTFIX = "-fafnir-claim";
-    HazelcastInstance hazelcastInstance;
-    HazelcastConf hazelcastConf;
+    private final HazelcastInstance hazelcastInstance;
+    private final HazelcastConf hazelcastConf;
 
     @Override
     public UserData createUser(UserData source) {
@@ -44,9 +41,11 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public UserData[] readUsers() {
+    public Slice<UserData> readUsers(Long page) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        return userMap.values().toArray(UserData[]::new);
+        var offset = Slice.getOffset(page);
+        var total = Long.valueOf(userMap.size());
+        return Slice.fromPartial(userMap.values().stream().skip(offset), total, x -> x);
     }
 
     @Override
@@ -126,7 +125,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData createClaim(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (claimSet.contains(source)) {
             throw new ClaimAlreadyExists();
         }
@@ -136,7 +135,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData readClaims(String orgId, String subject) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimSet.stream().filter(data -> (data.getSubject().equals(subject) && data.getOrganisationId().equals(orgId)))
                 .findAny()
                 .orElseThrow(NoSuchClaim::new);
@@ -144,7 +143,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData updateClaims(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimSet.contains(source)) {
             throw new NoSuchClaim();
         }
@@ -154,7 +153,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData deleteClaims(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimSet.contains(source)) {
             throw new NoSuchClaim();
         }
@@ -164,7 +163,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public OrganisationData[] getOrganisationsForUser(UserData user) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimSet.stream().filter(x -> x.getSubject().equals(user.getSubject()))
                 .map(ClaimData::getOrganisationId)
                 .map(this::readOrganisation)
@@ -173,7 +172,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public UserData[] getUsersForOrganisation(String orgId) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimSet.stream().filter(x -> x.getOrganisationId().equals(orgId))
                 .map(ClaimData::getSubject)
                 .map(this::readUser)
