@@ -38,7 +38,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation 'com.hazelcast:hazelcast:4.2'
 
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     implementation 'org.springframework:spring-context:5.2.8.RELEASE'
     implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
