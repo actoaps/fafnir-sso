@@ -33,12 +33,22 @@ public class OrganisationController {
     @PostMapping
     public RedirectView organisationRedirect(@RequestParam String orgId) {
         var myOrganisation = administrationService.readOrganisation(orgId);
-        var orgSupport = providerService.providerSupportsOrganisations(myOrganisation.getProvider());
-        var sb = new StringBuilder();
-        if (orgSupport) {
-            sb.append(myOrganisation.getOrganisationId()).append("/");
+        var multipleProviders = myOrganisation.getProviderConfigurations().size() == 1;
+        if (multipleProviders) {
+            return new RedirectView("/login/"
+                    + myOrganisation.getOrganisationId()
+                    + "provider/");
         }
-        sb.append(myOrganisation.getProvider());
-        return new RedirectView(sb.toString());
+        var pc = myOrganisation.getProviderConfigurations().get(0);
+        var pi = providerService.getProviderInformation(pc.getProviderId());
+        if (pi.supportsOrganisationUrls()) {
+            return new RedirectView("/"
+                    + myOrganisation.getOrganisationId()
+                    + "/"
+                    + pc.getProviderId());
+        } else {
+            return new RedirectView("/"
+                    + pc.getProviderId());
+        }
     }
 }

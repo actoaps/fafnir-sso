@@ -32,9 +32,8 @@ public class HazelcastAuthenticationService implements AuthenticationService {
     RsaKeyManager rsaKeyManager;
 
     @Override
-    public FafnirUser authenticate(final String orgId, final String username, final String password) {
+    public ClaimData authenticate(final String orgId, final String username, final String password) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
         ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + "-claim");
 
         var pk = hazelcastConf.isPasswordIsEncrypted() ? rsaKeyManager.getPrivateKey() : null;
@@ -44,18 +43,10 @@ public class HazelcastAuthenticationService implements AuthenticationService {
         if (!user.canAuthenticate(password, pk)){
             throw new PasswordMismatch();
         }
-        var org = Optional.ofNullable(orgMap.get(orgId))
-                .orElseThrow(NoSuchOrganisation::new);
 
-        return FafnirUser.builder()
-                .data(user)
-                .organisationId(org.getOrganisationId())
-                .organisationName(org.getOrganisationName())
-                .roles(claimSet.stream().filter(x -> x.getOrganisationId().equals(orgId))
+        return claimSet.stream().filter(x -> x.getOrganisationId().equals(orgId))
                         .filter(x -> x.getSubject().equals(username))
-                        .map(ClaimData::getClaims)
-                        .flatMap(Arrays::stream)
-                        .toArray(String[]::new))
-                .build();
+                .findAny()
+                .orElse(ClaimData.empty(user.getSubject(), orgId));
     }
 }

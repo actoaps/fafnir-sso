@@ -1,7 +1,7 @@
 package dk.acto.fafnir.api.service;
 
-import dk.acto.fafnir.api.model.FafnirUser;
+import dk.acto.fafnir.api.model.ClaimData;
 
 public interface AuthenticationService {
-    FafnirUser authenticate(String organisation, String username, String password);
+    ClaimData authenticate(String organisation, String username, String password);
 }

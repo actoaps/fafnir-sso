@@ -19,5 +19,6 @@ public class FafnirUser implements Serializable {
     UserData data;
     String organisationId;
     String organisationName;
+    String provider;
     String[] roles;
 }

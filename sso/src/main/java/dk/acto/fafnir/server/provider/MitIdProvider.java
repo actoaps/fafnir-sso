@@ -3,8 +3,8 @@ package dk.acto.fafnir.server.provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.api.model.FafnirUser;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.server.model.FailureReason;
 import dk.acto.fafnir.server.util.TokenFactory;
 import dk.acto.fafnir.server.model.CallbackResult;
@@ -24,6 +24,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -35,6 +37,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     private final TestConf testConf;
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
+    private final AdministrationService administrationService;
 
     @Override
     public String authenticate() {
@@ -59,14 +62,15 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
         if (userInfo == null) {
             return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
+        var subjectActual = UserData.builder()
+                .subject(userInfo.getLeft())
+                .name(userInfo.getRight())
+                .build();
+        var orgActual = administrationService.readOrganisation(getMetaData());
+        var claimsActual = ClaimData.empty(subjectActual.getSubject(), orgActual.getOrganisationId());
 
-        String jwt = tokenFactory.generateToken(FafnirUser.builder()
-                .data(UserData.builder()
-                        .subject(userInfo.getLeft())
-                        .provider("mitid")
-                        .name(userInfo.getRight())
-                        .build())
-                .build());
+        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+
         return CallbackResult.success(jwt);
     }
 
@@ -76,8 +80,18 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     }
 
     @Override
-    public String entryPoint() {
+    public String providerId() {
         return "mitid";
+    }
+
+    @Override
+    public ProviderMetaData getMetaData() {
+        return ProviderMetaData.builder()
+                .inputs(List.of())
+                .organisationSupport(OrganisationSupport.SINGLE)
+                .providerName("MitID")
+                .providerId(providerId())
+                .build();
     }
 
     private Pair<String, String> getUserInfo(String token) {
