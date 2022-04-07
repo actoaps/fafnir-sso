@@ -63,7 +63,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       make bootstrap
+       ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN
        make release
 
     - name: Perform CodeQL Analysis
