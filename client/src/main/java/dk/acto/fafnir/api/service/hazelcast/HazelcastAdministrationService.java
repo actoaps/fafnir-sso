@@ -10,9 +10,7 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 @AllArgsConstructor
 @Service
@@ -180,8 +178,12 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public OrganisationData[] readOrganisations() {
+    public Slice<OrganisationData> readOrganisations(Long page) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        return orgMap.values().toArray(OrganisationData[]::new);
+        var offset = Slice.getOffset(page);
+        var total = Long.valueOf(orgMap.size());
+        return Slice.fromPartial(orgMap.values().stream().skip(offset), total, x -> x);
+
     }
+
 }
