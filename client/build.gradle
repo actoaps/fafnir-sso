@@ -34,7 +34,7 @@ dependencies {
     compileOnly "org.projectlombok:lombok:1.18.10"
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
-    implementation "io.vavr:vavr:0.10.2"
+    implementation "io.vavr:vavr:0.10.4"
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation 'com.hazelcast:hazelcast:4.2'
 
