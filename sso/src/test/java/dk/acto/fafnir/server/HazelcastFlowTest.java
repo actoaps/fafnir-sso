@@ -94,20 +94,11 @@ class HazelcastFlowTest {
     }
 
     @Test
-    void testNoSecurityFailsFlow() {
-        var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
-                .username("om@acto.dk")
-                .password("omom")
-                .build());
-        var url = result.getUrl(fafnirConf);
-        assertThat(url).contains("/fail#");
-    }
-
-    @Test
     void testWrongPasswordFailsFlow() {
         var result = hazelcastProvider.callback(UsernamePasswordCredentials.builder()
                 .username("om@acto.dk")
                 .password("momo")
+                .organisation(OrganisationData.DEFAULT.getOrganisationId())
                 .build());
         var url = result.getUrl(fafnirConf);
         assertThat(url).contains("/fail#");
