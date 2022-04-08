@@ -169,12 +169,17 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public UserData[] getUsersForOrganisation(String orgId) {
+    public Slice<UserData> getUsersForOrganisation(String orgId, Long page) {
         ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimSet.stream().filter(x -> x.getOrganisationId().equals(orgId))
+        var temp = claimSet.stream()
+                .filter(x -> x.getOrganisationId().equals(orgId))
                 .map(ClaimData::getSubject)
-                .map(this::readUser)
-                .toArray(UserData[]::new);
+                .sorted().toList();
+
+        var offset = Slice.getOffset(page);
+        var total = Long.valueOf(temp.size());
+
+        return Slice.fromPartial(temp.stream().skip(offset), total, this::readUser);
     }
 
     @Override
