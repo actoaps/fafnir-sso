@@ -18,7 +18,7 @@ import java.util.Map;
 public class OrganisationController {
     private final AdministrationService administrationService;
 
-    @GetMapping("all/{pageNumber}")
+    @GetMapping("page/{pageNumber}")
     public ModelAndView getOrganisationOverview(@PathVariable Long pageNumber) {
         var result = administrationService.readOrganisations(pageNumber);
         var model = Map.of("page", pageNumber,

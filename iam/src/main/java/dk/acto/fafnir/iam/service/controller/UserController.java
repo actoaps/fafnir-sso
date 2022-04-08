@@ -18,7 +18,7 @@ import java.util.Map;
 public class UserController {
     private final AdministrationService administrationService;
 
-    @GetMapping("all/{pageNumber}")
+    @GetMapping("page/{pageNumber}")
     public ModelAndView getUserOverview(@PathVariable Long pageNumber) {
         var result = administrationService.readUsers(pageNumber);
         var model = Map.of("page", pageNumber,
