@@ -52,6 +52,4 @@ public class OrganisationController {
         administrationService.createOrganisation(org);
         return new RedirectView("/iam/org/page/0");
     }
-
-
 }
