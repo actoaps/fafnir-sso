@@ -1,14 +1,15 @@
 package dk.acto.fafnir.iam.service.controller;
 
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.Instant;
 import java.util.Map;
 
 @Controller
@@ -33,4 +34,24 @@ public class OrganisationController {
         var model = Map.of("tableData", result);
         return new ModelAndView("organisation_detail", model);
     }
+
+    @GetMapping
+    public ModelAndView getEmptyOrganisationDetail() {
+        var result = OrganisationData.builder()
+                .contactEmail("")
+                .organisationName("")
+                .organisationId("")
+                .created(Instant.now())
+                .build();
+        var model = Map.of("tableData", result);
+        return new ModelAndView("organisation_detail", model);
+    }
+
+    @PostMapping
+    public RedirectView createOrganisation(@ModelAttribute OrganisationData org) {
+        administrationService.createOrganisation(org);
+        return new RedirectView("/iam/org/page/0");
+    }
+
+
 }

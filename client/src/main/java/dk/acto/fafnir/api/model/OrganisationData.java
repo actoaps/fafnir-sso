@@ -2,6 +2,7 @@ package dk.acto.fafnir.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Singular;
 import lombok.Value;
 
 import java.io.Serial;
