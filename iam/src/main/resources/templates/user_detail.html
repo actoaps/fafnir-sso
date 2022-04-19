@@ -16,14 +16,13 @@
 		<div class="content">
 			<h1>Edit User</h1>
 			<div class="inner-content">
-						<form action="/edit" method="post">
+						<form action="/iam/usr" method="post">
 							<div>
 								<label>
 									Name:
 								</label>
-								<input type="text" name="name"value="James" th:value="${user.name}" >
+								<input type="text" name="name"value="James" th:value="${tableData.name}" >
 							</div>
-							<br />
 							<div>
 								<label>
 									Password:
@@ -34,25 +33,18 @@
 								<label>
 									Meta Id:
 								</label>
-								<input type="text" name="metaId" value="metaId" th:value="${user.metaId}">
+								<input type="text" name="metaId" value="metaId" th:value="${tableData.metaId}">
 							</div>
 
 							<div>
 								<label>
 									Subject:
 								</label>
-								<input type="text" name="subject" value="subject" th:value="${user.subject}">
+								<input type="text" name="subject" value="subject" th:value="${tableData.subject}">
 							</div>
 
-						<label for="providerId">Change provider:</label>
-						<select name="providerId" id="providerId">
-							<option value=""> current provider </option>
-							<option th:each="o : ${providerId}"
-									th:text="${o.providerName}"
-									th:value="${o.providerId}">
-						</select>
 							<button class="submitButton" type="submit">
-								Submit changes to user
+								Save
 							</button>
 						</form>
 				</div>
