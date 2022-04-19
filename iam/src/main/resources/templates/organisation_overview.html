@@ -19,7 +19,7 @@
                 <h1>All Organisations</h1>
             </div>
             <div class="column">
-                <form action="" method="post">
+                <form action="/iam/org" method="get">
                     <button  type="submit">+</button>
                 </form>
             </div>
@@ -30,14 +30,12 @@
                 <th>Id</th>
                 <th>Organisation Name</th>
                 <th>Email</th>
-                <th>Provider</th>
 
             </tr>
-            <tr th:each="o : ${orgs}">
+            <tr th:each="o : ${tableData}">
                 <td  th:text="${o.organisationId}"></td>
                 <td  th:text="${o.organisationName}"></td>
                 <td  th:text="${o.contactEmail}"></td>
-                <td  th:text="${o.provider}"></td>
             </tr>
         </table>
     </div>
