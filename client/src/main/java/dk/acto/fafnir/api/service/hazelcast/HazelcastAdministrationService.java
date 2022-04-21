@@ -111,8 +111,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     @Override
     public OrganisationData updateOrganisation(OrganisationData source) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        if (orgMap.containsKey(source.getOrganisationId())) {
-            throw new OrganisationAlreadyExists();
+        if (!orgMap.containsKey(source.getOrganisationId())) {
+            throw new NoSuchOrganisation();
         }
         orgMap.put(source.getOrganisationId(), source);
         return source;

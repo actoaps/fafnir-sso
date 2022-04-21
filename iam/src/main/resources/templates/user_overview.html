@@ -20,12 +20,9 @@
                 <h1>All Users</h1>
             </div>
             <div class="column">
-                <form action="/iam/usr" method="get">
-                    <button  type="submit">+</button>
-                </form>
+                <a href="/iam/usr">Add</a>
             </div>
         </div>
-
 
         <table class="table table-striped table-bordered ">
             <tr>
@@ -33,16 +30,15 @@
                 <th>Name</th>
                 <th>Password</th>
                 <th>Meta Id</th>
+                <th></th>
             </tr>
             {{#tableData}}
             <tr>
-                <td>
                 <td>{{subject}}</td>
                 <td>{{name}}</td>
                 <td>{{password}}</td>
                 <td>{{metaId}}</td>
                 <td><a href="/iam/usr/{{subject}}">Edit</a><td>
-            </td>
             </tr>
             {{/tableData}}
         </table>

@@ -31,8 +31,9 @@ public class ClaimsController
                 .distinct().map(administrationService::readUser)
                 .collect(Collectors.toList());
         var transformed = dtoFactory.toInfo(result.getPageData(), orgs, users);
-        var model = Map.of("tableData", transformed,
-                "pageData", result);
+        var model = Map.of(
+                "tableData", transformed
+                );
         return new ModelAndView("claims_overview", model);
     }
 
@@ -41,12 +42,15 @@ public class ClaimsController
         var users = administrationService.readUsers();
         var organisations = administrationService.readOrganisations();
         var model = Map.of("users", users,
-                "organisations", organisations);
+                "organisations", organisations,
+                "action", "Create ",
+                "verb", "post"
+        );
         return new ModelAndView("claims_detail", model);
     }
     @PostMapping()
     public RedirectView addClaims(@ModelAttribute ClaimData source) {
-        return new RedirectView("/iam/claim");
+        return new RedirectView("/iam/clm/page/0");
     }
 
     @GetMapping("{orgId}/{subject}")

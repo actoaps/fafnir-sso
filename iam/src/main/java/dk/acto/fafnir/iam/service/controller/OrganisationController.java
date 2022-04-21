@@ -31,7 +31,11 @@ public class OrganisationController {
     @GetMapping("{orgId}")
     public ModelAndView getOrganisationDetail(@PathVariable String orgId) {
         var result = administrationService.readOrganisation(orgId);
-        var model = Map.of("tableData", result);
+        var model = Map.of(
+                "tableData", result,
+                "action", "Edit ",
+                "verb", "put"
+        );
         return new ModelAndView("organisation_detail", model);
     }
 
@@ -43,8 +47,18 @@ public class OrganisationController {
                 .organisationId("")
                 .created(Instant.now())
                 .build();
-        var model = Map.of("tableData", result);
+        var model = Map.of(
+                "tableData", result,
+                "action", "Create ",
+                "verb", "post"
+        );
         return new ModelAndView("organisation_detail", model);
+    }
+
+    @PutMapping
+    public RedirectView updateOrganisation(@ModelAttribute OrganisationData org) {
+        administrationService.updateOrganisation(org);
+        return new RedirectView("/iam/org/page/0");
     }
 
     @PostMapping
