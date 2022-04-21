@@ -1,14 +1,12 @@
 package dk.acto.fafnir.api.model;
 
-import io.vavr.collection.Array;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Arrays;
 
 @Value
 @AllArgsConstructor
@@ -19,6 +17,7 @@ public class ClaimData implements Serializable {
 
     String subject;
     String organisationId;
+    @EqualsAndHashCode.Exclude
     String[] claims;
 
     public static ClaimData empty(String subject, String orgId) {

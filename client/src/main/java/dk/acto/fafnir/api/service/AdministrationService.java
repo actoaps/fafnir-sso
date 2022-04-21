@@ -19,6 +19,8 @@ public interface AdministrationService {
 
     Slice<UserData> readUsers(Long page);
 
+    UserData[] readUsers();
+
     /**
      * ,Updates a user. Fails if user does not exist.
      * @param source
@@ -44,6 +46,9 @@ public interface AdministrationService {
     OrganisationData deleteOrganisation(String source);
 
     ClaimData createClaim(ClaimData source);
+
+    Slice<ClaimData> readClaims(Long page);
+
     ClaimData readClaims(String orgId, String subject);
     ClaimData updateClaims(ClaimData source);
     ClaimData deleteClaims(ClaimData source);
@@ -53,4 +58,8 @@ public interface AdministrationService {
     Slice<UserData> getUsersForOrganisation(String orgId, Long page);
 
     Slice<OrganisationData> readOrganisations(Long page);
+
+    OrganisationData[] readOrganisations();
+
+    Long countOrganisations();
 }

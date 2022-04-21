@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!--HTML 4 Strict  to avoid deprecated HTML elements -->
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="en">
 
 <head>
     <title>Organisation</title>
@@ -18,31 +18,27 @@
         <div class="inner-content">
             <form action="/iam/org" method="post">
                 <div>
-                    <label>
-                        Organisation Name:
-                    </label>
-                    <input type="text" name="organisationName"value="Acto" th:value="${tableData.organisationName}" >
-                </div>
-                <br />
-                <div>
-                    <label>
-                        Contact Email:
-                    </label>
-                    <input type="text" name="contactEmail">
+                    <label>Organisation Name:
+                        <input type="text" name="organisationName">
+                    </label>{{tableData.organisationName}}
                 </div>
                 <div>
-                    <label>
-                        organisation Id:
+                    <label>Contact Email:
+                    <input type="text" name="contactEmail">{{tableData.contactEmail}}
                     </label>
-                    <input type="text" name="organisationId"value="actoaps" th:value="${tableData.organisationId}" >
                 </div>
                 <div>
-                    <input type="hidden" name="created" value="created" th:value="${tableData.created}" >
+                    <label>Organisation Id:
+                    <input type="text" name="organisationId">{{tableData.organisationId}}
+                    </label>
                 </div>
+                <div>
+                    <input type="hidden" name="created">{{tableData.created}}
 
                 <button class="submitButton" type="submit">
                     Save
                 </button>
+                </div>
             </form>
         </div>
 

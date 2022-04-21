@@ -1,22 +1,53 @@
 package dk.acto.fafnir.iam.service.controller;
 
+import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
-public class ClaimsController {
+public class ClaimsController
+{
     private final AdministrationService administrationService;
+    private final DtoFactory dtoFactory;
+    @GetMapping("page/{pageNumber}")
+    public ModelAndView getClaimsOverview(@PathVariable Long pageNumber) {
+        var result = administrationService.readClaims((pageNumber));
+        var orgs = result.getPageData().stream().map(ClaimData::getOrganisationId)
+                .distinct().map(administrationService::readOrganisation)
+                .collect(Collectors.toList());
+        var users = result.getPageData().stream().map(ClaimData::getSubject)
+                .distinct().map(administrationService::readUser)
+                .collect(Collectors.toList());
+        var transformed = dtoFactory.toInfo(result.getPageData(), orgs, users);
+        var model = Map.of("tableData", transformed,
+                "pageData", result);
+        return new ModelAndView("claims_overview", model);
+    }
+
+    @GetMapping()
+    public ModelAndView createClaims() {
+        var users = administrationService.readUsers();
+        var organisations = administrationService.readOrganisations();
+        var model = Map.of("users", users,
+                "organisations", organisations);
+        return new ModelAndView("claims_detail", model);
+    }
+    @PostMapping()
+    public RedirectView addClaims(@ModelAttribute ClaimData source) {
+        return new RedirectView("/iam/claim");
+    }
 
     @GetMapping("{orgId}/{subject}")
     public ModelAndView getClaims(@PathVariable String orgId, @PathVariable String subject) {

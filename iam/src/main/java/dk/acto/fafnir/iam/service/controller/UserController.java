@@ -1,6 +1,5 @@
 package dk.acto.fafnir.iam.service.controller;
 
-import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.Instant;
-import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -47,6 +45,7 @@ public class UserController {
                 .metaId("")
                 .name("")
                 .password("")
+                .created(Instant.now())
                 .build();
         var model = Map.of("tableData", result);
         return new ModelAndView("user_detail", model);
