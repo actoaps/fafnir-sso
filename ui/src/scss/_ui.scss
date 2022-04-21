@@ -3,6 +3,42 @@
 }
 
 
-.container {
+select {
+    option {
+        &:checked {
+            background-color: $primary;
+        }
+    }
+}
 
+
+.navbar {
+    list-style: none;
+    display: inline-flex;
+
+    padding: 0;
+    margin: $spacer-2 0 $spacer-2;
+
+    li, > a {
+        margin-left: $spacer-2;
+        font-size: 1.2em;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        a {
+            text-decoration: underline;
+        }
+
+    }
+
+
+}
+
+.dialogue {
+
+}
+
+.container {
 }
