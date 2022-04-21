@@ -15,6 +15,7 @@
 <div class="container">
     <div class="content">
         <div class="header">
+            <div>{{>navbar}}</div>
             <div class="column">
                 <h1>All Users</h1>
             </div>
@@ -32,9 +33,9 @@
                 <th>Name</th>
                 <th>Password</th>
                 <th>Meta Id</th>
-
             </tr>
-            <tr th:each="u : ${tableData}">
+            <tr>
+                <td>
                 <td  th:text="${u.subject}"></td>
                 <td  th:text="${u.name}"></td>
                 <td  th:text="${u.password}"></td>

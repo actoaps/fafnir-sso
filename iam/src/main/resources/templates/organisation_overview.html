@@ -15,13 +15,12 @@
 <div class="container">
     <div class="content">
         <div class="header">
+            <div>{{>navbar}}</div>
             <div class="column">
                 <h1>All Organisations</h1>
             </div>
             <div class="column">
-                <form action="/iam/org" method="get">
-                    <button  type="submit">+</button>
-                </form>
+                <a href="/iam/org">Add</a>
             </div>
         </div>
 
@@ -30,20 +29,17 @@
                 <th>Id</th>
                 <th>Organisation Name</th>
                 <th>Email</th>
+                <th></th>
             </tr>
-            <tr th:each="o : ${tableData}">
-                <td  th:text="${o.organisationId}"></td>
-                <td  th:text="${o.organisationName}"></td>
-                <td  th:text="${o.contactEmail}"></td>
-                </td><td>
-                <form th:action="@{/edit}" th:object="${tableData}" method="post">
-                    <input type="hidden" name="id" th:value="${o.organisationId}">
-                    <input type="hidden" name="organisationName" th:value="${o.organisationName}">
-                    <input type="hidden" name="contactEmail" th:value="${o.contactEmail}">
-                    <button type="submit">Edit</button>
-                </form>
+            {{#tableData}}
+            <tr>
+                <td>{{organisationId}}</td>
+                <td>{{organisationName}}</td>
+                <td>{{contactEmail}}</td>
+                <td><a href="/iam/org/{{organisationId}}">Edit</a><td>
             </td>
             </tr>
+            {{/tableData}}
         </table>
     </div>
 </div>

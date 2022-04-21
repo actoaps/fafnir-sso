@@ -47,6 +47,12 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
+    public UserData[] readUsers() {
+        IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
+        return userMap.values().toArray(UserData[]::new);
+    }
+
+    @Override
     public UserData updateUser(UserData source) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         if (!userMap.containsKey(source.getSubject())) {
@@ -132,6 +138,16 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
+    public Slice<ClaimData> readClaims(Long page) {
+        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        var offset = Slice.getOffset(page);
+        var total = Long.valueOf(claimSet.size());
+
+        return Slice.fromPartial(claimSet.stream().skip(offset), total, x -> x);
+
+    }
+
+    @Override
     public ClaimData readClaims(String orgId, String subject) {
         ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimSet.stream().filter(data -> (data.getSubject().equals(subject) && data.getOrganisationId().equals(orgId)))
@@ -188,7 +204,17 @@ public class HazelcastAdministrationService implements AdministrationService {
         var offset = Slice.getOffset(page);
         var total = Long.valueOf(orgMap.size());
         return Slice.fromPartial(orgMap.values().stream().skip(offset), total, x -> x);
-
     }
 
+    @Override
+    public OrganisationData[] readOrganisations() {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+        return orgMap.values().toArray(OrganisationData[]::new);
+    }
+
+    @Override
+    public Long countOrganisations() {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+        return (long) orgMap.entrySet().size();
+    }
 }
