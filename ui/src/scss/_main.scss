@@ -22,13 +22,13 @@ body {
     padding: 13px;
 }
 
-@media (max-width: 684px) {
+@media (max-width: $md) {
     body {
         font-size: $font-size-base * 0.85;
     }
 }
 
-@media (max-width: 382px) {
+@media (max-width: $sm) {
     body {
         font-size: $font-size-base * 0.75;
     }
@@ -67,20 +67,20 @@ small, sub, sup {
 }
 
 hr {
-    border-color: $color-blossom;
+    border-color: $primary;
 }
 
 a {
     text-decoration: none;
-    color: $color-blossom;
+    color: $primary;
 
     &:hover {
-        color: $color-fade;
+        color: $secondary;
         border-bottom: 2px solid $color-text;
     }
 
     &:visited {
-        color: darken($color-blossom, 10%);
+        color: darken($primary, 10%);
     }
 
 }
@@ -102,7 +102,7 @@ blockquote {
     padding-top: 0.8em;
     padding-bottom: 0.8em;
     padding-right: 0.8em;
-    border-left: 5px solid $color-blossom;
+    border-left: 5px solid $primary;
     margin-bottom: 2.5rem;
     background-color: $color-bg-alt;
 }
@@ -163,7 +163,7 @@ input, textarea {
     border: 1px solid $color-text;
 
     &:focus {
-        border: 1px solid $color-blossom;
+        border: 1px solid $primary;
     }
 }
 
@@ -178,10 +178,10 @@ textarea {
     text-decoration: none;
     white-space: nowrap;
 
-    background-color: $color-blossom;
+    background-color: $primary;
     color: $color-bg;
     border-radius: 1px;
-    border: 1px solid $color-blossom;
+    border: 1px solid $primary;
     cursor: pointer;
     box-sizing: border-box;
 
@@ -191,8 +191,8 @@ textarea {
     }
 
     &:focus:enabled, &:hover:enabled {
-        background-color: $color-fade;
-        border-color: $color-fade;
+        background-color: $secondary;
+        border-color: $secondary;
         color: $color-bg;
         outline: 0;
     }
@@ -209,13 +209,13 @@ textarea, select, input {
     box-sizing: border-box;
 
     &:focus {
-        border: 1px solid $color-blossom;
+        border: 1px solid $primary;
         outline: 0;
     }
 }
 
 input[type="checkbox"]:focus {
-    outline: 1px dotted $color-blossom;
+    outline: 1px dotted $primary;
 }
 
 label, legend, fieldset {
