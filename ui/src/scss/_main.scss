@@ -17,11 +17,14 @@ body {
     // rem for easier responsive font sizing
     font-size: $font-size-base-rem;
     line-height: 1.618;
-    max-width: $sm;
+    max-width: $lg;
     margin: auto;
     color: $color-text;
     background-color: $color-bg;
     padding: $spacer-1;
+    @media (min-width: $sm) {
+        padding: $spacer-4
+    }
 }
 
 @media (max-width: $md) {
@@ -162,6 +165,7 @@ table {
     text-align: justify;
     width: 100%;
     border-collapse: collapse;
+    margin: $spacer-1 0;
 }
 
 td, th {
@@ -174,6 +178,7 @@ td, th {
 input, textarea {
     border: 1px solid $color-text;
 
+
     &:focus {
         border: 1px solid $primary;
     }
@@ -185,17 +190,16 @@ textarea {
 
 .button, button, input[type="submit"], input[type="reset"], input[type="button"] {
     display: inline-block;
-    padding: 5px 10px;
+    padding: $spacer-1 $spacer-2;
     text-align: center;
     text-decoration: none;
     white-space: nowrap;
 
     background-color: $primary;
     color: $color-bg;
-    border-radius: 1px;
+    border-radius: $borderRadius;
     border: 1px solid $primary;
     cursor: pointer;
-    box-sizing: border-box;
 
     &[disabled] {
         cursor: default;
@@ -212,13 +216,12 @@ textarea {
 
 textarea, select, input {
     color: $color-text;
-    padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
-    margin-bottom: 10px;
+    padding: $spacer-1 $spacer-2; /* The 6px vertically centers text on FF, ignored by Webkit */
+    margin-bottom: $spacer-2;
     background-color: $color-bg-alt;
     border: 1px solid $color-bg-alt;
-    border-radius: 4px;
+    border-radius: $borderRadius;
     box-shadow: none;
-    box-sizing: border-box;
 
     &:focus {
         border: 1px solid $primary;
