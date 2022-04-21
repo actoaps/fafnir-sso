@@ -37,7 +37,7 @@
                 <h1>All Organisations</h1>
             </div>
             <div class="column">
-                <a href="/iam/org">Add</a>
+                <a href="/iam/org" aria-label="Add organisation">Add &#65291</a>
             </div>
         </div>
 
@@ -47,19 +47,20 @@
                 <th>Organisation Name</th>
                 <th>Email</th>
                 <th></th>
+                <th></th>
             </tr>
             {{#tableData}}
             <tr>
                 <td>{{organisationId}}</td>
                 <td>{{organisationName}}</td>
                 <td>{{contactEmail}}</td>
-                <td><a href="/iam/org/{{organisationId}}">Edit</a>
+                <td><a href="/iam/org/{{organisationId}}" aria-label="Edit this organisation">Edit &#9998;</a>
                 <td>
                 </td>
             </tr>
             {{/tableData}}
         </table>
     </div>
-    <div class="container">>
+</div>
 </body>
 </html>
