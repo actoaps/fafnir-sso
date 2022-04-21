@@ -1,5 +1,6 @@
 package dk.acto.fafnir.iam.service.controller;
 
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,11 @@ public class UserController {
     @GetMapping("{subject}")
     public ModelAndView getUserDetail(@PathVariable String subject) {
         var result = administrationService.readUser(subject);
-        var model = Map.of("tableData", result);
+        var model = Map.of(
+                "tableData", result,
+                "action", "Edit ",
+                "verb", "put"
+        );
         return new ModelAndView("user_detail", model);
     }
 
@@ -47,8 +52,18 @@ public class UserController {
                 .password("")
                 .created(Instant.now())
                 .build();
-        var model = Map.of("tableData", result);
+        var model = Map.of(
+                "tableData", result,
+                "action", "Create ",
+                "verb", "post"
+        );
         return new ModelAndView("user_detail", model);
+    }
+
+    @PutMapping
+    public RedirectView updateUser(@ModelAttribute UserData user) {
+        administrationService.updateUser(user);
+        return new RedirectView("/iam/usr/page/0");
     }
 
     @PostMapping
