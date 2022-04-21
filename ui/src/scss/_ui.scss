@@ -2,6 +2,11 @@
     box-sizing: border-box;
 }
 
+* {
+    ::selection {
+        background: #99C56E;
+    }
+}
 
 select {
     option {
