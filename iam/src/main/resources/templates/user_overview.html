@@ -34,23 +34,18 @@
                 <th>Password</th>
                 <th>Meta Id</th>
             </tr>
+            {{#tableData}}
             <tr>
                 <td>
-                <td  th:text="${u.subject}"></td>
-                <td  th:text="${u.name}"></td>
-                <td  th:text="${u.password}"></td>
-                <td  th:text="${u.metaId}"></td>
-                </td><td>
-                <form th:action="@{/editUser}" th:object="${tableData}" method="post">
-                    <input type="hidden" name="subject" th:value="${u.subject}">
-                    <input type="hidden" name="name" th:value="${u.name}">
-                    <input type="hidden" name="password" th:value="${u.password}">
-                    <input type="hidden" name="metaId" th:value="${u.metaId}">
-                    <button type="submit">Edit</button>
-                </form>
+                <td>{{subject}}</td>
+                <td>{{name}}</td>
+                <td>{{password}}</td>
+                <td>{{metaId}}</td>
+                <td><a href="/iam/usr/{{subject}}">Edit</a><td>
+            </td>
             </tr>
+            {{/tableData}}
         </table>
-        </form>
     </div>
 </div>
 </body>
