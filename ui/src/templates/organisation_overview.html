@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <title>All Organisations</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../scss/styles.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div>
+                <ul class="navbar">
+                    <li>
+                        <a href="/iam/org/page/0">
+                            Organisation Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/iam/usr/page/0">
+                            User Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/iam/clm/page/0">
+                            Claims Overview
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="column">
+                <h1>All Organisations</h1>
+            </div>
+            <div class="column">
+                <a href="/iam/org">Add</a>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered ">
+            <tr>
+                <th>Id</th>
+                <th>Organisation Name</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+            {{#tableData}}
+            <tr>
+                <td>{{organisationId}}</td>
+                <td>{{organisationName}}</td>
+                <td>{{contactEmail}}</td>
+                <td><a href="/iam/org/{{organisationId}}">Edit</a>
+                <td>
+                </td>
+            </tr>
+            {{/tableData}}
+        </table>
+    </div>
+    <div class="container">>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <title>view Users</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../scss/styles.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="content">
+        <div>{{>navbar}}</div>
+
+        <h1>{{action}}Claims</h1>
+        <form action="/iam/clm/{{tableData.organisationId}}" method="{{verb}}{{^verb}}post{{/verb}}">
+            <table>
+                <tr>
+                    <td>
+                        <label for="organisations">Pick Organisation:</label>
+                        <select name="organisationId" id="organisations">
+                            {{#organisations}}
+                            <option value="{{organisationId}}">{{organisationName}}</option>
+                            <option value="{{organisationId}}">{{organisationName}}</option>
+                            <option value="{{organisationId}}">{{organisationName}}</option>
+                            <option value="{{organisationId}}">{{organisationName}}</option>
+                            {{/organisations}}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <label for="users">Pick User:</label>
+                        <select name="subject" id="users">
+                            {{#users}}
+                            <option value="subject">{{name}}
+                                {{/users}}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <h3>Claims:</h3>
+            <table>
+                <tr>
+                    <td><input type="text" name="claims"></td>
+                </tr>
+            </table>
+            <button class="submitButton" type="submit">Permit</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
