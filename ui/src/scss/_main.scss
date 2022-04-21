@@ -1,10 +1,9 @@
-/* Sakura.css v1.3.1
- * ================
- * Minimal css theme.
- * Project: https://github.com/oxalorg/sakura/
- */
-
-/* Body */
+/*
+    Based on Sakura.css v1.3.1: https://github.com/oxalorg/sakura/
+    Heavily modified
+    1. Progressive falllback for  em and rem values for browser support reasons.
+    1.1 all fonts have 2 values px and rem/em values - in that order.
+*/
 
 html {
     font-size: 62.5%; // So that root size becomes 10px
@@ -13,24 +12,29 @@ html {
 
 body {
     // $font-size-base must be a rem value
+    // IE11 and below support:
     font-size: $font-size-base;
+    // rem for easier responsive font sizing
+    font-size: $font-size-base-rem;
     line-height: 1.618;
-    max-width: 38em;
+    max-width: $sm;
     margin: auto;
     color: $color-text;
     background-color: $color-bg;
-    padding: 13px;
+    padding: $spacer-1;
 }
 
 @media (max-width: $md) {
     body {
         font-size: $font-size-base * 0.85;
+        font-size: $font-size-base-rem * 0.85;
     }
 }
 
 @media (max-width: $sm) {
     body {
         font-size: $font-size-base * 0.75;
+        font-size: $font-size-base-rem * 0.75;
     }
 }
 
@@ -45,10 +49,18 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
     font-family: $font-family-heading;
     font-weight: 700;
-    margin-top: 3rem;
-    margin-bottom: 1.5rem;
+    margin-top: $spacer-3;
+    margin-bottom: $spacer-2;
     @include word-wrap;
 }
+
+
+h1 { font-size: 38px}
+h2 { font-size: 32px }
+h3 { font-size: 28px }
+h4 { font-size: 24px }
+h5 { font-size: 20px }
+h6 { font-size: 17px }
 
 h1 { font-size: 2.35em }
 h2 { font-size: 2.00em }
@@ -59,7 +71,7 @@ h6 { font-size: 1em }
 
 p {
     margin-top: 0px;
-    margin-bottom: 2.5rem;
+    margin-bottom: $spacer-3;
 }
 
 small, sub, sup {
@@ -86,24 +98,21 @@ a {
 }
 
 ul {
-    padding-left: 1.4em;
+    padding-left: $spacer-1;
     margin-top: 0px;
-    margin-bottom: 2.5rem;
+    margin-bottom: $spacer-3;
 }
 
 li {
-    margin-bottom: 0.4em;
+    margin-bottom: $spacer-1;
 }
 
 blockquote {
     margin-left: 0px;
     margin-right: 0px;
-    padding-left: 1em;
-    padding-top: 0.8em;
-    padding-bottom: 0.8em;
-    padding-right: 0.8em;
+    padding: $spacer-2 $spacer-1;
     border-left: 5px solid $primary;
-    margin-bottom: 2.5rem;
+    margin-bottom: $spacer-3;
     background-color: $color-bg-alt;
 }
 
@@ -115,7 +124,7 @@ img, video {
     height: auto;
     max-width: 100%;
     margin-top: 0px;
-    margin-bottom: 2.5rem;
+    margin-bottom: $spacer-3;
 }
 
 /* Pre and Code */
@@ -126,13 +135,15 @@ pre {
     padding: 1em;
     overflow-x: auto;
     margin-top: 0px;
-    margin-bottom: 2.5rem;
+    margin-bottom: $spacer-3;
+    font-size: 14px;
     font-size: 0.9em;
 }
 
 code {
+    font-size: 14px;
     font-size: 0.9em;
-    padding: 0 0.5em;
+    padding: 0 $spacer-1;
     background-color: $color-bg-alt;
     white-space: pre-wrap;
 }
@@ -141,6 +152,7 @@ pre > code {
     padding: 0;
     background-color: transparent;
     white-space: pre;
+    font-size: $font-size-base;
     font-size: 1em;
 }
 
@@ -153,7 +165,7 @@ table {
 }
 
 td, th {
-    padding: 0.5em;
+    padding: $spacer-1;
     border-bottom: 1px solid $color-bg-alt;
 }
 
@@ -220,6 +232,6 @@ input[type="checkbox"]:focus {
 
 label, legend, fieldset {
     display: block;
-    margin-bottom: .5rem;
+    margin-bottom: $spacer-1;
     font-weight: 600;
 }
