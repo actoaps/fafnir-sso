@@ -20,9 +20,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,13 +32,7 @@ public class BeanConf {
         return Mustache.compiler()
                 .defaultValue("")
                 .nullValue("")
-                .withLoader(templateLoader)
-                .withFormatter(value -> {
-                    if (value instanceof Instant){
-                        return DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.ofInstant((Instant) value, ZoneOffset.UTC));
-                    }
-                    return String.valueOf(value);
-                });
+                .withLoader(templateLoader);
     }
 
     @Bean
