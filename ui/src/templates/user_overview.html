@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <title>view Users</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../scss/styles.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div>
+                <ul class="navbar">
+                    <li>
+                        <a href="/iam/org/page/0">
+                            Organisation Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/iam/usr/page/0">
+                            User Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/iam/clm/page/0">
+                            Claims Overview
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <h1>All Users</h1>
+        </div>
+
+        <table >
+            <tr>
+                <th>Subject</th>
+                <th>Name</th>
+                <th>Password</th>
+                <th>Meta Id</th>
+                <th><a href="/iam/usr">Add  &#65291;</a></th>
+            </tr>
+            {{#tableData}}
+            <tr>
+                <td>{{subject}}</td>
+                <td>{{name}}</td>
+                <td>{{password}}</td>
+                <td>{{metaId}}</td>
+                <td><a href="/iam/usr/{{subject}}">Edit &#9998;</a><td>
+            </tr>
+            {{/tableData}}
+        </table>
+    </div>
+</div>
+</body>
+</html>

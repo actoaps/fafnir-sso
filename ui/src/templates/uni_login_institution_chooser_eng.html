@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+	<title>Choose Institution - UNI•Login</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="../scss/styles.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="content">
+			<h1>Choose your institution:</h1>
+			<div class="inner-content">
+				<p class="headline-choose-institution"></p>
+				<form action="/unilogin/org" method="post">
+					<select id="institution" name="institution">
+						<option value="">Select Institution</option>
+						<option th:each="institution : ${institutionList}" th:value="${institution.id}" th:text="${institution.id}+' : '+${institution.name}+' (Roles: '+${#strings.listJoin(institution.roles,',')}+')'"></option>
+				</select>
+				<input type="hidden" name="auth" th:value="${auth}">
+				<input type="hidden" name="timestamp" th:value="${timestamp}">
+				<input type="hidden" name="user" th:value="${user}">
+				<br/>
+				<button class="submitButton" type="submit">
+					Login using Institution
+				</button>
+			</form>
+		</div>
+
+	</div>
+</div>
+</body>
+</html>
