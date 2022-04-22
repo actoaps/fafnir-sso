@@ -89,9 +89,10 @@ a {
     text-decoration: none;
     color: $primary;
 
-    &:hover {
+    &:hover, &:focus {
         color: $secondary;
         border-bottom: 2px solid $color-text;
+        outline: 0;
     }
 
     &:visited {
@@ -174,16 +175,6 @@ td, th {
 }
 
 /* Buttons, forms and input */
-
-input, textarea {
-    border: 1px solid $color-text;
-
-
-    &:focus {
-        border: 1px solid $primary;
-    }
-}
-
 textarea {
     width: 100%;
 }
@@ -201,6 +192,8 @@ textarea {
     border: 1px solid $primary;
     cursor: pointer;
 
+    min-height: 48px;
+
     &[disabled] {
         cursor: default;
         opacity: .5;
@@ -213,7 +206,6 @@ textarea {
         outline: 0;
     }
 }
-
 textarea, select, input {
     color: $color-text;
     padding: $spacer-1 $spacer-2; /* The 6px vertically centers text on FF, ignored by Webkit */
@@ -223,14 +215,14 @@ textarea, select, input {
     border-radius: $borderRadius;
     box-shadow: none;
 
-    &:focus {
-        border: 1px solid $primary;
+    &:focus, &:active {
+        border-left: 6px solid $primary;
         outline: 0;
     }
 }
 
 input[type="checkbox"]:focus {
-    outline: 1px dotted $primary;
+    outline: 2px dotted $primary;
 }
 
 label, legend, fieldset {

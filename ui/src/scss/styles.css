@@ -1,17 +1,320 @@
-/* Error: Can't find stylesheet to import.
- *    ,
- * 14 | @import "fafnir_ui";
- *    |         ^^^^^^^^^^^
- *    '
- *   styles.scss 14:9  root stylesheet */
+/*
+    Based on Sakura.css v1.3.1: https://github.com/oxalorg/sakura/
+    Heavily modified
+    1. Progressive falllback for  em and rem values for browser support reasons.
+    1.1 all fonts have 2 values px and rem/em values - in that order.
+*/
+html {
+  font-size: 62.5%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
 
-body::before {
-  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
-      "Droid Sans Mono", monospace, monospace;
-  white-space: pre;
+body {
+  font-size: 16px;
+  font-size: 1.6rem;
+  line-height: 1.618;
+  max-width: 992px;
+  margin: auto;
+  color: #000;
+  background-color: #f7f7f7;
+  padding: 8px;
+}
+@media (min-width: 576px) {
+  body {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 13.6px;
+    font-size: 1.36rem;
+  }
+}
+@media (max-width: 576px) {
+  body {
+    font-size: 12px;
+    font-size: 1.2rem;
+  }
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-weight: 700;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+}
+
+h1 {
+  font-size: 38px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 28px;
+}
+
+h4 {
+  font-size: 24px;
+}
+
+h5 {
+  font-size: 20px;
+}
+
+h6 {
+  font-size: 17px;
+}
+
+h1 {
+  font-size: 2.35em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.75em;
+}
+
+h4 {
+  font-size: 1.5em;
+}
+
+h5 {
+  font-size: 1.25em;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+p {
+  margin-top: 0px;
+  margin-bottom: 24px;
+}
+
+small, sub, sup {
+  font-size: 75%;
+}
+
+hr {
+  border-color: #23C19D;
+}
+
+a {
+  text-decoration: none;
+  color: #23C19D;
+}
+a:hover, a:focus {
+  color: #08486D;
+  border-bottom: 2px solid #000;
+  outline: 0;
+}
+a:visited {
+  color: #1b967a;
+}
+
+ul {
+  padding-left: 8px;
+  margin-top: 0px;
+  margin-bottom: 24px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+blockquote {
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 16px 8px;
+  border-left: 5px solid #23C19D;
+  margin-bottom: 24px;
+  background-color: #d2d2d2;
+}
+
+blockquote p {
+  margin-bottom: 0;
+}
+
+img, video {
+  height: auto;
+  max-width: 100%;
+  margin-top: 0px;
+  margin-bottom: 24px;
+}
+
+/* Pre and Code */
+pre {
+  background-color: #d2d2d2;
   display: block;
   padding: 1em;
-  margin-bottom: 1em;
-  border-bottom: 2px solid black;
-  content: "Error: Can't find stylesheet to import.\a    \2577 \a 14 \2502  @import \"fafnir_ui\";\a    \2502          ^^^^^^^^^^^\a    \2575 \a   styles.scss 14:9  root stylesheet";
+  overflow-x: auto;
+  margin-top: 0px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-size: 0.9em;
 }
+
+code {
+  font-size: 14px;
+  font-size: 0.9em;
+  padding: 0 8px;
+  background-color: #d2d2d2;
+  white-space: pre-wrap;
+}
+
+pre > code {
+  padding: 0;
+  background-color: transparent;
+  white-space: pre;
+  font-size: 16px;
+  font-size: 1em;
+}
+
+/* Tables */
+table {
+  text-align: justify;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+
+td, th {
+  padding: 8px;
+  border-bottom: 1px solid #d2d2d2;
+}
+
+/* Buttons, forms and input */
+textarea {
+  width: 100%;
+}
+
+.button, button, input[type=submit], input[type=reset], input[type=button] {
+  display: inline-block;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: #23C19D;
+  color: #f7f7f7;
+  border-radius: 4px;
+  border: 1px solid #23C19D;
+  cursor: pointer;
+  min-height: 48px;
+}
+.button[disabled], button[disabled], input[type=submit][disabled], input[type=reset][disabled], input[type=button][disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+.button:focus:enabled, .button:hover:enabled, button:focus:enabled, button:hover:enabled, input[type=submit]:focus:enabled, input[type=submit]:hover:enabled, input[type=reset]:focus:enabled, input[type=reset]:hover:enabled, input[type=button]:focus:enabled, input[type=button]:hover:enabled {
+  background-color: #08486D;
+  border-color: #08486D;
+  color: #f7f7f7;
+  outline: 0;
+}
+
+textarea, select, input {
+  color: #000;
+  padding: 8px 16px;
+  /* The 6px vertically centers text on FF, ignored by Webkit */
+  margin-bottom: 16px;
+  background-color: #d2d2d2;
+  border: 1px solid #d2d2d2;
+  border-radius: 4px;
+  box-shadow: none;
+}
+textarea:focus, textarea:active, select:focus, select:active, input:focus, input:active {
+  border-left: 6px solid #23C19D;
+  outline: 0;
+}
+
+input[type=checkbox]:focus {
+  outline: 2px dotted #23C19D;
+}
+
+label, legend, fieldset {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* ::selection {
+  background: #99C56E;
+  color: #000;
+}
+
+body {
+  overflow: auto;
+}
+
+select option:checked {
+  background-color: #23C19D;
+}
+
+.navbar {
+  list-style: none;
+  display: inline-flex;
+  padding: 0;
+  margin: 16px 0 16px;
+}
+.navbar li, .navbar > a {
+  margin-left: 16px;
+  font-size: 1.2em;
+}
+.navbar li:first-child, .navbar > a:first-child {
+  margin-left: 0;
+}
+.navbar li a, .navbar > a a {
+  text-decoration: underline;
+}
+
+form {
+  margin-bottom: 16px;
+}
+form:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+form > div {
+  margin-bottom: 8px;
+}
+
+.login {
+  max-width: fit-content;
+  padding: 16px;
+  margin: auto;
+}
+.login:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.login input, .login button {
+  width: 100%;
+}
+@media (min-width: 576px) {
+  .login input, .login button {
+    min-width: 256px;
+  }
+  .login [type=submit] {
+    margin-left: auto;
+    float: right;
+  }
+}
+
+/*# sourceMappingURL=styles.css.map */
