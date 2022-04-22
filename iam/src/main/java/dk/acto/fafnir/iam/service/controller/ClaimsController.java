@@ -57,6 +57,13 @@ public class ClaimsController
     }
     @PostMapping()
     public RedirectView addClaims(@ModelAttribute ClaimData source) {
+        administrationService.createClaim(source);
+        return new RedirectView("/iam/clm/page/0");
+    }
+
+    @PutMapping
+    public RedirectView updateClaims(@ModelAttribute ClaimData source) {
+        administrationService.updateClaims(source);
         return new RedirectView("/iam/clm/page/0");
     }
 
