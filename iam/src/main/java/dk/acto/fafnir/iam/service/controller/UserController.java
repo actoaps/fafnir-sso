@@ -1,8 +1,9 @@
 package dk.acto.fafnir.iam.service.controller;
 
-import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,13 +21,18 @@ import java.util.Map;
 @RequestMapping("iam/usr")
 public class UserController {
     private final AdministrationService administrationService;
+    private final DtoFactory dtoFactory;
 
     @GetMapping("page/{pageNumber}")
     public ModelAndView getUserOverview(@PathVariable Long pageNumber) {
-        var result = administrationService.readUsers(pageNumber);
-        var model = Map.of("page", pageNumber,
-                "pages", result.getTotalPages(),
-                "tableData", result.getPageData());
+        var maxValue = administrationService.countOrganisations();
+        var pageActual = Slice.cropPage(pageNumber, maxValue);
+        if (!pageActual.equals(pageNumber - 1)) {
+            return new ModelAndView("redirect:/iam/usr/page/" + (pageActual +1));
+        }
+        var result = administrationService.readUsers(pageActual);
+        var model = dtoFactory.calculatePageData(pageActual, maxValue, "/iam/org");
+        model.put("tableData", result.getPageData());
         return new ModelAndView("user_overview", model);
     }
 

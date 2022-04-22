@@ -20,6 +20,6 @@ public class DefaultViewController {
         if (administrationService.countOrganisations() < 1) {
             return new RedirectView("/iam/org");
         }
-        return new RedirectView("/iam/org/page/0");
+        return new RedirectView("/iam/org/page/1");
     }
 }
