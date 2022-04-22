@@ -382,15 +382,15 @@
                         <label for="users">Pick User:</label>
                         <select name="subject" id="users">
                             {{#users}}
-                            <option value="subject">{{name}}
-                                {{/users}}
+                            <option value="{{subject}}">{{name}}
+                            {{/users}}
                         </select>
                     </td>
                 </tr>
             </table>
 
             <h3>Claims:</h3>
-            <input type="button" value="Add Row" onclick="addRow('claimsTable')" />
+            <input type="button" value="Add Row" onclick="addRow('claimsTable')"/>
             <table id="claimsTable">
                 <tr>
                     <td><input type="text" name="claims"></td>
@@ -401,7 +401,7 @@
     </div>
 </div>
 </body>
-<script language="javascript">
+<script type="application/javascript">
 
     function addRow(tableID) {
         var table = document.getElementById(tableID);
@@ -412,18 +412,22 @@
         var deleteCell = row.insertCell(0);
         var element1 = document.createElement("input");
         element1.type = "button";
-        var deleteButton = "dButton" + (rowCount+1);
+        var deleteButton = "dButton" + (rowCount + 1);
         element1.name = deleteButton;
         element1.setAttribute('value', 'Delete');
-        element1.onclick = function () { removeRow(deleteButton); }
+        element1.onclick = function () {
+            removeRow(deleteButton);
+        }
         deleteCell.appendChild(element1);
 
         var valueCell = row.insertCell(1);
         var element3 = document.createElement("input");
         element3.type = "text";
+        element3.name="claims"
         valueCell.appendChild(element3);
 
     }
+
     function removeRow(btnName) {
         try {
             var table = document.getElementById('claimsTable');
@@ -431,17 +435,12 @@
             for (var i = 0; i < rowCount; i++) {
                 var row = table.rows[i];
                 var rowObj = row.cells[0].childNodes[0];
-
-
-                console.log(rowObj.name+" Hey");
-                console.log(btnName+" dis is nt");
-                if (rowObj.name == btnName) {
+                if (rowObj.name === btnName) {
                     table.deleteRow(i);
                     rowCount--;
                 }
             }
-        }
-        catch (e) {
+        } catch (e) {
         }
     }
 </script>
