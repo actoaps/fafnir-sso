@@ -1,30 +1,35 @@
 package dk.acto.fafnir.iam.service.controller;
 
 import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
 import java.time.Instant;
 import java.util.Map;
 
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("iam/org")
+@RequestMapping("/iam/org")
 public class OrganisationController {
     private final AdministrationService administrationService;
+    private final DtoFactory dtoFactory;
 
     @GetMapping("page/{pageNumber}")
     public ModelAndView getOrganisationOverview(@PathVariable Long pageNumber) {
-        var result = administrationService.readOrganisations(pageNumber);
-        var model = Map.of("page", pageNumber,
-                "pages", result.getTotalPages(),
-                "tableData", result.getPageData());
+        var maxValue = administrationService.countOrganisations();
+        var pageActual = Slice.cropPage(pageNumber, maxValue);
+        if (!pageActual.equals(pageNumber - 1)) {
+            return new ModelAndView("redirect:/iam/org/page/" + (pageActual +1));
+        }
+        var result = administrationService.readOrganisations(pageActual);
+        var model = dtoFactory.calculatePageData(pageActual, maxValue, "/iam/org");
+        model.put("tableData", result.getPageData());
         return new ModelAndView("organisation_overview", model);
     }
 
@@ -56,14 +61,14 @@ public class OrganisationController {
     }
 
     @PutMapping
-    public RedirectView updateOrganisation(@ModelAttribute OrganisationData org) {
+    public ModelAndView updateOrganisation(@ModelAttribute OrganisationData org) {
         administrationService.updateOrganisation(org);
-        return new RedirectView("/iam/org/page/0");
+        return new ModelAndView("redirect:/iam/org/page/1");
     }
 
     @PostMapping
-    public RedirectView createOrganisation(@ModelAttribute OrganisationData org) {
+    public ModelAndView createOrganisation(@ModelAttribute OrganisationData org) {
         administrationService.createOrganisation(org);
-        return new RedirectView("/iam/org/page/0");
+        return new ModelAndView("redirect:/iam/org/page/1");
     }
 }

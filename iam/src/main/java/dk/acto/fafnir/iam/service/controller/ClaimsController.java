@@ -1,6 +1,7 @@
 package dk.acto.fafnir.iam.service.controller;
 
 import dk.acto.fafnir.api.model.ClaimData;
+import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,12 @@ public class ClaimsController
     private final DtoFactory dtoFactory;
     @GetMapping("page/{pageNumber}")
     public ModelAndView getClaimsOverview(@PathVariable Long pageNumber) {
-        var result = administrationService.readClaims((pageNumber));
+        var maxValue = administrationService.countOrganisations();
+        var pageActual = Slice.cropPage(pageNumber, maxValue);
+        if (!pageActual.equals(pageNumber - 1)) {
+            return new ModelAndView("redirect:/iam/clm/page/" + (pageActual +1));
+        }
+        var result = administrationService.readClaims((pageActual));
         var orgs = result.getPageData().stream().map(ClaimData::getOrganisationId)
                 .distinct().map(administrationService::readOrganisation)
                 .collect(Collectors.toList());
@@ -31,7 +37,8 @@ public class ClaimsController
                 .distinct().map(administrationService::readUser)
                 .collect(Collectors.toList());
         var transformed = dtoFactory.toInfo(result.getPageData(), orgs, users);
-        var model = Map.of(
+        var model = dtoFactory.calculatePageData(pageActual, maxValue, "/iam/org");
+        model.put(
                 "tableData", transformed
                 );
         return new ModelAndView("claims_overview", model);
@@ -50,7 +57,14 @@ public class ClaimsController
     }
     @PostMapping()
     public RedirectView addClaims(@ModelAttribute ClaimData source) {
-        return new RedirectView("/iam/clm/page/0");
+        administrationService.createClaim(source);
+        return new RedirectView("/iam/clm/page/1");
+    }
+
+    @PutMapping
+    public RedirectView updateClaims(@ModelAttribute ClaimData source) {
+        administrationService.updateClaims(source);
+        return new RedirectView("/iam/clm/page/1");
     }
 
     @GetMapping("{orgId}/{subject}")

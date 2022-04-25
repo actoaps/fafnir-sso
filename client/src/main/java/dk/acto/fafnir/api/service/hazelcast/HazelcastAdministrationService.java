@@ -10,6 +10,7 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -43,7 +44,7 @@ public class HazelcastAdministrationService implements AdministrationService {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         var offset = Slice.getOffset(page);
         var total = Long.valueOf(userMap.size());
-        return Slice.fromPartial(userMap.values().stream().skip(offset), total, x -> x);
+        return Slice.fromPartial(userMap.values().stream().skip(offset).limit(Slice.PAGE_SIZE), total, x -> x);
     }
 
     @Override
@@ -143,7 +144,7 @@ public class HazelcastAdministrationService implements AdministrationService {
         var offset = Slice.getOffset(page);
         var total = Long.valueOf(claimSet.size());
 
-        return Slice.fromPartial(claimSet.stream().skip(offset), total, x -> x);
+        return Slice.fromPartial(claimSet.stream().skip(offset).limit(Slice.PAGE_SIZE), total, x -> x);
 
     }
 
@@ -203,7 +204,9 @@ public class HazelcastAdministrationService implements AdministrationService {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
         var offset = Slice.getOffset(page);
         var total = Long.valueOf(orgMap.size());
-        return Slice.fromPartial(orgMap.values().stream().skip(offset), total, x -> x);
+        return Slice.fromPartial(orgMap.values().stream()
+                .sorted(Comparator.comparing(OrganisationData::getOrganisationName))
+                .skip(offset).limit(Slice.PAGE_SIZE), total, x -> x);
     }
 
     @Override
