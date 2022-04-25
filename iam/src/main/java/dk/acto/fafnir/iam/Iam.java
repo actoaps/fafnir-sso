@@ -13,10 +13,10 @@ import java.security.Security;
 @AllArgsConstructor
 @Slf4j
 @Profile("!test")
-public class Main {
+public class Iam {
 
     public static void main(String[] args) {
         Security.addProvider(new BouncyCastleProvider());
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(Iam.class, args);
     }
 }

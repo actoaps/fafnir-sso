@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Value
 @Builder
 public class Slice<T> {
-    private static final Integer PAGE_SIZE= 50;
+    public static final Long PAGE_SIZE= 3L;
     BigInteger totalPages;
     List<T> pageData;
 
@@ -23,6 +23,23 @@ public class Slice<T> {
         return pageNumber*PAGE_SIZE;
     }
 
+    public static Long lastPage(Long maxValue) {
+        if (maxValue == 0 ) {
+            return 0L;
+        }
+        return (maxValue-1) / PAGE_SIZE;
+    }
+
+        public static Long cropPage(Long purePageNumber, Long maxValue){
+        var result = purePageNumber - 1;
+        var lastPage = maxValue/PAGE_SIZE;
+        if (result < 1) {
+            return 0L;
+        } else if (result > lastPage) {
+            return lastPage;
+        }
+        return result;
+    }
     public static <T,R> Slice<R> fromPartial(final Stream<T> source, Long totalElements, Function<T,R> transform) {
         return Slice.<R>builder()
                 .totalPages(BigDecimal.valueOf(totalElements).divide(BigDecimal.valueOf(PAGE_SIZE), RoundingMode.CEILING).toBigInteger())
