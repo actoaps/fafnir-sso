@@ -1,0 +1,232 @@
+/*
+    Based on Sakura.css v1.3.1: https://github.com/oxalorg/sakura/
+    Heavily modified
+    1. Progressive falllback for  em and rem values for browser support reasons.
+    1.1 all fonts have 2 values px and rem/em values - in that order.
+*/
+
+html {
+    font-size: 62.5%; // So that root size becomes 10px
+    font-family: $font-family-base;
+}
+
+body {
+    // $font-size-base must be a rem value
+    // IE11 and below support:
+    font-size: $font-size-base;
+    // rem for easier responsive font sizing
+    font-size: $font-size-base-rem;
+    line-height: 1.618;
+    max-width: $lg;
+    margin: auto;
+    color: $color-text;
+    background-color: $color-bg;
+    padding: $spacer-1;
+    @media (min-width: $sm) {
+        padding: $spacer-4
+    }
+}
+
+@media (max-width: $md) {
+    body {
+        font-size: $font-size-base * 0.85;
+        font-size: $font-size-base-rem * 0.85;
+    }
+}
+
+@media (max-width: $sm) {
+    body {
+        font-size: $font-size-base * 0.75;
+        font-size: $font-size-base-rem * 0.75;
+    }
+}
+
+@mixin word-wrap() {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.1;
+    font-family: $font-family-heading;
+    font-weight: 700;
+    margin-top: $spacer-3;
+    margin-bottom: $spacer-2;
+    @include word-wrap;
+}
+
+
+h1 { font-size: 38px}
+h2 { font-size: 32px }
+h3 { font-size: 28px }
+h4 { font-size: 24px }
+h5 { font-size: 20px }
+h6 { font-size: 17px }
+
+h1 { font-size: 2.35em }
+h2 { font-size: 2.00em }
+h3 { font-size: 1.75em }
+h4 { font-size: 1.5em }
+h5 { font-size: 1.25em }
+h6 { font-size: 1em }
+
+p {
+    margin-top: 0px;
+    margin-bottom: $spacer-3;
+}
+
+small, sub, sup {
+    font-size: 75%;
+}
+
+hr {
+    border-color: $primary;
+}
+
+a {
+    text-decoration: none;
+    color: $primary;
+
+    &:hover, &:focus {
+        color: $secondary;
+        border-bottom: 2px solid $color-text;
+        outline: 0;
+    }
+
+    &:visited {
+        color: darken($primary, 10%);
+    }
+
+}
+
+ul {
+    padding-left: $spacer-1;
+    margin-top: 0px;
+    margin-bottom: $spacer-3;
+}
+
+li {
+    margin-bottom: $spacer-1;
+}
+
+blockquote {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: $spacer-2 $spacer-1;
+    border-left: 5px solid $primary;
+    margin-bottom: $spacer-3;
+    background-color: $color-bg-alt;
+}
+
+blockquote p {
+    margin-bottom: 0;
+}
+
+img, video {
+    height: auto;
+    max-width: 100%;
+    margin-top: 0px;
+    margin-bottom: $spacer-3;
+}
+
+/* Pre and Code */
+
+pre {
+    background-color: $color-bg-alt;
+    display: block;
+    padding: 1em;
+    overflow-x: auto;
+    margin-top: 0px;
+    margin-bottom: $spacer-3;
+    font-size: 14px;
+    font-size: 0.9em;
+}
+
+code {
+    font-size: 14px;
+    font-size: 0.9em;
+    padding: 0 $spacer-1;
+    background-color: $color-bg-alt;
+    white-space: pre-wrap;
+}
+
+pre > code {
+    padding: 0;
+    background-color: transparent;
+    white-space: pre;
+    font-size: $font-size-base;
+    font-size: 1em;
+}
+
+/* Tables */
+
+table {
+    text-align: justify;
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacer-1 0;
+}
+
+td, th {
+    padding: $spacer-1;
+    border-bottom: 1px solid $color-bg-alt;
+}
+
+/* Buttons, forms and input */
+textarea {
+    width: 100%;
+}
+
+.button, button, input[type="submit"], input[type="reset"], input[type="button"] {
+    display: inline-block;
+    padding: $spacer-1 $spacer-2;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    background-color: $primary;
+    color: $color-bg;
+    border-radius: $borderRadius;
+    border: 1px solid $primary;
+    cursor: pointer;
+
+    min-height: 48px;
+
+    &[disabled] {
+        cursor: default;
+        opacity: .5;
+    }
+
+    &:focus:enabled, &:hover:enabled {
+        background-color: $secondary;
+        border-color: $secondary;
+        color: $color-bg;
+        outline: 0;
+    }
+}
+textarea, select, input {
+    color: $color-text;
+    padding: $spacer-1 $spacer-2; /* The 6px vertically centers text on FF, ignored by Webkit */
+    margin-bottom: $spacer-2;
+    background-color: $color-bg-alt;
+    border: 1px solid $color-bg-alt;
+    border-radius: $borderRadius;
+    box-shadow: none;
+
+    &:focus, &:active {
+        border-left: 6px solid $primary;
+        outline: 0;
+    }
+}
+
+input[type="checkbox"]:focus {
+    outline: 2px dotted $primary;
+}
+
+label, legend, fieldset {
+    display: block;
+    margin-bottom: $spacer-1;
+    font-weight: 600;
+}

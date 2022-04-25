@@ -1,0 +1,9 @@
+// So why do we have a clearfix mixin?
+// Because we want legacy support out the Wazooo
+@mixin clearfix {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
