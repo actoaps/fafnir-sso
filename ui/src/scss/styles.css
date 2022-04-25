@@ -98,7 +98,7 @@ h6 {
 }
 
 p {
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 24px;
 }
 
@@ -125,7 +125,7 @@ a:visited {
 
 ul {
   padding-left: 8px;
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 24px;
 }
 
@@ -134,8 +134,8 @@ li {
 }
 
 blockquote {
-  margin-left: 0px;
-  margin-right: 0px;
+  margin-left: 0;
+  margin-right: 0;
   padding: 16px 8px;
   border-left: 5px solid #23C19D;
   margin-bottom: 24px;
@@ -149,7 +149,7 @@ blockquote p {
 img, video {
   height: auto;
   max-width: 100%;
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 24px;
 }
 
@@ -159,7 +159,7 @@ pre {
   display: block;
   padding: 1em;
   overflow-x: auto;
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 24px;
   font-size: 14px;
   font-size: 0.9em;

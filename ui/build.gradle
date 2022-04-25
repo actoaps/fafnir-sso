@@ -1,0 +1,29 @@
+plugins {
+    id "io.miret.etienne.sass" version "1.3.0"
+    id "java-library"
+}
+
+compileSass {
+    outputDir = project.file("${projectDir}/dist/static/css")
+    sourceDir = project.file("${projectDir}/src/scss")
+}
+
+task cleanDist(type: Delete) {
+    delete "${projectDir}/dist"
+}
+
+task copyTemplates(type: Copy) {
+    from "${projectDir}/src/templates"
+    into "${projectDir}/dist/templates"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["${projectDir}/dist"]
+        }
+    }
+}
+
+processResources.dependsOn compileSass, copyTemplates
+clean.finalizedBy cleanDist
