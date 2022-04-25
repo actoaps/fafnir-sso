@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Claims</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div class="container">
+    <div class="content">
+        <div class="header">
+            <div>{{>navbar}}</div>
+            <div class="column">
+                <h1>Claims</h1>
+            </div>
+            <div class="column">
+                <a href="/iam/clm">Add</a>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered ">
+            <tr>
+                <td>
+                    <ul>
+                        {{#tableData}}
+                        <li>{{organisationName}}
+                            <ul>
+                                {{#users}}
+                                <li>{{name}}
+                                    <ul>
+                                        {{#claims}}
+                                        <li>{{.}}</li>
+                                        {{/claims}}
+                                    </ul>
+                                </li>
+                                {{/users}}
+                            </ul>
+                        </li>
+                        {{/tableData}}
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+</body>
+</html>
