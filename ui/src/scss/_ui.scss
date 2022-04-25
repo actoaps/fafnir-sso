@@ -1,0 +1,77 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+* {
+    ::selection {
+        background: #99C56E;
+        color: $color-text;
+    }
+}
+
+body {
+    overflow: auto;
+}
+
+select {
+    option {
+        &:checked {
+            background-color: $primary;
+        }
+    }
+}
+
+
+.navbar {
+    list-style: none;
+    display: inline-flex;
+
+    padding: 0;
+    margin: $spacer-2 0 $spacer-2;
+
+    li, > a {
+        margin-left: $spacer-2;
+        font-size: 1.2em;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        a {
+            text-decoration: underline;
+        }
+    }
+}
+
+form {
+    @include clearfix;
+    margin-bottom: $spacer-2;
+
+    > div {
+        margin-bottom: $spacer-1;
+    }
+}
+
+.login {
+    @include clearfix;
+    max-width: fit-content;
+    padding: $spacer-2;
+
+    input, button {
+        width: 100%;
+    }
+
+    margin: auto;
+    @media (min-width: $sm) {
+        input, button {
+            min-width: 256px;
+        }
+        [type="submit"] {
+            margin-left: auto;
+            float: right;
+        }
+    }
+}
+
+.container {
+}

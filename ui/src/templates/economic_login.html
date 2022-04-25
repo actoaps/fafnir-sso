@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="da" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <title>Login - Economic</title>
+    {{> metadata}}
+</head>
+
+<body>
+
+<div class="login">
+    <h1>Login:</h1>
+    <p class="headline-choose-institution"></p>
+
+    <form action="/economic/login" method="post">
+        <div>
+
+            <label for="username">
+                Username / email:
+            </label>
+            <input id="username" type="text" name="email">
+        </div>
+        <div>
+            <label for="password">
+                Kundenummer:
+            </label>
+            <input id="password" type="password" name="customerNumber">
+        </div>
+        <button class="submitButton" type="submit">
+            Login
+        </button>
+    </form>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="da" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <title>Provider Picker</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div class="login">
+    <h1>Choose Provider:</h1>
+    <div class="box">
+        <p class="headline-choose-institution"></p>
+
+        <form action="/google" method="post">
+            <td>
+                <button type="submit" name="google">Google Provider</button>
+            </td>
+        </form>
+
+        <form action="/apple" method="post">
+            <td>
+                <button type="submit" name="apple">Apple Provider</button>
+            </td>
+        </form>
+
+        <form action="/facebook" method="post">
+            <td>
+                <button type="submit" name="facebook">Facebook Provider</button>
+            </td>
+        </form>
+
+        <form action="/mitID" method="post">
+            <td>
+                <button type="submit" name="mitID">MitID Provider</button>
+            </td>
+        </form>
+
+        <form action="/microsoftIdentity" method="post">
+            <td>
+                <button type="submit" name="microsoftIdentity">Microsoft Identity Provider</button>
+            </td>
+        </form>
+
+        <form action="/uniLogin" method="post">
+            <td>
+                <button type="submit" name="uniLogin">UniLogin Provider</button>
+            </td>
+        </form>
+
+        <form action="/hazelcast" method="post">
+            <td>
+                <button type="submit" name="hazelcast">Hazelcast Provider</button>
+            </td>
+        </form>
+
+        <form action="/economicCustomer" method="post">
+            <td>
+                <button type="submit" name="economicCustomer">Economic Customer Provider</button>
+            </td>
+        </form>
+
+        <form action="/linkin" method="post">
+            <td>
+                <button type="submit" name="linkin">LinkIn Provider</button>
+            </td>
+        </form>
+    </div>
+</div>
+</body>
+
+</html>

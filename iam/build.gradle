@@ -36,6 +36,7 @@ mainClassName = 'dk.acto.fafnir.server.Main'
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.22'
     implementation project(':client')
+    implementation project(':ui')
 
     implementation 'io.vavr:vavr:0.10.4'
     implementation 'com.google.guava:guava:31.1-jre'
