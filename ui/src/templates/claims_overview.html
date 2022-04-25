@@ -24,19 +24,19 @@
                 <td>
                     <ul>
                         {{#tableData}}
-                        <li>{{organisationName}}
-                            <ul>
-                                {{#users}}
-                                <li>{{name}}
-                                    <ul>
-                                        {{#claims}}
-                                        <li>{{.}}</li>
-                                        {{/claims}}
-                                    </ul>
-                                </li>
-                                {{/users}}
-                            </ul>
-                        </li>
+                            <li>{{organisationName}}
+                                <ul>
+                                    {{#users}}
+                                        <li>{{name}}
+                                            <ul>
+                                                {{#claims}}
+                                                    <li>{{.}}</li>
+                                                {{/claims}}
+                                            </ul>
+                                        </li>
+                                    {{/users}}
+                                </ul>
+                            </li>
                         {{/tableData}}
                     </ul>
                 </td>
