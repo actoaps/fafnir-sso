@@ -6,44 +6,43 @@
     <title>view Users</title>
     {{> metadata}}
 </head>
-
 <body>
 <div class="container">
     <div class="content">
         <div>{{>navbar}}</div>
 
         <h1>{{action}}Claims</h1>
-        <form action="/iam/clm/{{tableData.organisationId}}" method="{{verb}}{{^verb}}post{{/verb}}">
+        <form action="/iam/clm/" method="{{verb}}{{^verb}}post{{/verb}}">
             <table>
                 <tr>
                     <td>
                         <label for="organisations">Pick Organisation:</label>
                         <select name="organisationId" id="organisations">
                             {{#organisations}}
-                            <option value="{{organisationId}}">{{organisationName}}</option>
-                            <option value="{{organisationId}}">{{organisationName}}</option>
-                            <option value="{{organisationId}}">{{organisationName}}</option>
-                            <option value="{{organisationId}}">{{organisationName}}</option>
+                                <option value="{{organisationId}}">{{organisationName}}</option>
                             {{/organisations}}
                         </select>
                     </td>
                 </tr>
             </table>
-            <table>
+
+
+            <table id="dataTables">
                 <tr>
                     <td>
                         <label for="users">Pick User:</label>
                         <select name="subject" id="users">
                             {{#users}}
-                            <option value="subject">{{name}}
-                                {{/users}}
+                            <option value="{{subject}}">{{name}}
+                            {{/users}}
                         </select>
                     </td>
                 </tr>
             </table>
 
             <h3>Claims:</h3>
-            <table>
+            <input type="button" value="Add Row" onclick="addRow('claimsTable')"/>
+            <table id="claimsTable">
                 <tr>
                     <td><input type="text" name="claims"></td>
                 </tr>
@@ -53,4 +52,47 @@
     </div>
 </div>
 </body>
+<script type="application/javascript">
+
+    function addRow(tableID) {
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+
+        var deleteCell = row.insertCell(0);
+        var element1 = document.createElement("input");
+        element1.type = "button";
+        var deleteButton = "dButton" + (rowCount + 1);
+        element1.name = deleteButton;
+        element1.setAttribute('value', 'Delete');
+        element1.onclick = function () {
+            removeRow(deleteButton);
+        }
+        deleteCell.appendChild(element1);
+
+        var valueCell = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name="claims"
+        valueCell.appendChild(element3);
+
+    }
+
+    function removeRow(btnName) {
+        try {
+            var table = document.getElementById('claimsTable');
+            var rowCount = table.rows.length;
+            for (var i = 0; i < rowCount; i++) {
+                var row = table.rows[i];
+                var rowObj = row.cells[0].childNodes[0];
+                if (rowObj.name === btnName) {
+                    table.deleteRow(i);
+                    rowCount--;
+                }
+            }
+        } catch (e) {
+        }
+    }
+</script>
 </html>
