@@ -34,7 +34,7 @@ public class TokenFactory {
 
 		jwt.withIssuer(Optional.ofNullable(pmd)
 						.map(ProviderMetaData::getProviderId)
-				.map(idp -> "fafnir-" + idp)
+				.map("fafnir-"::concat)
 				.orElseThrow(NoIssuer::new));
 
 		jwt.withSubject(Optional.ofNullable(userData.getSubject())

@@ -41,7 +41,7 @@ public class HazelcastController {
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginView() {
-        return new ModelAndView("hazelcast_login.html");
+        return new ModelAndView("hazelcast_login");
     }
 
     @PostConstruct
