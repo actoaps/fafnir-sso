@@ -5,8 +5,8 @@ import dk.acto.fafnir.api.model.ProviderConfiguration;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.util.DataGenerator;
 import dk.acto.fafnir.server.provider.HazelcastProvider;
+import dk.acto.fafnir.server.provider.SamlProvider;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +20,11 @@ import java.util.Map;
 @Profile("demo")
 public class DemoDataGenerator implements DataGenerator {
     private final AdministrationService administrationService;
-    @Autowired
     private final HazelcastProvider hazelcastProvider;
+    private final SamlProvider samlProvider;
 
     @Override
     public void generateData(){
-
-
         var actoTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("1")
@@ -93,12 +91,29 @@ public class DemoDataGenerator implements DataGenerator {
                                 .build()
                 ))
                 .build();
+        var samlTest = OrganisationData.builder()
+                .created(Instant.now())
+                .organisationId("7")
+                .organisationName("SAML Org")
+                .providerConfigurations(List.of(
+                        ProviderConfiguration.builder()
+                                .providerId(samlProvider.providerId())
+                                .values(Map.of(
+                                        "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
+                                        "Registration Id", "spring-saml"
+                                ))
+                                .build()
+                ))
+                .build();
+
+
         administrationService.createOrganisation(actoTest);
         administrationService.createOrganisation(HTML24Test);
         administrationService.createOrganisation(jhTest);
         administrationService.createOrganisation(omTest);
         administrationService.createOrganisation(peTest);
         administrationService.createOrganisation(kaTest);
+        administrationService.createOrganisation(samlTest);
     }
 
 

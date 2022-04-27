@@ -212,8 +212,6 @@ public class BeanConf {
     @Bean
     @ConditionalOnBean(DemoDataGenerator.class)
     public CommandLineRunner commandLineRunner(DemoDataGenerator demoDataGenerator) {
-        return args -> {
-            demoDataGenerator.generateData();
-        };
+        return args -> demoDataGenerator.generateData();
     }
 }

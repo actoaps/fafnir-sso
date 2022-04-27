@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -25,9 +22,9 @@ public class OrganisationController {
     ProviderService providerService;
 
     @GetMapping("{page}")
-    public ModelAndView organisationPicker(Long page) {
+    public ModelAndView organisationPicker(@PathVariable Long page) {
         var orgs = administrationService.readOrganisations(page);
-        return new ModelAndView("organisation_picker.html", Map.of("orgs", orgs));
+        return new ModelAndView("organisation_picker", Map.of("orgs", orgs));
     }
 
     @PostMapping
