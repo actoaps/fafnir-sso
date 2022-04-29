@@ -9,31 +9,29 @@
 
 <body>
 <div>
+    <h1>{{action}}Organisation</h1>
     <div>
-        <h1>{{action}}Organisation</h1>
-        <div>
-            <form action="/iam/org/{{tableData.organisationId}}" method="{{verb}}{{^verb}}post{{/verb}}">
-                <div>
-                    <label>Organisation Name:
-                        <input type="text" name="organisationName" value="{{tableData.organisationName}}">
-                    </label>
-                </div>
-                <div>
-                    <label>Contact Email:
-                        <input type="text" name="contactEmail" value="{{tableData.contactEmail}}">
-                    </label>
-                </div>
-                <div>
-                    <label>Organisation Id:
-                        <input type="text" name="organisationId" value="{{tableData.organisationId}}">
-                    </label>
-                </div>
-                <div>
-                    <input type="hidden" name="created" value="{{tableData.created}}">
-                    <button class="submitButton" type="submit">Save</button>
-                </div>
-            </form>
-        </div>
+        <form action="/iam/org/{{tableData.organisationId}}" method="{{verb}}{{^verb}}post{{/verb}}">
+            <div>
+                <label>Organisation Name:
+                    <input type="text" name="organisationName" value="{{tableData.organisationName}}">
+                </label>
+            </div>
+            <div>
+                <label>Contact Email:
+                    <input type="text" name="contactEmail" value="{{tableData.contactEmail}}">
+                </label>
+            </div>
+            <div>
+                <label>Organisation Id:
+                    <input type="text" name="organisationId" value="{{tableData.organisationId}}">
+                </label>
+            </div>
+            <div>
+                <input type="hidden" name="created" value="{{tableData.created}}">
+                <button class="submitButton" type="submit">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 </body>
