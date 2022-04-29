@@ -8,18 +8,18 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="content">
-        <div class="header">
+<div>
+    <div>
+        <div>
             <div>{{>navbar}}</div>
-            <div class="column">
+            <div>
                 <h1>Choose SAML provider</h1>
             </div>
         </div>
-        <div class="inner-content">
+        <div>
             <ul>
                 {{#registrationIds}}
-                    <li><a href="{{baseUrl}}/{{.}}"{{.}}</li>
+                <li><a href="{{baseUrl}}/{{.}}" {{.}}</li>
                 {{/registrationIds}}
             </ul>
         </div>
