@@ -8,10 +8,10 @@
 </head>
 
 <body>
-	<div class="container">
-		<div class="content">
+	<div>
+		<div>
 			<h1>Choose your institution:</h1>
-			<div class="inner-content">
+			<div>
 				<p class="headline-choose-institution"></p>
 				<form action="/unilogin/org" method="post">
 					<select id="institution" name="institution">
@@ -22,7 +22,7 @@
 				<input type="hidden" name="timestamp" th:value="${timestamp}">
 				<input type="hidden" name="user" th:value="${user}">
 				<br/>
-				<button class="submitButton" type="submit">
+				<button type="submit">
 					Login using Institution
 				</button>
 			</form>

@@ -8,16 +8,15 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="content">
-        <div class="header">
+<div>
+    <div>
+        <div>
             <div>{{>navbar}}</div>
-            <div class="column">
+            <div>
                 <h1>All Organisations</h1>
             </div>
-            <div class="column">
-                <a href="/iam/org">Add</a>
-            </div>
+
+
         </div>
 
         <table class="table table-striped table-bordered ">
@@ -25,16 +24,17 @@
                 <th>Id</th>
                 <th>Organisation Name</th>
                 <th>Email</th>
-                <th></th>
+                <th><a href="/iam/org">Add</a></th>
             </tr>
             {{#tableData}}
-                <tr>
-                    <td>{{organisationId}}</td>
-                    <td>{{organisationName}}</td>
-                    <td>{{contactEmail}}</td>
-                    <td><a href="/iam/org/{{organisationId}}">Edit</a><td>
+            <tr>
+                <td>{{organisationId}}</td>
+                <td>{{organisationName}}</td>
+                <td>{{contactEmail}}</td>
+                <td><a href="/iam/org/{{organisationId}}">Edit</a>
+                <td>
                 </td>
-                </tr>
+            </tr>
             {{/tableData}}
         </table>
         {{>pagebar}}
