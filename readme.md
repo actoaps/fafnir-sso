@@ -133,3 +133,22 @@ X509 certificate format (aka. Base64 encoded raw data). You can use this to vali
 Your JWT is returned to the success url as a fragment, as browsers do not ordinarily send this part to the server,
 so the JWT will not bleed through to server access logs. This means that the browser is responsible for storing the JWT
 securely until it is needed for API requests. 
+
+### Developer Setup
+Before running this setup, you need to build the system. To build it, you need to run:
+
+```Bash
+$ .\gradlew build
+```
+---
+For running "iam" you will need to run the iam main
+
+After running the main you can now acces http://localhost:8082/iam/org/page/1 
+
+---
+
+Running the app with Docker:
+
+```Bash
+$ docker-compose up --build -d
+```
