@@ -8,42 +8,39 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="content">
-        <div class="header">
-            <div>{{>navbar}}</div>
-            <div class="column">
-                <h1>Claims</h1>
-            </div>
-            <div class="column">
-                <a href="/iam/clm">Add</a>
-            </div>
+<div>
+    <div>
+        <div>{{>navbar}}</div>
+        <div>
+            <h1>Claims</h1>
         </div>
-        <table class="table table-striped table-bordered ">
-            <tr>
-                <td>
-                    <ul>
-                        {{#tableData}}
-                            <li>{{organisationName}}
+        <div>
+            <a href="/iam/clm">Add</a>
+        </div>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <ul>
+                    {{#tableData}}
+                    <li>{{organisationName}}
+                        <ul>
+                            {{#users}}
+                            <li>{{name}}
                                 <ul>
-                                    {{#users}}
-                                        <li>{{name}}
-                                            <ul>
-                                                {{#claims}}
-                                                    <li>{{.}}</li>
-                                                {{/claims}}
-                                            </ul>
-                                        </li>
-                                    {{/users}}
+                                    {{#claims}}
+                                    <li>{{.}}</li>
+                                    {{/claims}}
                                 </ul>
                             </li>
-                        {{/tableData}}
-                    </ul>
-                </td>
-            </tr>
-        </table>
-
-    </div>
+                            {{/users}}
+                        </ul>
+                    </li>
+                    {{/tableData}}
+                </ul>
+            </td>
+        </tr>
+    </table>
 </div>
 </body>
 </html>

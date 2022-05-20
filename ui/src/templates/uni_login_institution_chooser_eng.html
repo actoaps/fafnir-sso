@@ -3,32 +3,30 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 
 <head>
-	<title>Choose Institution - UNI•Login</title>
+    <title>Choose Institution - UNI•Login</title>
     {{> metadata}}
 </head>
 
 <body>
-	<div class="container">
-		<div class="content">
-			<h1>Choose your institution:</h1>
-			<div class="inner-content">
-				<p class="headline-choose-institution"></p>
-				<form action="/unilogin/org" method="post">
-					<select id="institution" name="institution">
-						<option value="">Select Institution</option>
-						<option th:each="institution : ${institutionList}" th:value="${institution.id}" th:text="${institution.id}+' : '+${institution.name}+' (Roles: '+${#strings.listJoin(institution.roles,',')}+')'"></option>
-				</select>
-				<input type="hidden" name="auth" th:value="${auth}">
-				<input type="hidden" name="timestamp" th:value="${timestamp}">
-				<input type="hidden" name="user" th:value="${user}">
-				<br/>
-				<button class="submitButton" type="submit">
-					Login using Institution
-				</button>
-			</form>
-		</div>
-
-	</div>
+<div>
+    <h1>Choose your institution:</h1>
+    <div>
+        <p class="headline-choose-institution"></p>
+        <form action="/unilogin/org" method="post">
+            <select id="institution" name="institution">
+                <option value="">Select Institution</option>
+                <option th:each="institution : ${institutionList}" th:value="${institution.id}"
+                        th:text="${institution.id}+' : '+${institution.name}+' (Roles: '+${#strings.listJoin(institution.roles,',')}+')'"></option>
+            </select>
+            <input type="hidden" name="auth" th:value="${auth}">
+            <input type="hidden" name="timestamp" th:value="${timestamp}">
+            <input type="hidden" name="user" th:value="${user}">
+            <br/>
+            <button type="submit">
+                Login using Institution
+            </button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

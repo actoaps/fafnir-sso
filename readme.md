@@ -134,7 +134,7 @@ Your JWT is returned to the success url as a fragment, as browsers do not ordina
 so the JWT will not bleed through to server access logs. This means that the browser is responsible for storing the JWT
 securely until it is needed for API requests. 
 
-### Developer Setup
+## Developer Setup
 Before running this setup, you need to build the system. To build it, you need to run:
 
 ```Bash

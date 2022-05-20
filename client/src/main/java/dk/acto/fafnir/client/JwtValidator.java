@@ -8,14 +8,12 @@ import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
-import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.List;
 import java.util.Locale;

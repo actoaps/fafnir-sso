@@ -8,36 +8,30 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="content">
-            <h1>Login:</h1>
-            <div class="inner-content">
-                <p class="headline-choose-institution"></p>
-
-                <form action="/hazelcast/login" method="post">
-                    <div>
-
-                        <label>
-                            Username / email:
-                        </label>
-                        <input type="text" name="email">
-                    </div>
-                    <br />
-                    <div>
-                        <label>
-                            Password:
-                        </label>
-                        <input type="password" name="password">
-                    </div>
-                    <br />
-                    <button class="submitButton" type="submit">
-                        Login
-                    </button>
-                </form>
+<div>
+    <h1>Login:</h1>
+    <div>
+        <p class="headline-choose-institution"></p>
+        <form action="/hazelcast/login" method="post">
+            <div>
+                <label>
+                    Username / email:
+                </label>
+                <input type="text" name="email">
             </div>
-
-        </div>
+            <br/>
+            <div>
+                <label>
+                    Password:
+                </label>
+                <input type="password" name="password">
+            </div>
+            <br/>
+            <button class="submitButton" type="submit">
+                Login
+            </button>
+        </form>
     </div>
+</div>
 </body>
-
 </html>
