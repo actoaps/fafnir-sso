@@ -8,34 +8,31 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="content">
-        <h1>User</h1>
-        <div class="inner-content">
-            <form action="/iam/usr/{{tableData.subject}}" method="{{verb}}{{^verb}}post{{/verb}}">
-                <div>
-                    <label for="username">Name:</label>
-                    <input id="username" type="text" name="name" value="{{tableData.name}}">
-                </div>
-                <div>
-                    <label for="userPassword">Password:</label>
-                    <input id="userPassword" type="text" name="password" value="{{tableData.password}}">
-                </div>
-                <div>
-                    <label for="userMetaId">Meta Id:</label>
-                    <input id="userMetaId" type="text" name="metaId" value="{{tableData.metaId}}">
-                </div>
-
-                <div>
-                    <label for="userSubject">Subject:</label>
-                    <input id="userSubject" type="text" name="subject" value="{{tableData.subject}}">
-                </div>
-                <div>
-                    <input type="hidden" name="created" value="{{tableData.created}}">
-                    <button class="submitButton" type="submit">Save</button>
-                </div>
-            </form>
-        </div>
+<div>
+    <h1>User</h1>
+    <div>
+        <form action="/iam/usr/{{tableData.subject}}" method="{{verb}}{{^verb}}post{{/verb}}">
+            <div>
+                <label for="username">Name:</label>
+                <input id="username" type="text" name="name" value="{{tableData.name}}">
+            </div>
+            <div>
+                <label for="userPassword">Password:</label>
+                <input id="userPassword" type="text" name="password" value="{{tableData.password}}">
+            </div>
+            <div>
+                <label for="userMetaId">Meta Id:</label>
+                <input id="userMetaId" type="text" name="metaId" value="{{tableData.metaId}}">
+            </div>
+            <div>
+                <label for="userSubject">Subject:</label>
+                <input id="userSubject" type="text" name="subject" value="{{tableData.subject}}">
+            </div>
+            <div>
+                <input type="hidden" name="created" value="{{tableData.created}}">
+                <button type="submit">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 </body>
