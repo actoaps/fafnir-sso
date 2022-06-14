@@ -18,6 +18,11 @@ repositories {
     mavenCentral()
 }
 
+test {
+    ignoreFailures = false
+    useJUnitPlatform()
+}
+
 group = "dk.acto"
 
 def myVersion = System.properties['versionOverride']
@@ -28,23 +33,28 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.22"
-    annotationProcessor "org.projectlombok:lombok:1.18.22"
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
     implementation "io.vavr:vavr:0.10.4"
     annotationProcessor "io.vavr:vavr:0.10.4"
 
-    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.13.3')
+
     implementation 'com.hazelcast:hazelcast:5.1.1'
     implementation 'com.google.guava:guava:31.1-jre'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    implementation 'org.springframework:spring-context:5.2.8.RELEASE'
-    implementation 'org.springframework.security:spring-security-web:5.3.4.RELEASE'
+    implementation 'org.springframework:spring-context:5.3.20'
+    implementation 'org.springframework.security:spring-security-web:5.7.1'
 
+    testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 }
 
 publishing {

@@ -10,6 +10,7 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -23,13 +24,16 @@ public class HazelcastAdministrationService implements AdministrationService {
     private final HazelcastConf hazelcastConf;
 
     @Override
-    public UserData createUser(UserData source) {
+    public UserData createUser(final UserData source) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         if (userMap.containsKey(source.getSubject())) {
             throw new UserAlreadyExists();
         }
-        userMap.put(source.getSubject(), source);
-        return source;
+        var create = source.toBuilder()
+                        .created(Instant.now())
+                                .build();
+        userMap.put(source.getSubject(), create);
+        return create;
     }
 
     @Override
