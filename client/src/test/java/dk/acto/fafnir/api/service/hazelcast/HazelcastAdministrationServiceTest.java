@@ -1,6 +1,7 @@
 package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.InterfacesConfig;
 import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
 import dk.acto.fafnir.api.model.UserData;
@@ -131,8 +132,7 @@ class HazelcastAdministrationServiceTest {
         Config config = new Config();
         config.setProperty("hazelcast.shutdownhook.enabled", "false");
         NetworkConfig network = config.getNetworkConfig();
-        network.getJoin().getTcpIpConfig().setEnabled(false);
-        network.getJoin().getMulticastConfig().setEnabled(false);
+        network.getInterfaces().setEnabled(false);
         var instance = Hazelcast.newHazelcastInstance(config);
 
         return new HazelcastAdministrationService(
