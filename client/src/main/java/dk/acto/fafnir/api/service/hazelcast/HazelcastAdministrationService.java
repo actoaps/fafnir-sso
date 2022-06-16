@@ -30,8 +30,8 @@ public class HazelcastAdministrationService implements AdministrationService {
             throw new UserAlreadyExists();
         }
         var create = source.toBuilder()
-                        .created(Instant.now())
-                                .build();
+                .created(Instant.now())
+                .build();
         userMap.put(source.getSubject(), create);
         return create;
     }
@@ -58,13 +58,19 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public UserData updateUser(UserData source) {
+    public UserData updateUser(final UserData source) {
+        var subject = Optional.ofNullable(source.getSubject())
+                .orElseThrow(NoSubject::new);
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        if (!userMap.containsKey(source.getSubject())) {
+        if (!userMap.containsKey(subject)) {
             throw new NoSuchUser();
         }
-        userMap.put(source.getSubject(), source);
-        return source;
+        var updated = Optional.of(userMap.get(subject))
+                .map(x -> x.partialUpdate(source))
+                .orElseThrow(UserUpdateFailed::new);
+
+        userMap.put(subject, updated);
+        return updated;
     }
 
     @Override
@@ -77,13 +83,20 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public OrganisationData createOrganisation(OrganisationData source) {
+    public OrganisationData createOrganisation(final OrganisationData source) {
+        var orgId = source.getOrganisationId();
+
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        if (orgMap.containsKey(source.getOrganisationId())) {
+        if (orgMap.containsKey(orgId)) {
             throw new OrganisationAlreadyExists();
         }
-        orgMap.put(source.getOrganisationId(), source);
-        return source;
+
+        var create = source.toBuilder()
+                .created(Instant.now())
+                .build();
+
+        orgMap.put(orgId, create);
+        return create;
     }
 
     @Override
