@@ -14,6 +14,7 @@ Fafnir-SSO supports the following Authentication providers:
 * Economic customers
 * LinkedIn
 * Hazelcast (Username/Password)
+* Apple
 * MitID
 * Microsoft Identity
 

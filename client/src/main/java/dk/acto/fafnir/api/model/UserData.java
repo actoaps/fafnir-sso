@@ -43,6 +43,18 @@ public class UserData implements Serializable {
                 .orElse(authHash(password));
     }
 
+    public UserData partialUpdate(UserData updated) {
+        return UserData.builder()
+                .subject(subject)
+                .name(Optional.ofNullable(updated.getName()).orElse(name))
+                .password(Optional.ofNullable(updated.getPassword()).orElse(password))
+                .metaId(Optional.ofNullable(updated.getMetaId()).orElse(metaId))
+                .locale(Optional.ofNullable(updated.getLocale()).orElse(locale))
+                .created(Optional.ofNullable(created).or(() -> Optional.ofNullable(updated.getCreated()))
+                        .orElse(Instant.now()))
+                .build();
+    }
+
     private boolean authHash(final String password) {
         return CryptoUtil.hashPassword(password).equals(this.password);
     }

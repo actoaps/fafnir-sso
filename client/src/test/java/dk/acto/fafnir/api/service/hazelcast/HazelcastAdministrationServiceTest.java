@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.InterfacesConfig;
 import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class HazelcastAdministrationServiceTest {
 
@@ -37,14 +39,14 @@ class HazelcastAdministrationServiceTest {
     @Test
     void readUsers() {
         var bc = UserData.builder()
-                .subject("ALPHA_BRAVO")
-                .password("abob")
-                .name("Alpha Bravo")
+                .subject("BRAVO_CHARLIE")
+                .password("bobcoc")
+                .name("Bravo Charlie")
                 .build();
         var cd = UserData.builder()
-                .subject("ALPHA_BRAVO")
-                .password("abob")
-                .name("Alpha Bravo")
+                .subject("CHARLIE_DELTA")
+                .password("cocdod")
+                .name("Charlie Delta")
                 .build();
 
         var result = Stream.of(
@@ -58,27 +60,60 @@ class HazelcastAdministrationServiceTest {
 
     @Test
     void updateUser() {
+        var de = UserData.builder()
+                .subject("DELTA_ECHO")
+                .password("dode")
+                .name("Delta Echo")
+                .build();
+        var temp = subject.createUser(de);
+        assertThat(temp).isNotNull();
+        var result = subject.updateUser(UserData.builder()
+                .subject("DELTA_ECHO")
+                .name("Echo Delta")
+                .build());
+        assertThat(result).isNotNull();
+        assertThat(result.getCreated()).isEqualTo(temp.getCreated());
+        assertThat(result.getSubject()).isEqualTo(temp.getSubject());
+        assertThat(result.getPassword()).isEqualTo(temp.getPassword());
+        assertThat(result.getName()).isNotEqualTo(temp.getName());
+        var secondResult = subject.readUser(result.getSubject());
+        assertThat(secondResult).isEqualTo(result);
     }
 
     @Test
     void deleteUser() {
+        var ef = UserData.builder()
+                .subject("ECHO_FOXTROT")
+                .password("efof")
+                .name("Echo Foxtrot")
+                .build();
+        var temp = subject.createUser(ef);
+        assertThat(temp).isNotNull();
+        var result = subject.deleteUser(ef.getSubject());
+        assertThat(temp).isEqualTo(result);
+        assertThat(subject.readUsers()).doesNotContain(result);
     }
 
     @Test
-    void createOrganisation() {
+    void createAndReadOrganisation() {
+        var php25 = OrganisationData.builder()
+                .organisationId("PHP_25")
+                .organisationName("PHP 25")
+                .build();
+        var result = subject.createOrganisation(php25);
+        assertThat(result).isNotNull();
+        assertThat(result.getCreated()).isNotNull();
+        assertThat(result.getOrganisationId()).isNotNull();
+        assertThat(result.getOrganisationName()).isNotNull();
+        var readResult = subject.readOrganisation(php25.getOrganisationId());
+        assertThat(readResult).isEqualTo(result);
     }
 
-    @Test
-    void readOrganisation() {
-    }
 
     @Test
-    void testReadOrganisation() {
+    void readOrganisations() {
     }
 
-    @Test
-    void testReadOrganisation1() {
-    }
 
     @Test
     void updateOrganisation() {
@@ -89,15 +124,11 @@ class HazelcastAdministrationServiceTest {
     }
 
     @Test
-    void createClaim() {
+    void createAndReadClaim() {
     }
 
     @Test
     void readClaims() {
-    }
-
-    @Test
-    void testReadClaims() {
     }
 
     @Test
@@ -116,21 +147,9 @@ class HazelcastAdministrationServiceTest {
     void getUsersForOrganisation() {
     }
 
-    @Test
-    void readOrganisations() {
-    }
-
-    @Test
-    void testReadOrganisations() {
-    }
-
-    @Test
-    void countOrganisations() {
-    }
-
     private static HazelcastAdministrationService getService() {
         Config config = new Config();
-        config.setProperty("hazelcast.shutdownhook.enabled", "false");
+//        config.setProperty("hazelcast.shutdownhook.enabled", "false");
         NetworkConfig network = config.getNetworkConfig();
         network.getInterfaces().setEnabled(false);
         var instance = Hazelcast.newHazelcastInstance(config);
