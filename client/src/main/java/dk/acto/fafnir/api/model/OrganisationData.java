@@ -9,6 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Value
 @AllArgsConstructor
@@ -28,4 +29,15 @@ public class OrganisationData implements Serializable {
             .organisationId("default")
             .organisationName("Default Organisation")
             .build();
+
+    public OrganisationData partialUpdate(OrganisationData updated) {
+        return OrganisationData.builder()
+                .organisationId(organisationId)
+                .organisationName(Optional.ofNullable(updated.getOrganisationName()).orElse(organisationName))
+                .contactEmail(Optional.ofNullable(updated.contactEmail).orElse(contactEmail))
+                .providerConfigurations(Optional.ofNullable(updated.getProviderConfigurations()).orElse(providerConfigurations))
+                .created(Optional.ofNullable(created).or(() -> Optional.ofNullable(updated.getCreated())).orElse(Instant.now()))
+                .build();
+    }
+
 }

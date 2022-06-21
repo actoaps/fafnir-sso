@@ -37,25 +37,19 @@ public interface AdministrationService {
 
     OrganisationData createOrganisation(OrganisationData source);
     OrganisationData readOrganisation(String orgId);
-
     OrganisationData readOrganisation(String providerKey, String providerValue);
-
     OrganisationData readOrganisation(ProviderMetaData providerMetaData);
-
     OrganisationData updateOrganisation(OrganisationData source);
     OrganisationData deleteOrganisation(String source);
 
-    ClaimData createClaim(ClaimData source);
-
-    Slice<ClaimData> readClaims(Long page);
-
-    ClaimData readClaims(String orgId, String subject);
-    ClaimData updateClaims(ClaimData source);
-    ClaimData deleteClaims(ClaimData source);
+    ClaimData createClaim(final OrganisationSubjectPair pair, final ClaimData source);
+    ClaimData readClaims(final OrganisationSubjectPair pair);
+    ClaimData updateClaims(final OrganisationSubjectPair pair, final ClaimData source);
+    ClaimData deleteClaims(OrganisationSubjectPair pair);
 
     OrganisationData[] getOrganisationsForUser(UserData user);
 
-    Slice<UserData> getUsersForOrganisation(String orgId, Long page);
+    UserData[] getUsersForOrganisation(String orgId);
 
     Slice<OrganisationData> readOrganisations(Long page);
 

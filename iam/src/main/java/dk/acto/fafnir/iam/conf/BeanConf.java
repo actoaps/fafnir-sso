@@ -6,6 +6,7 @@ import com.samskivert.mustache.Mustache;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
@@ -28,7 +29,7 @@ import java.util.Locale;
 public class BeanConf {
 
     @Bean
-    public Mustache.Compiler compiler (Mustache.TemplateLoader templateLoader) {
+    public Mustache.Compiler compiler(Mustache.TemplateLoader templateLoader) {
         return Mustache.compiler()
                 .defaultValue("")
                 .nullValue("")
@@ -47,7 +48,7 @@ public class BeanConf {
 
     @Bean
     @ConditionalOnProperty(name = "HAZELCAST_TCP_IP_ADDRESS")
-    public ClientConfig hazelcastInstanceConf (@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
+    public ClientConfig hazelcastInstanceConf(@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
         log.info("Hazelcast TCP/IP Connection Configured...");
         var config = new ClientConfig();
         config.getNetworkConfig().addAddress(address);
@@ -63,7 +64,7 @@ public class BeanConf {
     @ConditionalOnProperty(name = "IAM_ADMIN_PASSWORD")
     public CommandLineRunner commandLineRunner(
             AdministrationService administrationService,
-            @Value("${IAM_ADMIN_PASSWORD}") String password ) {
+            @Value("${IAM_ADMIN_PASSWORD}") String password) {
         return args -> {
             var user = Try.of(() -> administrationService.createUser(UserData.builder()
                             .name("Fafnir Admin")
@@ -71,24 +72,29 @@ public class BeanConf {
                             .subject("FAFNIR_ADMIN")
                             .created(Instant.now())
                             .locale(Locale.US)
-                    .build()))
+                            .build()))
                     .recover(UserAlreadyExists.class, administrationService.readUser("FAFNIR_ADMIN"))
                     .toJavaOptional()
                     .orElseThrow(NoUser::new);
 
-            var org = Try.of( () ->administrationService.createOrganisation(OrganisationData.DEFAULT))
-                            .recover(OrganisationAlreadyExists.class, administrationService.readOrganisation(OrganisationData.DEFAULT.getOrganisationId()))
-                                    .toJavaOptional()
-                                            .orElseThrow(NoOrganisation::new);
-
-            Try.of(()-> administrationService.createClaim(ClaimData.builder()
-                            .organisationId(org.getOrganisationId())
-                            .subject(user.getSubject())
-                            .claims(List.of("FAFNIR_ADMIN").toArray(String[]::new))
-                    .build()))
-                    .recover(ClaimAlreadyExists.class, administrationService.readClaims(org.getOrganisationId(), user.getSubject()))
+            var org = Try.of(() -> administrationService.createOrganisation(OrganisationData.DEFAULT))
+                    .recover(OrganisationAlreadyExists.class, administrationService.readOrganisation(OrganisationData.DEFAULT.getOrganisationId()))
                     .toJavaOptional()
-                    .orElseThrow(NoClaimData::new);
+                    .orElseThrow(NoOrganisation::new);
+
+            var pair = OrganisationSubjectPair.builder()
+                    .organisationId(org.getOrganisationId())
+                    .subject(user.getSubject())
+                    .build();
+
+            Try.of(() -> administrationService.createClaim(
+                            pair,
+                            ClaimData.builder()
+                                    .claims(List.of("FAFNIR_ADMIN").toArray(String[]::new))
+                                    .build()))
+                    .recover(ClaimAlreadyExists.class, administrationService.readClaims(pair))
+                            .toJavaOptional()
+                            .orElseThrow(NoClaimData::new);
         };
     }
 }
