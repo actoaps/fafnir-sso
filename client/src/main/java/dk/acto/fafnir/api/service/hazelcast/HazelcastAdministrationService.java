@@ -1,6 +1,5 @@
 package dk.acto.fafnir.api.service.hazelcast;
 
-import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import dk.acto.fafnir.api.exception.*;
@@ -128,92 +127,88 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public OrganisationData updateOrganisation(OrganisationData source) {
+        var orgId = Optional.ofNullable(source.getOrganisationId())
+                .orElseThrow(NoOrganisationId::new);
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        if (!orgMap.containsKey(source.getOrganisationId())) {
+        if (!orgMap.containsKey(orgId)) {
             throw new NoSuchOrganisation();
         }
-        orgMap.put(source.getOrganisationId(), source);
-        return source;
+        var updated = Optional.of(orgMap.get(orgId))
+                .map(x -> x.partialUpdate(source))
+                .orElseThrow(NoOrganisationId::new);
+        orgMap.put(orgId, updated);
+        return updated;
     }
 
     @Override
     public OrganisationData deleteOrganisation(String orgId) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        if (orgMap.containsKey(orgId)) {
+        if (!orgMap.containsKey(orgId)) {
             throw new NoSuchOrganisation();
         }
         return orgMap.remove(orgId);
     }
 
     @Override
-    public ClaimData createClaim(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        if (claimSet.contains(source)) {
+    public ClaimData createClaim(final OrganisationSubjectPair pair, final ClaimData source) {
+        readUser(pair.getSubject());
+        readOrganisation(pair.getOrganisationId());
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        if (claimMap.containsKey(pair)) {
             throw new ClaimAlreadyExists();
         }
-        claimSet.add(source);
+        claimMap.put(pair, source);
         return source;
     }
 
     @Override
-    public Slice<ClaimData> readClaims(Long page) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        var offset = Slice.getOffset(page);
-        var total = Long.valueOf(claimSet.size());
-
-        return Slice.fromPartial(claimSet.stream().skip(offset).limit(Slice.PAGE_SIZE), total, x -> x);
-
-    }
-
-    @Override
-    public ClaimData readClaims(String orgId, String subject) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimSet.stream().filter(data -> (data.getSubject().equals(subject) && data.getOrganisationId().equals(orgId)))
-                .findAny()
-                .orElseThrow(NoSuchClaim::new);
-    }
-
-    @Override
-    public ClaimData updateClaims(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        if (!claimSet.contains(source)) {
+    public ClaimData readClaims(final OrganisationSubjectPair pair) {
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        if (!claimMap.containsKey(pair)){
             throw new NoSuchClaim();
         }
-        claimSet.add(source);
+        return claimMap.get(pair);
+    }
+
+    @Override
+    public ClaimData updateClaims(final OrganisationSubjectPair pair, final ClaimData source) {
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        if (!claimMap.containsKey(pair)) {
+            throw new NoSuchClaim();
+        }
+        claimMap.put(pair, source);
         return source;
     }
 
     @Override
-    public ClaimData deleteClaims(ClaimData source) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        if (!claimSet.contains(source)) {
+    public ClaimData deleteClaims(final OrganisationSubjectPair pair) {
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
         }
-        claimSet.remove(source);
-        return source;
+        var result = claimMap.get(pair);
+        claimMap.remove(pair);
+        return result;
     }
 
     @Override
     public OrganisationData[] getOrganisationsForUser(UserData user) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimSet.stream().filter(x -> x.getSubject().equals(user.getSubject()))
-                .map(ClaimData::getOrganisationId)
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        return claimMap.keySet().stream().filter(x -> x.getSubject().equals(user.getSubject()))
+                .map(OrganisationSubjectPair::getOrganisationId)
                 .map(this::readOrganisation)
                 .toArray(OrganisationData[]::new);
     }
 
     @Override
-    public Slice<UserData> getUsersForOrganisation(String orgId, Long page) {
-        ISet<ClaimData> claimSet = hazelcastInstance.getSet(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        var temp = claimSet.stream()
+    public UserData[] getUsersForOrganisation(String orgId) {
+        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        return claimMap.keySet().stream()
                 .filter(x -> x.getOrganisationId().equals(orgId))
-                .map(ClaimData::getSubject)
-                .sorted().toList();
-
-        var offset = Slice.getOffset(page);
-        var total = Long.valueOf(temp.size());
-
-        return Slice.fromPartial(temp.stream().skip(offset), total, this::readUser);
+                .map(OrganisationSubjectPair::getSubject)
+                .sorted()
+                .map(this::readUser)
+                .toArray(UserData[]::new);
     }
 
     @Override
