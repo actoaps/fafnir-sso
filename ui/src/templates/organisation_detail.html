@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<!--HTML 4 Strict to avoid deprecated HTML elements -->
 <html lang="en">
 
 <head>
@@ -9,9 +9,9 @@
 
 <body>
 <div>
-    <h1>{{action}}Organisation</h1>
+    <h1>{{#isNew}}Create{{/isNew}}{{^isNew}}Edit{{/isNew}} Organisation</h1>
     <div>
-        <form action="/iam/org/{{tableData.organisationId}}" method="{{verb}}{{^verb}}post{{/verb}}">
+        <form action="/iam/org/{{tableData.organisationId}}" method="post">
             <div>
                 <label>Organisation Name:
                     <input type="text" name="organisationName" value="{{tableData.organisationName}}">
@@ -24,11 +24,11 @@
             </div>
             <div>
                 <label>Organisation Id:
-                    <input type="text" name="organisationId" value="{{tableData.organisationId}}">
+                    <input type="text" {{^isNew}}readonly{{/isNew}} name="organisationId" value="{{tableData.organisationId}}">
                 </label>
             </div>
             <div>
-                <input type="hidden" name="created" value="{{tableData.created}}">
+                {{#isNew}}<input type="hidden" name="created" value="{{tableData.created}}">{{/isNew}}
                 <button class="submitButton" type="submit">Save</button>
             </div>
         </form>

@@ -1,9 +1,11 @@
 package dk.acto.fafnir.iam.service.controller;
 
+import dk.acto.fafnir.api.exception.OrganisationUpdateFailed;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -38,8 +40,7 @@ public class OrganisationController {
         var result = administrationService.readOrganisation(orgId);
         var model = Map.of(
                 "tableData", result,
-                "action", "Edit ",
-                "verb", "put"
+                "isNew", false
         );
         return new ModelAndView("organisation_detail", model);
     }
@@ -54,14 +55,16 @@ public class OrganisationController {
                 .build();
         var model = Map.of(
                 "tableData", result,
-                "action", "Create ",
-                "verb", "post"
+                "isNew", true
         );
         return new ModelAndView("organisation_detail", model);
     }
 
-    @PutMapping
-    public ModelAndView updateOrganisation(@ModelAttribute OrganisationData org) {
+    @PostMapping("{orgId}")
+    public ModelAndView updateOrganisation(@ModelAttribute OrganisationData org, @PathVariable String orgId) {
+        if(!orgId.equals(org.getOrganisationId())) {
+            throw new OrganisationUpdateFailed();
+        }
         administrationService.updateOrganisation(org);
         return new ModelAndView("redirect:/iam/org/page/1");
     }
