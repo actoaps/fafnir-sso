@@ -1,6 +1,7 @@
 package dk.acto.fafnir.iam.dto;
 
 import dk.acto.fafnir.api.model.ClaimData;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.model.UserData;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,19 @@ public class DtoFactory {
         return result;
     }
 
-    public ClaimUserInfo toInfo(UserData userData, ClaimData claims) {
-        return ClaimUserInfo.builder()
+    public ClaimInfo toInfo(UserData userData, ClaimData claims) {
+        return ClaimInfo.builder()
                 .name(userData.getName())
-                .subject(userData.getSubject())
-                .claims(Arrays.asList(claims.getClaims()))
+                .id(userData.getSubject())
+                .csvClaims(String.join(", ", claims.getClaims()))
+                .build();
+    }
+
+    public ClaimInfo toInfo(OrganisationData organisationData, ClaimData claims) {
+        return ClaimInfo.builder()
+                .name(organisationData.getOrganisationName())
+                .id(organisationData.getOrganisationId())
+                .csvClaims(String.join(", ", claims.getClaims()))
                 .build();
     }
 }

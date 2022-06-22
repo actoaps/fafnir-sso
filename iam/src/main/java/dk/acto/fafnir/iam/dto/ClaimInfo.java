@@ -8,5 +8,7 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 public class ClaimInfo {
-    String[] claims;
+    String id;
+    String name;
+    String csvClaims;
 }
