@@ -20,8 +20,7 @@ public class DtoFactory {
         result.put("nextUrl", pageActual < lastPage ? baseUrl + "/page/" + (pageActual + 2) : null);
         result.put("prevUrl", pageActual > 0 ? baseUrl + "/page/" + (pageActual) : null);
         result.put("pageData",
-        LongStream.range(0, lastPage +1)
-                .map(x -> x + 1)
+        LongStream.range(1, lastPage +1)
                 .mapToObj(page -> PageData.builder()
                         .number(BigInteger.valueOf(page))
                         .url(pageActual+1 != page ? baseUrl + "/page/" + (page) : null)

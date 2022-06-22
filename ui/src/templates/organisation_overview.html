@@ -24,6 +24,7 @@
                 <th>Id</th>
                 <th>Organisation Name</th>
                 <th>Email</th>
+                <th>Claims</th>
                 <th><a href="/iam/org">Add</a></th>
             </tr>
             {{#tableData}}
@@ -31,9 +32,8 @@
                 <td>{{organisationId}}</td>
                 <td>{{organisationName}}</td>
                 <td>{{contactEmail}}</td>
-                <td><a href="/iam/org/{{organisationId}}">Edit</a>
-                <td>
-                </td>
+                <td><a href="/iam/clm/org/{{organisationId}}">Show</a></td>
+                <td><a href="/iam/org/{{organisationId}}">Edit</a></td>
             </tr>
             {{/tableData}}
         </table>

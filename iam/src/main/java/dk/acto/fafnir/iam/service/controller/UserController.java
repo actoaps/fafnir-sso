@@ -1,5 +1,6 @@
 package dk.acto.fafnir.iam.service.controller;
 
+import dk.acto.fafnir.api.exception.UserUpdateFailed;
 import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.service.AdministrationService;
@@ -41,8 +42,7 @@ public class UserController {
         var result = administrationService.readUser(subject);
         var model = Map.of(
                 "tableData", result,
-                "action", "Edit ",
-                "verb", "put"
+                "isNew", false
         );
         return new ModelAndView("user_detail", model);
     }
@@ -60,22 +60,24 @@ public class UserController {
                 .build();
         var model = Map.of(
                 "tableData", result,
-                "action", "Create ",
-                "verb", "post"
+                "isNew", true
         );
         return new ModelAndView("user_detail", model);
     }
 
-    @PutMapping
-    public RedirectView updateUser(@ModelAttribute UserData user) {
+
+    @PostMapping("{subject}")
+    public RedirectView updateUser(@ModelAttribute UserData user, @PathVariable String subject) {
+        if (! subject.equals(user.getSubject())) {
+            throw new UserUpdateFailed();
+        }
         administrationService.updateUser(user);
-        return new RedirectView("/iam/usr/page/0");
+        return new RedirectView("/iam/usr/page/1");
     }
 
     @PostMapping
     public RedirectView createUser(@ModelAttribute UserData usr) {
         administrationService.createUser(usr);
-        return new RedirectView("/iam/usr/page/0");
+        return new RedirectView("/iam/usr/page/1");
     }
-
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!--HTML 4 Strict  to avoid deprecated HTML elements -->
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="en">
 
 <head>
     <title>view Users</title>
@@ -20,6 +20,7 @@
             <th>Name</th>
             <th>Password</th>
             <th>Meta Id</th>
+            <th>Claims</th>
             <th><a href="/iam/usr">Add</a></th>
         </tr>
         {{#tableData}}
@@ -28,11 +29,12 @@
             <td>{{name}}</td>
             <td>{{password}}</td>
             <td>{{metaId}}</td>
-            <td><a href="/iam/usr/{{subject}}">Edit</a>
-            <td>
+            <td><a href="/iam/clm/usr/{{subject}}">Show</a></td>
+            <td><a href="/iam/usr/{{subject}}">Edit</a></td>
         </tr>
         {{/tableData}}
     </table>
+    {{>pagebar}}
 </div>
 </body>
 </html>

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Value
 @Builder
 public class Slice<T> {
-    public static final Long PAGE_SIZE= 3L;
+    public static final Long PAGE_SIZE= 30L;
     BigInteger totalPages;
     List<T> pageData;
 

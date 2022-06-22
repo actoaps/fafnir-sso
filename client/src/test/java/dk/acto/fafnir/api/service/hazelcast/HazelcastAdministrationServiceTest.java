@@ -11,10 +11,8 @@ import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
-import io.vavr.collection.Array;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
