@@ -47,7 +47,7 @@ public interface AdministrationService {
     ClaimData updateClaims(final OrganisationSubjectPair pair, final ClaimData source);
     ClaimData deleteClaims(OrganisationSubjectPair pair);
 
-    OrganisationData[] getOrganisationsForUser(UserData user);
+    OrganisationData[] getOrganisationsForUser(String user);
 
     UserData[] getUsersForOrganisation(String orgId);
 

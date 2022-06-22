@@ -192,9 +192,9 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public OrganisationData[] getOrganisationsForUser(UserData user) {
+    public OrganisationData[] getOrganisationsForUser(String subject) {
         IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimMap.keySet().stream().filter(x -> x.getSubject().equals(user.getSubject()))
+        return claimMap.keySet().stream().filter(x -> x.getSubject().equals(subject))
                 .map(OrganisationSubjectPair::getOrganisationId)
                 .map(this::readOrganisation)
                 .toArray(OrganisationData[]::new);

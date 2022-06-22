@@ -10,37 +10,30 @@
 <body>
 <div>
     <div>
-        <div>{{>navbar}}</div>
         <div>
-            <h1>Claims</h1>
+            <div>{{>navbar}}</div>
+            <div>
+                <h1>Claims</h1>
+            </div>
         </div>
-        <div>
-            <a href="/iam/clm">Add</a>
-        </div>
+
+        <table>
+            <tr>
+                <th>{{#isUser}}Subject{{/isUser}}{{^isUser}}OrganisationId{{/isUser}}</th>
+                <th>Name</th>
+                <th>Claims</th>
+                <th><a href="/iam/clm">Add</a></th>
+            </tr>
+            {{#tableData}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{name}}</td>
+                <td>{{csvClaims}}</td>
+                <td>Edit</td>
+            </tr>
+            {{/tableData}}
+        </table>
     </div>
-    <table>
-        <tr>
-            <td>
-                <ul>
-                    {{#tableData}}
-                    <li>{{organisationName}}
-                        <ul>
-                            {{#users}}
-                            <li>{{name}}
-                                <ul>
-                                    {{#claims}}
-                                    <li>{{.}}</li>
-                                    {{/claims}}
-                                </ul>
-                            </li>
-                            {{/users}}
-                        </ul>
-                    </li>
-                    {{/tableData}}
-                </ul>
-            </td>
-        </tr>
-    </table>
 </div>
 </body>
 </html>
