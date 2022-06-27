@@ -64,7 +64,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
                 .providerId(providerId())
                 .providerName("SAML Provider")
                 .inputs(List.of("Metadata Location", "Registration Id"))
-                .organisationSupport(OrganisationSupport.FAFNIR)
+                .organisationSupport(OrganisationSupport.MULTIPLE)
                 .build();
     }
 }

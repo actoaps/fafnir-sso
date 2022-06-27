@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.websocket.server.PathParam;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
 @Slf4j
@@ -27,12 +29,15 @@ public class ClaimsController {
     public ModelAndView getClaimsOverviewForUser(@PathVariable final String orgId) {
         var users = administrationService.getUsersForOrganisation(orgId);
         var transformed = Arrays.stream(users)
-                .map(userData -> dtoFactory.toInfo(userData, administrationService.readClaims(OrganisationSubjectPair.builder()
+                .map(userData -> dtoFactory.toInfo(
+                        orgId,
+                        userData, administrationService.readClaims(OrganisationSubjectPair.builder()
                         .subject(userData.getSubject())
                         .organisationId(orgId)
                         .build())))
                 .toList();
         var model = Map.of(
+
                 "tableData", transformed,
                 "isUser", true
         );
@@ -43,7 +48,9 @@ public class ClaimsController {
     public ModelAndView getClaimsOverview(@PathVariable final String subject) {
         var orgs = administrationService.getOrganisationsForUser(subject);
         var transformed = Arrays.stream(orgs)
-                .map(organisationData -> dtoFactory.toInfo(organisationData, administrationService.readClaims(OrganisationSubjectPair.builder()
+                .map(organisationData -> dtoFactory.toInfo(
+                        subject,
+                        organisationData, administrationService.readClaims(OrganisationSubjectPair.builder()
                         .subject(subject)
                         .organisationId(organisationData.getOrganisationId())
                         .build())))
@@ -62,8 +69,24 @@ public class ClaimsController {
         var organisations = administrationService.readOrganisations();
         var model = Map.of("users", users,
                 "organisations", organisations,
-                "action", "Create ",
-                "verb", "post"
+                "isNew", true
+        );
+        return new ModelAndView("claims_detail", model);
+    }
+
+    @GetMapping("for/{orgId}/{subject}")
+    public ModelAndView editClaims(@PathVariable String orgId, @PathVariable String subject) {
+        var users = administrationService.readUser(subject);
+        var organisations = administrationService.readOrganisation(orgId);
+        var claims = administrationService.readClaims(OrganisationSubjectPair.builder()
+                        .organisationId(orgId)
+                        .subject(subject)
+                .build())
+                .getClaims();
+        var model = Map.of("users", users,
+                "organisations", organisations,
+                "claims", claims,
+                "isNew", false
         );
         return new ModelAndView("claims_detail", model);
     }
@@ -72,8 +95,12 @@ public class ClaimsController {
     public RedirectView addClaims(
             @RequestParam final String organisationId,
             @RequestParam final String subject,
-            @RequestParam final String[] claims
+            @RequestParam(required = false) final String[] claims
     ) {
+        if (claims == null) {
+            return new RedirectView("/iam/clm/org/" + organisationId);
+        }
+
         administrationService.createClaim(OrganisationSubjectPair.builder()
                 .organisationId(organisationId)
                 .subject(subject)
@@ -81,5 +108,28 @@ public class ClaimsController {
                 .claims(claims)
                 .build());
         return new RedirectView("/iam/clm/org/" + organisationId);
+    }
+
+    @PostMapping("for/{orgId}/{subject}")
+    public RedirectView updateClaims(
+            @PathVariable final String orgId,
+            @PathVariable final String subject,
+            @RequestParam(required = false) final String[] claims
+    ) {
+        if (claims == null) {
+            administrationService.deleteClaims(OrganisationSubjectPair.builder()
+                    .organisationId(orgId)
+                    .subject(subject)
+                    .build());
+            return new RedirectView("/iam/clm/org/" + orgId);
+        }
+
+        administrationService.updateClaims(OrganisationSubjectPair.builder()
+                .organisationId(orgId)
+                .subject(subject)
+                .build(), ClaimData.builder()
+                .claims(claims)
+                .build());
+        return new RedirectView("/iam/clm/org/" + orgId);
     }
 }

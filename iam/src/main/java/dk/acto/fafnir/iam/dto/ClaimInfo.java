@@ -11,4 +11,5 @@ public class ClaimInfo {
     String id;
     String name;
     String csvClaims;
+    String url;
 }

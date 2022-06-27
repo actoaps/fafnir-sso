@@ -60,7 +60,7 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
     public ProviderMetaData getMetaData() {
         return ProviderMetaData.builder()
                 .inputs(List.of())
-                .organisationSupport(OrganisationSupport.NONE)
+                .organisationSupport(OrganisationSupport.SINGLE)
                 .providerName("Apple")
                 .providerId(providerId())
                 .build();
