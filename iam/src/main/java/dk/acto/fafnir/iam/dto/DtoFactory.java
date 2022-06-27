@@ -30,19 +30,21 @@ public class DtoFactory {
         return result;
     }
 
-    public ClaimInfo toInfo(UserData userData, ClaimData claims) {
+    public ClaimInfo toInfo(String orgId, UserData userData, ClaimData claims) {
         return ClaimInfo.builder()
                 .name(userData.getName())
                 .id(userData.getSubject())
                 .csvClaims(String.join(", ", claims.getClaims()))
+                .url(String.format("/iam/clm/for/%s/%s", orgId, userData.getSubject()))
                 .build();
     }
 
-    public ClaimInfo toInfo(OrganisationData organisationData, ClaimData claims) {
+    public ClaimInfo toInfo(String subject, OrganisationData organisationData, ClaimData claims) {
         return ClaimInfo.builder()
                 .name(organisationData.getOrganisationName())
                 .id(organisationData.getOrganisationId())
                 .csvClaims(String.join(", ", claims.getClaims()))
+                .url(String.format("/iam/clm/for/%s/%s", organisationData.getOrganisationId(), subject))
                 .build();
     }
 }
