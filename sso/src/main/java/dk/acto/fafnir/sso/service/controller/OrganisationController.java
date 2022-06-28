@@ -30,13 +30,7 @@ public class OrganisationController {
     @PostMapping
     public RedirectView organisationRedirect(@RequestParam String orgId) {
         var myOrganisation = administrationService.readOrganisation(orgId);
-        var multipleProviders = myOrganisation.getProviderConfigurations().size() == 1;
-        if (multipleProviders) {
-            return new RedirectView("/login/"
-                    + myOrganisation.getOrganisationId()
-                    + "provider/");
-        }
-        var pc = myOrganisation.getProviderConfigurations().get(0);
+        var pc = myOrganisation.getProviderConfiguration();
         var pi = providerService.getProviderInformation(pc.getProviderId());
         if (pi.supportsOrganisationUrls()) {
             return new RedirectView("/"

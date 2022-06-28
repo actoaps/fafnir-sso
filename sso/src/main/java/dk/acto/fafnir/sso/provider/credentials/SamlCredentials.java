@@ -8,6 +8,7 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 public class SamlCredentials {
+    String registrationId;
     String email;
     String name;
 }

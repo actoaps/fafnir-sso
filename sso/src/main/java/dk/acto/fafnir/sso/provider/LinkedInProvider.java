@@ -76,7 +76,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
                 .subject(subject)
                 .name(String.format("%s %s", firstName, lastName))
                 .build();
-        var orgActual = administrationService.readOrganisation(getMetaData());
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
         var claimsActual = ClaimData.empty();
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());

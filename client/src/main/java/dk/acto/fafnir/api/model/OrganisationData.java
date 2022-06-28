@@ -2,13 +2,11 @@ package dk.acto.fafnir.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 @Value
@@ -21,7 +19,7 @@ public class OrganisationData implements Serializable {
     String organisationId;
     String organisationName;
     String contactEmail;
-    List<ProviderConfiguration> providerConfigurations;
+    ProviderConfiguration providerConfiguration;
     Instant created;
 
     public final static OrganisationData DEFAULT = OrganisationData.builder()
@@ -35,9 +33,8 @@ public class OrganisationData implements Serializable {
                 .organisationId(organisationId)
                 .organisationName(Optional.ofNullable(updated.getOrganisationName()).orElse(organisationName))
                 .contactEmail(Optional.ofNullable(updated.contactEmail).orElse(contactEmail))
-                .providerConfigurations(Optional.ofNullable(updated.getProviderConfigurations()).orElse(providerConfigurations))
+                .providerConfiguration(Optional.ofNullable(updated.getProviderConfiguration()).orElse(providerConfiguration))
                 .created(Optional.ofNullable(created).or(() -> Optional.ofNullable(updated.getCreated())).orElse(Instant.now()))
                 .build();
     }
-
 }

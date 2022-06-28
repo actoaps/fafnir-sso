@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Value
 @AllArgsConstructor
 @Builder
-public class OrganisationSubjectPair  implements Serializable {
+public class OrganisationSubjectPair implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 

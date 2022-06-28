@@ -29,83 +29,75 @@ public class DemoDataGenerator implements DataGenerator {
                 .created(Instant.now())
                 .organisationId("1")
                 .organisationName("Acto")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var HTML24Test = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("2")
                 .organisationName("HTML24")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var jhTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("3")
                 .organisationName("Jh.dk")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var omTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("4")
                 .organisationName("Om.com")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var peTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("5")
                 .organisationName("Pe.com")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var kaTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("6")
                 .organisationName("Ka.eu")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(hazelcastProvider.providerId())
                                 .values(Map.of())
                                 .build()
-                ))
+                )
                 .build();
         var samlTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("7")
                 .organisationName("SAML Org")
-                .providerConfigurations(List.of(
-                        ProviderConfiguration.builder()
+                .providerConfiguration(ProviderConfiguration.builder()
                                 .providerId(samlProvider.providerId())
                                 .values(Map.of(
                                         "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
                                         "Registration Id", "spring-saml"
                                 ))
                                 .build()
-                ))
+                )
                 .build();
-
 
         administrationService.createOrganisation(actoTest);
         administrationService.createOrganisation(HTML24Test);
@@ -115,8 +107,4 @@ public class DemoDataGenerator implements DataGenerator {
         administrationService.createOrganisation(kaTest);
         administrationService.createOrganisation(samlTest);
     }
-
-
-
-
 }
