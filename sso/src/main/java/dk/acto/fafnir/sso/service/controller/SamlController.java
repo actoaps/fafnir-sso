@@ -34,24 +34,15 @@ public class SamlController {
     @GetMapping("saml/callback")
     public RedirectView callback(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal) {
         return new RedirectView(provider.callback(SamlCredentials.builder()
+                        .registrationId(principal.getRelyingPartyRegistrationId())
                 .email(principal.getFirstAttribute("email"))
                 .build()).getUrl(fafnirConf));
     }
 
     @GetMapping(value = "{orgId}/saml/login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView login(@PathVariable("orgId") String orgId) {
-        var registrationIds = provider.getSamlRegistrationIds(orgId);
-
-        if (registrationIds.size() == 1) {
-            return new ModelAndView("redirect:/saml2/authenticate/" + registrationIds.get(0));
-        }
-
-        var model = Map.of(
-                "registrationIds", registrationIds,
-                "baseUrl", "/saml2/authenticate"
-        );
-
-        return new ModelAndView("saml_login", model);
+        var registrationId = provider.getSamlRegistrationIds(orgId);
+        return new ModelAndView("redirect:/saml2/authenticate/" + registrationId);
     }
 
     @PostConstruct

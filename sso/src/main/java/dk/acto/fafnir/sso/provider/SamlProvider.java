@@ -1,5 +1,6 @@
 package dk.acto.fafnir.sso.provider;
 
+import dk.acto.fafnir.api.exception.OrganisationNotUsingSaml;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.saml.UpdateableRelyingPartyRegistrationRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -32,7 +34,9 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
                 .subject(data.getEmail())
                 .name(data.getName())
                 .build();
-        var orgActual = administrationService.readOrganisation(getMetaData());
+        var orgActual = administrationService.readOrganisation(test ->
+                test.getProviderId().equals(getMetaData().getProviderId()) &&
+                        test.getValues().get("Registration Id").equals(data.getRegistrationId()));
         var claimsActual = ClaimData.empty();
 
         var jwt = tokenFactory.generateToken(userData, orgActual, claimsActual, getMetaData());
@@ -40,17 +44,16 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
         return CallbackResult.success(jwt);
     }
 
-    public List<String> getSamlRegistrationIds(String orgId) {
+    public String getSamlRegistrationIds(String orgId) {
         var org = administrationService.readOrganisation(orgId);
 
-        return org.getProviderConfigurations().stream()
-                .filter(x -> x.getProviderId().equals(providerId()))
+        return Optional.of(org.getProviderConfiguration())
                 .map(ProviderConfiguration::getValues)
                 .map(x -> relyingPartyRegistrations.findById(x.get("Registration Id"))
                         .orElse(relyingPartyRegistrations.addRelyingPartyRegistration(x.get("Registration Id"), x.get("Metadata Location")))
                 )
                 .map(RelyingPartyRegistration::getRegistrationId)
-                .toList();
+                .orElseThrow(OrganisationNotUsingSaml::new);
     }
 
     @Override

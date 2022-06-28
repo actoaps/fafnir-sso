@@ -66,7 +66,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
                 .subject(userInfo.getLeft())
                 .name(userInfo.getRight())
                 .build();
-        var orgActual = administrationService.readOrganisation(getMetaData());
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
         var claimsActual = ClaimData.empty();
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());

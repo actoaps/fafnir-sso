@@ -261,9 +261,11 @@ class HazelcastAdministrationServiceTest {
     }
 
     private static HazelcastAdministrationService getService() {
-        Config config = new Config();
-        NetworkConfig network = config.getNetworkConfig();
-        network.getInterfaces().setEnabled(false);
+        var config = new Config();
+        config.setProperty("hazelcast.shutdownhook.enabled", "false");
+        var network = config.getNetworkConfig();
+        network.getJoin().getMulticastConfig().setEnabled(false);
+        network.getJoin().getTcpIpConfig().setEnabled(true);
         var instance = Hazelcast.newHazelcastInstance(config);
 
         return new HazelcastAdministrationService(

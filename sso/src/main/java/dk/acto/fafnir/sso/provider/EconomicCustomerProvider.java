@@ -51,7 +51,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
         headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
 
-        var orgActual = administrationService.readOrganisation(getMetaData());
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
 
         return Try.of(() -> "https://restapi.e-conomic.com/customers/" + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
                 .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(headers), EconomicCustomer.class))

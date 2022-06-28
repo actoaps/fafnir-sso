@@ -19,14 +19,4 @@ public class ProviderConfiguration implements Serializable {
 
     String providerId;
     Map<String, String> values;
-
-    public boolean hasKey(String key) {
-        return values.containsKey(key);
-    }
-
-    public boolean hasValue(String key, String value) {
-        return Optional.ofNullable(values.get(key))
-                .map(x -> x.equals(value))
-                .orElse(false);
-    }
 }

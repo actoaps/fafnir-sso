@@ -59,7 +59,7 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
                 .subject(subject)
                 .name(displayName)
                 .build();
-        var orgActual = administrationService.readOrganisation("TenantId", tenantId);
+        var orgActual = administrationService.readOrganisation(test -> test.getValues().get("TenantId").equals(tenantId));
         var claimsActual = ClaimData.empty();
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
