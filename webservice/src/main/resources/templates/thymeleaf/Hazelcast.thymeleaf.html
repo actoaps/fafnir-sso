@@ -368,6 +368,7 @@
         border-radius: 16px;
       }
       .logo {
+          
         position: absolute;
         top: 2rem;
         right: 2rem;
@@ -456,6 +457,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        max-height: 120px;
       }
       #overlay {
         position: absolute; /* Sit on top of the page content */
@@ -476,13 +478,15 @@
         cursor: pointer; /* Add a pointer on hover */
       }
       input::-webkit-input-placeholder {
-    font-size: 15px;
-     color: #b2b2b2;
-    text-align: center;
-    margin-right: 16px;
+        font-size: 15px;
+        color: #b2b2b2;
+        text-align: center;
+        margin-right: 16px;
       }
       .input-wrapper{margin: 0 auto; width:85%}
-      @media screen and (max-width: 1480px) {
+         #logo_black{display: block;}
+           #logo_white{display: none;}
+       @media screen and (max-width: 1480px) {
         .logo {
           display: none;
         }
@@ -511,6 +515,8 @@
         .logo {
           display: block;
         }
+          #logo_black{display: none;}
+           #logo_white{display: block;}
         .right-side {
           display: none;
         }
@@ -575,7 +581,8 @@ margin-top:0px;
         <div class="content">
           <div class="inner-content">
             <div class="inner-content-positioner">
-              <img class="logo" alt="Selfcast" src="./logo_white.png" />
+              <img class="logo" id='logo_white' alt="Selfcast" src="./logo_white.png" />
+               <img class="logo" id='logo_black' alt="Selfcast" src="./logo_black.png" />
               <h1 class="title">Welcome back</h1>
               <p class="subtitle">
                 Welcome! Please fill in your email and password to login to your
