@@ -2,13 +2,13 @@ package dk.acto.fafnir.sso.provider;
 
 import com.google.common.net.UrlEscapers;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.model.FailureReason;
-import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
 import dk.acto.fafnir.sso.model.conf.EconomicConf;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.sso.provider.economic.EconomicCustomer;
+import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         return "/economic/login";
     }
 
-    public CallbackResult callback(final UsernamePasswordCredentials data) {
+    public AuthenticationResult callback(final UsernamePasswordCredentials data) {
         var email = data.getUsername();
         var customerNumber = data.getPassword();
 
@@ -51,7 +50,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
         headers.add("X-AppSecretToken", economicConf.getAppSecretToken());
         headers.add("X-AgreementGrantToken", economicConf.getAgreementGrantToken());
 
-        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
 
         return Try.of(() -> "https://restapi.e-conomic.com/customers/" + UrlEscapers.urlPathSegmentEscaper().escape(customerNumber))
                 .map(x -> restTemplate.exchange(x, HttpMethod.GET, new HttpEntity<>(headers), EconomicCustomer.class))
@@ -66,23 +65,13 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                         orgActual,
                         ClaimData.empty(),
                         getMetaData()))
-                .map(CallbackResult::success)
-                .recoverWith(Throwable.class, Try.of(() -> CallbackResult.failure(FailureReason.CONNECTION_FAILED)))
-                .getOrElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
-    }
-
-    @Override
-    public String providerId() {
-        return "economic";
+                .map(AuthenticationResult::success)
+                .recoverWith(Throwable.class, Try.of(() -> AuthenticationResult.failure(FailureReason.CONNECTION_FAILED)))
+                .getOrElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .providerId(providerId())
-                .providerName("Economic Customer")
-                .organisationSupport(OrganisationSupport.SINGLE)
-                .inputs(List.of("App Secret Token", "Argeement Grant Token"))
-                .build();
+        return MetadataProvider.ECONOMIC;
     }
 }

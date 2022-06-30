@@ -22,7 +22,7 @@
                 <th>Id</th>
                 <th>Organisation Name</th>
                 <th>Email</th>
-                <th>Claims</th>
+                <th>Provider</th>
                 <th><a href="/iam/org">Add</a></th>
             </tr>
             {{#tableData}}
@@ -30,7 +30,11 @@
                 <td>{{organisationId}}</td>
                 <td>{{organisationName}}</td>
                 <td>{{contactEmail}}</td>
-                <td><a href="/iam/clm/org/{{organisationId}}">Show</a></td>
+                <td>
+                    {{#providerConfiguration}}<a href="/iam/org/{{organisationId}}/pro/conf">Configure</a>{{/providerConfiguration}}
+                    {{#providerConfiguration}} | <a href="/iam/org/{{organisationId}}/pro/">Change</a>{{/providerConfiguration}}
+                    {{^providerConfiguration}}<a href="/iam/org/{{organisationId}}/pro/">Pick</a>{{/providerConfiguration}}
+                </td>
                 <td><a href="/iam/org/{{organisationId}}">Edit</a></td>
             </tr>
             {{/tableData}}

@@ -1,6 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.provider.SamlProvider;
 import dk.acto.fafnir.sso.provider.credentials.SamlCredentials;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
-import java.util.Map;
 
 @Slf4j
 @Controller

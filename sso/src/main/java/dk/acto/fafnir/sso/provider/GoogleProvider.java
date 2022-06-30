@@ -6,10 +6,12 @@ import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import lombok.AllArgsConstructor;
@@ -35,7 +37,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
     }
 
     @Override
-    public CallbackResult callback(TokenCredentials data) {
+    public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
         final OAuth2AccessToken token = Option.of(code)
                 .toTry()
@@ -43,7 +45,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
         if (token == null) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         DecodedJWT jwtToken = JWT.decode(((OpenIdOAuth2AccessToken) token).getOpenIdToken());
@@ -60,21 +62,11 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
-        return CallbackResult.success(jwt);
-    }
-
-    @Override
-    public String providerId() {
-        return "google";
+        return AuthenticationResult.success(jwt);
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .providerName("Google")
-                .providerId(providerId())
-                .organisationSupport(OrganisationSupport.NATIVE)
-                .inputs(List.of("Organisation Domain"))
-                .build();
+        return MetadataProvider.GOOGLE;
     }
 }

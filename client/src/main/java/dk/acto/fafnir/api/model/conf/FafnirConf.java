@@ -1,4 +1,4 @@
-package dk.acto.fafnir.sso.model.conf;
+package dk.acto.fafnir.api.model.conf;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

@@ -1,4 +1,4 @@
-package dk.acto.fafnir.sso.model;
+package dk.acto.fafnir.api.model;
 
 public enum FailureReason {
     AUTHENTICATION_FAILED(400),

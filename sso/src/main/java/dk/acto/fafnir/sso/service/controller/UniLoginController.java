@@ -1,6 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.provider.UniLoginProvider;
 import dk.acto.fafnir.sso.service.ServiceHelper;
 import dk.acto.fafnir.sso.provider.UniLoginHelper;

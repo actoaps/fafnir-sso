@@ -1,5 +1,6 @@
 package dk.acto.fafnir.sso.service;
 
+import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.sso.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ class ProviderServiceTest {
 
     @Test
     void getProviderInformation() {
-        var result = providerService.getProviderInformation("hazelcast");
+        var result = providerService.getProviderMetaData("hazelcast");
         assertThat(result).isNotNull();
     }
 }

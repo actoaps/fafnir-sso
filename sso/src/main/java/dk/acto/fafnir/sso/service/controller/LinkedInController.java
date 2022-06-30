@@ -1,6 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.provider.LinkedInProvider;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;

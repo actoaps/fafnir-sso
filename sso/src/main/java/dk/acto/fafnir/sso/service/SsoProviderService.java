@@ -1,7 +1,9 @@
 package dk.acto.fafnir.sso.service;
 
 import dk.acto.fafnir.api.exception.NoSuchProvider;
-import dk.acto.fafnir.sso.provider.ProviderInformation;
+import dk.acto.fafnir.api.model.ProviderMetaData;
+import dk.acto.fafnir.api.service.ProviderService;
+import dk.acto.fafnir.api.provider.ProviderInformation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,18 +11,22 @@ import java.util.Set;
 
 @AllArgsConstructor
 @Service
-public class ProviderService {
+public class SsoProviderService implements ProviderService {
     private final Set<ProviderInformation> providerInformationSet;
 
+    @Override
     public String[] getAcceptedProviders() {
         return providerInformationSet.stream()
-                .map(ProviderInformation::providerId)
+                .map(ProviderInformation::getMetaData)
+                .map(ProviderMetaData::getProviderId)
                 .toArray(String[]::new);
     }
 
-    public ProviderInformation getProviderInformation(String providerId) {
+    @Override
+    public ProviderMetaData getProviderMetaData(String providerId) {
         return providerInformationSet.stream()
-                .filter(x -> x.providerId().equals(providerId))
+                .map(ProviderInformation::getMetaData)
+                .filter(metaData -> metaData.getProviderId().equals(providerId))
                 .findAny()
                 .orElseThrow(NoSuchProvider::new);
     }

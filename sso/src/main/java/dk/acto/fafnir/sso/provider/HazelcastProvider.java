@@ -3,11 +3,13 @@ package dk.acto.fafnir.sso.provider;
 import dk.acto.fafnir.api.model.OrganisationSupport;
 import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AuthenticationService;
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
@@ -31,7 +33,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
         return "/{orgId}/hazelcast/login";
     }
 
-    public CallbackResult callback(final UsernamePasswordCredentials data) {
+    public AuthenticationResult callback(final UsernamePasswordCredentials data) {
         var username = hazelcastConf.isTrimUsername()
                 ? data.getUsername().stripTrailing()
                 : data.getUsername();
@@ -48,22 +50,12 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                         claimData,
                         getMetaData()
                 ))
-                .map(CallbackResult::success)
-                .orElse(CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED));
-    }
-
-    @Override
-    public String providerId() {
-        return "hazelcast";
+                .map(AuthenticationResult::success)
+                .orElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .providerName("Hazelcast (Built-In)")
-                .providerId(providerId())
-                .organisationSupport(OrganisationSupport.FAFNIR)
-                .inputs(List.of())
-                .build();
+        return MetadataProvider.HAZELCAST;
     }
 }

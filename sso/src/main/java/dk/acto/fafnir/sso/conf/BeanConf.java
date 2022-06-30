@@ -7,6 +7,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.sso.service.AppleApi;
