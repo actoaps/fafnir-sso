@@ -1,15 +1,13 @@
 package dk.acto.fafnir.iam.dto;
 
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.Slice;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 @Service
@@ -45,6 +43,16 @@ public class DtoFactory {
                 .id(organisationData.getOrganisationId())
                 .csvClaims(String.join(", ", claims.getClaims()))
                 .url(String.format("/iam/clm/for/%s/%s", organisationData.getOrganisationId(), subject))
+                .build();
+    }
+
+    public ProviderConfiguration fromMap (Map<String, String> source) {
+        return ProviderConfiguration.builder()
+                .providerId(source.get("providerId"))
+                .values(source.entrySet().stream()
+                        .filter(x -> !x.getKey().equals("providerId"))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                )
                 .build();
     }
 }

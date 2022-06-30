@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.model.conf.MitIdConf;
 import dk.acto.fafnir.sso.model.conf.TestConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
@@ -23,8 +25,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -45,7 +45,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     }
 
     @Override
-    public CallbackResult callback(TokenCredentials data) {
+    public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
         final OAuth2AccessToken token = Option.of(code)
                 .toTry()
@@ -54,44 +54,29 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
                 .getOrNull();
 
         if (token == null) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         var userInfo = getUserInfo(token.getAccessToken());
 
         if (userInfo == null) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
         var subjectActual = UserData.builder()
                 .subject(userInfo.getLeft())
                 .name(userInfo.getRight())
                 .build();
-        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
         var claimsActual = ClaimData.empty();
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
-        return CallbackResult.success(jwt);
-    }
-
-    @Override
-    public boolean supportsOrganisationUrls() {
-        return false;
-    }
-
-    @Override
-    public String providerId() {
-        return "mitid";
+        return AuthenticationResult.success(jwt);
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .inputs(List.of())
-                .organisationSupport(OrganisationSupport.SINGLE)
-                .providerName("MitID")
-                .providerId(providerId())
-                .build();
+        return MetadataProvider.MIT_ID;
     }
 
     private Pair<String, String> getUserInfo(String token) {

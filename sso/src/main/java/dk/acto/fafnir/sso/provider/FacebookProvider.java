@@ -6,10 +6,12 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -36,7 +38,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         return facebookOauth.getAuthorizationUrl();
     }
 
-    public CallbackResult callback(TokenCredentials data) {
+    public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
         OAuth2AccessToken token = Option.of(code)
                 .toTry()
@@ -44,7 +46,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
         if (token == null) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name,id");
@@ -56,32 +58,22 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         var displayName = result.get("name").asText();
         var id = result.get("id").asText();
         if (subject == null || subject.isEmpty()) {
-            return CallbackResult.failure(FailureReason.AUTHENTICATION_FAILED);
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         var subjectActual = UserData.builder()
                 .subject(subject)
                 .name(displayName)
                 .build();
-        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(providerId()));
+        var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
         var claimsActual = ClaimData.empty();
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
-        return CallbackResult.success(jwt);
-    }
-
-    @Override
-    public String providerId() {
-        return "facebook";
+        return AuthenticationResult.success(jwt);
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .providerId(providerId())
-                .providerName("Facebook")
-                .inputs(List.of())
-                .organisationSupport(OrganisationSupport.SINGLE)
-                .build();
+        return MetadataProvider.FACEBOOK;
     }
 }

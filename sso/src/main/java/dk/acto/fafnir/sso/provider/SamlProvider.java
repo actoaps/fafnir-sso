@@ -2,9 +2,11 @@ package dk.acto.fafnir.sso.provider;
 
 import dk.acto.fafnir.api.exception.OrganisationNotUsingSaml;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.saml.UpdateableRelyingPartyRegistrationRepository;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.SamlCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import lombok.AllArgsConstructor;
@@ -29,7 +31,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
     }
 
     @Override
-    public CallbackResult callback(SamlCredentials data) {
+    public AuthenticationResult callback(SamlCredentials data) {
         var userData = UserData.builder()
                 .subject(data.getEmail())
                 .name(data.getName())
@@ -41,7 +43,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
 
         var jwt = tokenFactory.generateToken(userData, orgActual, claimsActual, getMetaData());
 
-        return CallbackResult.success(jwt);
+        return AuthenticationResult.success(jwt);
     }
 
     public String getSamlRegistrationIds(String orgId) {
@@ -57,17 +59,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
     }
 
     @Override
-    public String providerId() {
-        return "saml";
-    }
-
-    @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .providerId(providerId())
-                .providerName("SAML Provider")
-                .inputs(List.of("Metadata Location", "Registration Id"))
-                .organisationSupport(OrganisationSupport.MULTIPLE)
-                .build();
+        return MetadataProvider.SAML;
     }
 }

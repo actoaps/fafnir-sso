@@ -1,73 +1,31 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!--HTML 4 Strict  to avoid deprecated HTML elements -->
-<html lang="da" xmlns:th="http://thymeleaf.org">
+<html lang="en">
 
 <head>
-    <title>Provider Picker</title>
+    <title>Pick Provider</title>
     {{> metadata}}
 </head>
-
 <body>
-<div class="login">
-    <h1>Choose Provider:</h1>
+<div>
     <div>
-        <p class="headline-choose-institution"></p>
+        <div>{{>navbar}}</div>
 
-        <form action="/google" method="post">
-            <td>
-                <button type="submit" name="google">Google Provider</button>
-            </td>
-        </form>
-
-        <form action="/apple" method="post">
-            <td>
-                <button type="submit" name="apple">Apple Provider</button>
-            </td>
-        </form>
-
-        <form action="/facebook" method="post">
-            <td>
-                <button type="submit" name="facebook">Facebook Provider</button>
-            </td>
-        </form>
-
-        <form action="/mitID" method="post">
-            <td>
-                <button type="submit" name="mitID">MitID Provider</button>
-            </td>
-        </form>
-
-        <form action="/microsoftIdentity" method="post">
-            <td>
-                <button type="submit" name="microsoftIdentity">Microsoft Identity Provider</button>
-            </td>
-        </form>
-
-        <form action="/uniLogin" method="post">
-            <td>
-                <button type="submit" name="uniLogin">UniLogin Provider</button>
-            </td>
-        </form>
-
-        <form action="/hazelcast" method="post">
-            <td>
-                <button type="submit" name="hazelcast">Hazelcast Provider</button>
-            </td>
-        </form>
-
-        <form action="/economicCustomer" method="post">
-            <td>
-                <button type="submit" name="economicCustomer">Economic Customer Provider</button>
-            </td>
-        </form>
-
-        <form action="/linkin" method="post">
-            <td>
-                <button type="submit" name="linkin">LinkIn Provider</button>
-            </td>
+        <h1>Provider for {{organisation.organisationName}}</h1>
+        <form action="/iam/org/{{organisation.organisationId}}/pro" method="post">
+            <div>
+                <label for="providers">Pick Provider:</label>
+                <select name="providerId" id="providers">
+                    {{#providers}}
+                    <option value="{{providerId}}">{{providerName}}</option>
+                    {{/providers}}
+                </select>
+            </div>
+            <div>
+                <button type="submit">Next</button>
+            </div>
         </form>
     </div>
 </div>
 </body>
-
 </html>

@@ -1,24 +1,24 @@
-package dk.acto.fafnir.sso.model;
+package dk.acto.fafnir.api.model;
 
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 
 import java.util.Optional;
 
-public class CallbackResult {
+public class AuthenticationResult {
     private final String jwt;
     private final FailureReason failureReason;
 
-    private CallbackResult(String jwt, FailureReason failureReason) {
+    private AuthenticationResult(String jwt, FailureReason failureReason) {
         this.jwt = jwt;
         this.failureReason = failureReason;
     }
 
-    public static CallbackResult success(String jwt) {
-        return new CallbackResult(jwt, null);
+    public static AuthenticationResult success(String jwt) {
+        return new AuthenticationResult(jwt, null);
     }
 
-    public static CallbackResult failure(FailureReason failureReason){
-        return new CallbackResult(null, failureReason);
+    public static AuthenticationResult failure(FailureReason failureReason){
+        return new AuthenticationResult(null, failureReason);
     }
 
     public String getUrl (FafnirConf fafnirConf) {

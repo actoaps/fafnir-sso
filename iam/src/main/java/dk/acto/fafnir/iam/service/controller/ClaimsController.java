@@ -1,10 +1,11 @@
 package dk.acto.fafnir.iam.service.controller;
 
 import dk.acto.fafnir.api.model.ClaimData;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
-import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -12,16 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.websocket.server.PathParam;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Objects;
 
 @Controller
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
 public class ClaimsController {
+    private final ProviderService providerService;
     private final AdministrationService administrationService;
     private final DtoFactory dtoFactory;
 
@@ -37,7 +38,6 @@ public class ClaimsController {
                         .build())))
                 .toList();
         var model = Map.of(
-
                 "tableData", transformed,
                 "isUser", true
         );
@@ -66,7 +66,11 @@ public class ClaimsController {
     @GetMapping()
     public ModelAndView createClaims() {
         var users = administrationService.readUsers();
-        var organisations = administrationService.readOrganisations();
+        var organisations = Arrays.stream(administrationService.readOrganisations())
+                .filter(organisationData -> Objects.nonNull(organisationData.getProviderConfiguration()))
+                .filter(organisationData -> providerService.supportsClaims(organisationData.getProviderConfiguration().getProviderId()))
+                .toArray(OrganisationData[]::new);
+
         var model = Map.of("users", users,
                 "organisations", organisations,
                 "isNew", true

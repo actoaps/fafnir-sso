@@ -8,7 +8,7 @@ import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.client.JwtValidator;
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import io.vavr.control.Try;

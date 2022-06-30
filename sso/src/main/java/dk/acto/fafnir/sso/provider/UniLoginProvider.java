@@ -1,9 +1,9 @@
 package dk.acto.fafnir.sso.provider;
 
 import dk.acto.fafnir.api.model.*;
-import dk.acto.fafnir.sso.model.FailureReason;
+import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.model.conf.TestConf;
 import dk.acto.fafnir.sso.provider.unilogin.Institution;
 import dk.acto.fafnir.sso.provider.unilogin.UserRole;

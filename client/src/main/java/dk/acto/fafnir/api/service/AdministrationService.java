@@ -47,12 +47,8 @@ public interface AdministrationService {
     ClaimData deleteClaims(OrganisationSubjectPair pair);
 
     OrganisationData[] getOrganisationsForUser(String user);
-
     UserData[] getUsersForOrganisation(String orgId);
-
     Slice<OrganisationData> readOrganisations(Long page);
-
     OrganisationData[] readOrganisations();
-
     Long countOrganisations();
 }

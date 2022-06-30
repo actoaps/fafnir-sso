@@ -1,7 +1,7 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.github.scribejava.core.model.ParameterList;
-import dk.acto.fafnir.sso.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.model.conf.UniLoginConf;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;

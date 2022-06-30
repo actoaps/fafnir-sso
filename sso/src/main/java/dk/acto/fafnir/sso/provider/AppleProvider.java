@@ -4,9 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.sso.model.CallbackResult;
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +27,13 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
     @Qualifier("appleOAuth")
     private final OAuth20Service appleOauth;
     private final TokenFactory tokenFactory;
-    private final AdministrationService administrationService;
 
     public String authenticate() {
         return appleOauth.getAuthorizationUrl(Map.of("response_mode", "form_post"));
     }
 
     @Override
-    public CallbackResult callback(TokenCredentials data) {
+    public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
 
         DecodedJWT jwtToken = JWT.decode(code);
@@ -48,21 +49,11 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
 
         String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
-        return CallbackResult.success(jwt);
-    }
-
-    @Override
-    public String providerId() {
-        return "apple";
+        return AuthenticationResult.success(jwt);
     }
 
     @Override
     public ProviderMetaData getMetaData() {
-        return ProviderMetaData.builder()
-                .inputs(List.of())
-                .organisationSupport(OrganisationSupport.SINGLE)
-                .providerName("Apple")
-                .providerId(providerId())
-                .build();
+        return MetadataProvider.APPLE;
     }
 }

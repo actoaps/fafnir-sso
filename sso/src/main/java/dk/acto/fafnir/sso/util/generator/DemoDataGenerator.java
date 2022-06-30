@@ -2,8 +2,8 @@ package dk.acto.fafnir.sso.util.generator;
 
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.ProviderConfiguration;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.api.util.DataGenerator;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.SamlProvider;
 import lombok.AllArgsConstructor;
@@ -11,28 +11,25 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
-
 
 @Component
 @AllArgsConstructor
 @Profile("demo")
-public class DemoDataGenerator implements DataGenerator {
+public class DemoDataGenerator {
     private final AdministrationService administrationService;
     private final HazelcastProvider hazelcastProvider;
     private final SamlProvider samlProvider;
 
-    @Override
-    public void generateData(){
+    public void generateData() {
         var actoTest = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("1")
                 .organisationName("Acto")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var HTML24Test = OrganisationData.builder()
@@ -40,9 +37,9 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("2")
                 .organisationName("HTML24")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var jhTest = OrganisationData.builder()
@@ -50,9 +47,9 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("3")
                 .organisationName("Jh.dk")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var omTest = OrganisationData.builder()
@@ -60,9 +57,9 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("4")
                 .organisationName("Om.com")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var peTest = OrganisationData.builder()
@@ -70,9 +67,9 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("5")
                 .organisationName("Pe.com")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var kaTest = OrganisationData.builder()
@@ -80,9 +77,9 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("6")
                 .organisationName("Ka.eu")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(hazelcastProvider.providerId())
-                                .values(Map.of())
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of())
+                        .build()
                 )
                 .build();
         var samlTest = OrganisationData.builder()
@@ -90,12 +87,12 @@ public class DemoDataGenerator implements DataGenerator {
                 .organisationId("7")
                 .organisationName("SAML Org")
                 .providerConfiguration(ProviderConfiguration.builder()
-                                .providerId(samlProvider.providerId())
-                                .values(Map.of(
-                                        "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
-                                        "Registration Id", "spring-saml"
-                                ))
-                                .build()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .values(Map.of(
+                                "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
+                                "Registration Id", "spring-saml"
+                        ))
+                        .build()
                 )
                 .build();
 

@@ -1,7 +1,8 @@
 package dk.acto.fafnir.sso.service.controller;
 
+import dk.acto.fafnir.api.model.OrganisationSupport;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.service.ProviderService;
+import dk.acto.fafnir.sso.service.SsoProviderService;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.util.Map;
 @RequestMapping("login")
 public class OrganisationController {
     AdministrationService administrationService;
-    ProviderService providerService;
+    SsoProviderService ssoProviderService;
 
     @GetMapping("{page}")
     public ModelAndView organisationPicker(@PathVariable Long page) {
@@ -31,12 +32,12 @@ public class OrganisationController {
     public RedirectView organisationRedirect(@RequestParam String orgId) {
         var myOrganisation = administrationService.readOrganisation(orgId);
         var pc = myOrganisation.getProviderConfiguration();
-        var pi = providerService.getProviderInformation(pc.getProviderId());
-        if (pi.supportsOrganisationUrls()) {
+        var pi = ssoProviderService.getProviderMetaData(pc.getProviderId());
+        if (pi.getOrganisationSupport().equals(OrganisationSupport.FAFNIR)) {
             return new RedirectView("/"
-                    + myOrganisation.getOrganisationId()
+                    + pc.getProviderId()
                     + "/"
-                    + pc.getProviderId());
+                    + myOrganisation.getOrganisationId());
         } else {
             return new RedirectView("/"
                     + pc.getProviderId());
