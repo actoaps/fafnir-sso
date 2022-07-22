@@ -11,7 +11,9 @@ import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
@@ -19,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class HazelcastAdministrationServiceTest {
-
     private final HazelcastAdministrationService subject = getService();
 
     @Test
@@ -269,12 +270,13 @@ class HazelcastAdministrationServiceTest {
         var instance = Hazelcast.newHazelcastInstance(config);
 
         return new HazelcastAdministrationService(
-                        instance,
-                        new HazelcastConf(true,
-                                false,
-                                true,
-                                "TEST"
-                        ));
-
+                instance,
+                new HazelcastConf(true,
+                        false,
+                        true,
+                        "TEST"
+                ),
+                () -> null
+        );
     }
 }
