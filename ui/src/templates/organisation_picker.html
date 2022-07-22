@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <title>Login - Fafnir</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div>
+    <div>
+        <h1>Login:</h1>
+        <div>
+            <form action="{{loginUrl}}" method="post">
+                <div>
+                    <label for="orgId">Pick an organisation:</label>
+                    <select name="orgId" id="orgId">
+                        {{#orgs}}
+                            <option value="{{organisationId}}">{{organisationName}}</option>
+                        {{/orgs}}
+                    </select>
+                    <button class="submitButton" type="submit">
+                        Next
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+</body>
+
+</html>

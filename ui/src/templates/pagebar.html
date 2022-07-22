@@ -1,0 +1,7 @@
+<ul>
+    {{#prevUrl}}<li><a href = "{{.}}">&lt;</a></li>{{/prevUrl}}
+    {{#pageData}}
+        <li>{{#url}}<a href = "{{.}}">{{number}}</a>{{/url}}{{^url}}{{number}}{{/url}}</li>
+    {{/pageData}}
+    {{#nextUrl}}<li><a href = "{{.}}">&gt;</a></li>{{/nextUrl}}
+</ul>

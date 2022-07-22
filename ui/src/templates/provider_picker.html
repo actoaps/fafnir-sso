@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <title>Pick Provider</title>
+    {{> metadata}}
+</head>
+<body>
+<div>
+    <div>
+        <div>{{>navbar}}</div>
+
+        <h1>Provider for {{organisation.organisationName}}</h1>
+        <form action="/iam/org/{{organisation.organisationId}}/pro" method="post">
+            <div>
+                <label for="providers">Pick Provider:</label>
+                <select name="providerId" id="providers">
+                    {{#providers}}
+                    <option value="{{providerId}}">{{providerName}}</option>
+                    {{/providers}}
+                </select>
+            </div>
+            <div>
+                <button type="submit">Next</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

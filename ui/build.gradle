@@ -1,0 +1,36 @@
+plugins {
+    id "io.miret.etienne.sass" version "1.3.0"
+    id "com.magnetichq.gradle.css" version "3.0.2"
+    id "java-library"
+}
+
+compileSass {
+    outputDir = project.file("${buildDir}/tmp/css")
+    sourceDir = project.file("${projectDir}/src/scss")
+}
+
+task cleanDist(type: Delete) {
+    delete "${projectDir}/dist"
+}
+
+task copyTemplates(type: Copy) {
+    from "${projectDir}/src/templates"
+    into "${projectDir}/dist/templates"
+}
+
+minifyCss {
+    source = "${buildDir}/tmp/css/styles.css"
+    dest = "${projectDir}/dist/static/css/styles.css"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["${projectDir}/dist"]
+        }
+    }
+}
+
+processResources.dependsOn compileSass, copyTemplates
+compileSass.finalizedBy minifyCss
+clean.finalizedBy cleanDist

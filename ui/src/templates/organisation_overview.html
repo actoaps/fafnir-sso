@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <title>All Organisations</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div>
+    <div>
+        <div>
+            <div>{{>navbar}}</div>
+            <div>
+                <h1>All Organisations</h1>
+            </div>
+        </div>
+
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Organisation Name</th>
+                <th>Email</th>
+                <th>Provider</th>
+                <th><a href="/iam/org">Add</a></th>
+            </tr>
+            {{#tableData}}
+            <tr>
+                <td>{{organisationId}}</td>
+                <td>{{organisationName}}</td>
+                <td>{{contactEmail}}</td>
+                <td>
+                    {{#providerConfiguration}}<a href="/iam/org/{{organisationId}}/pro/conf">Configure</a>{{/providerConfiguration}}
+                    {{#providerConfiguration}} | <a href="/iam/org/{{organisationId}}/pro/">Change</a>{{/providerConfiguration}}
+                    {{^providerConfiguration}}<a href="/iam/org/{{organisationId}}/pro/">Pick</a>{{/providerConfiguration}}
+                </td>
+                <td><a href="/iam/org/{{organisationId}}">Edit</a></td>
+            </tr>
+            {{/tableData}}
+        </table>
+        {{>pagebar}}
+    </div>
+</div>
+</body>
+</html>

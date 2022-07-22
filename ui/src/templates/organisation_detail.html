@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <title>Organisation</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div>
+    <h1>{{#isNew}}Create{{/isNew}}{{^isNew}}Edit{{/isNew}} Organisation</h1>
+    <div>
+        <form action="/iam/org/{{tableData.organisationId}}" method="post">
+            <div>
+                <label>Organisation Name:
+                    <input type="text" name="organisationName" value="{{tableData.organisationName}}">
+                </label>
+            </div>
+            <div>
+                <label>Contact Email:
+                    <input type="text" name="contactEmail" value="{{tableData.contactEmail}}">
+                </label>
+            </div>
+            <div>
+                <label>Organisation Id:
+                    <input type="text" {{^isNew}}readonly{{/isNew}} name="organisationId" value="{{tableData.organisationId}}">
+                </label>
+            </div>
+            <div>
+                {{#isNew}}<input type="hidden" name="created" value="{{tableData.created}}">{{/isNew}}
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
