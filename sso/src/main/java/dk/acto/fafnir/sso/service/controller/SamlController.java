@@ -1,6 +1,7 @@
 package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.conf.FafnirConf;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.provider.SamlProvider;
 import dk.acto.fafnir.sso.provider.credentials.SamlCredentials;
 import lombok.AllArgsConstructor;
@@ -10,22 +11,24 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 
 @Slf4j
 @Controller
 @AllArgsConstructor
+@RequestMapping("saml")
 @ConditionalOnBean(SamlProvider.class)
 public class SamlController {
     private final SamlProvider provider;
     private final FafnirConf fafnirConf;
+    private final AdministrationService administrationService;
 
-    @GetMapping("{orgId}/saml")
+    @GetMapping
     public RedirectView authenticate() {
         return new RedirectView(provider.authenticate());
     }
@@ -38,8 +41,16 @@ public class SamlController {
                 .build()).getUrl(fafnirConf));
     }
 
-    @GetMapping(value = "{orgId}/saml/login", produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView login(@PathVariable("orgId") String orgId) {
+    @GetMapping(value = "saml/login", produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView login() {
+        return new ModelAndView("organisation_picker", Map.of(
+                "loginUrl", provider.authenticate(),
+                "orgs", administrationService.readOrganisations()
+        ));
+    }
+
+    @PostMapping(value = "saml/login", produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView loginRedirect(@RequestParam String orgId) {
         var registrationId = provider.getSamlRegistrationIds(orgId);
         return new ModelAndView("redirect:/saml2/authenticate/" + registrationId);
     }

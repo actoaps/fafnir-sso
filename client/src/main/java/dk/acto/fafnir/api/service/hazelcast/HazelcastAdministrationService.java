@@ -2,10 +2,13 @@ package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.util.CryptoUtil;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     public final static String CLAIM_POSTFIX = "-fafnir-claim";
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
+    private PublicKeyProvider publicKeyProvider;
 
     @Override
     public UserData createUser(final UserData source) {
@@ -31,7 +35,7 @@ public class HazelcastAdministrationService implements AdministrationService {
         var create = source.toBuilder()
                 .created(Instant.now())
                 .build();
-        userMap.put(source.getSubject(), create);
+        userMap.put(source.getSubject(), secure(create));
         return create;
     }
 
@@ -68,7 +72,7 @@ public class HazelcastAdministrationService implements AdministrationService {
                 .map(x -> x.partialUpdate(source))
                 .orElseThrow(UserUpdateFailed::new);
 
-        userMap.put(subject, updated);
+        userMap.put(subject,source.getPassword() == null ? updated : secure(updated));
         return updated;
     }
 
@@ -219,5 +223,11 @@ public class HazelcastAdministrationService implements AdministrationService {
     public Long countOrganisations() {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
         return (long) orgMap.entrySet().size();
+    }
+
+    private UserData secure (UserData source) {
+        return source.secure(hazelcastConf.isPasswordIsEncrypted()
+                ? CryptoUtil.toPublicKey(publicKeyProvider)
+                : null);
     }
 }

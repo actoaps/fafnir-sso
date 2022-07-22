@@ -7,6 +7,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
+import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
@@ -100,7 +101,6 @@ public class BeanConf {
     public HazelcastAdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf) {
         return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf);
     }
-
 
     @Bean
     @ConditionalOnProperty(name = "TEST_ENABLED")

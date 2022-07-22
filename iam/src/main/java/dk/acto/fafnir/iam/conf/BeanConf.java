@@ -11,6 +11,8 @@ import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
+import dk.acto.fafnir.client.providers.builtin.RestfulPublicKeyProvider;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,8 +58,15 @@ public class BeanConf {
     }
 
     @Bean
-    public AdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf) {
-        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf);
+    public PublicKeyProvider publicKeyProvider(
+            @Value("${FAFNIR_URL:localhost}") final String fafnirUrl,
+            @Value("${FAFNIR_PORT:8080}") final String fafnirPort) {
+        return new RestfulPublicKeyProvider(fafnirUrl, fafnirPort);
+    }
+
+    @Bean
+    public AdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf, PublicKeyProvider publicKeyProvider) {
+        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf, publicKeyProvider);
     }
 
     @Bean
