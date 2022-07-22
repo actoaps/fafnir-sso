@@ -1,3 +1,5 @@
-rootProject.name = 'fafnir-sso'
-include 'webservice'
+rootProject.name = 'fafnir'
+include 'sso'
 include 'client'
+include 'iam'
+include 'ui'

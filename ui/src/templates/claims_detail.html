@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <script type="application/javascript">
+        function addClaim(value) {
+            var id = (id ?? -1) + 1;
+            const root = document.getElementById("claims");
+            const container = document.createElement("div");
+            container.setAttribute("id", "claim-group-" + id);
+            const label = document.createElement("label");
+            label.setAttribute("for", "claim-" + id);
+            container.appendChild(label);
+            const input = document.createElement("input");
+            input.setAttribute("id", "claim-" + id);
+            input.setAttribute("type", "text");
+            input.setAttribute("name", "claims");
+            input.setAttribute("value", value ?? "");
+            container.appendChild(input);
+            const nuke = document.createElement("input");
+            nuke.setAttribute("type", "button");
+            nuke.setAttribute("value", "Delete")
+            nuke.onclick=function () {
+                container.remove();
+            }
+            container.appendChild(nuke);
+            root.appendChild(container);
+        }
+    </script>
+    <title>view Users</title>
+    {{> metadata}}
+</head>
+<body>
+<div>
+    <div>
+        <div>{{>navbar}}</div>
+
+        {{#isNew}}
+        <h1>Create Claims</h1>
+        <form action="/iam/clm/" method="post">
+            <div>
+                <label for="organisations">Pick Organisation:</label>
+                <select name="organisationId" id="organisations">
+                    {{#organisations}}
+                    <option value="{{organisationId}}">{{organisationName}}</option>
+                    {{/organisations}}
+                </select>
+            </div>
+            <div>
+                <label for="users">Pick User:</label>
+                <select name="subject" id="users">
+                    {{#users}}
+                    <option value="{{subject}}">{{name}}
+                    {{/users}}
+                </select>
+            </div>{{/isNew}}{{^isNew}}
+            <h1>Edit Claims</h1>
+            <form action="/iam/clm/for/{{organisations.organisationId}}/{{users.subject}}" method="post">
+                <div>
+                    <label for="organisations">Organisation:</label>
+                    <input id="organisations" disabled type="text" value="{{organisations.organisationName}}">
+                </div>
+                <div>
+                    <label for="users">User:</label>
+                    <input id="users" disabled type="text" value="{{users.subject}}">
+                </div>{{/isNew}}
+            <h3>Claims:</h3>
+            <div>
+            <input type="button" value="Add Claim" onclick="addClaim('')"/>
+
+            <div id="claims">
+                {{#claims}}
+                <script type="application/javascript">
+                    addClaim('{{.}}');
+                </script>
+                {{/claims}}
+            </div>
+
+            <button type="submit">Permit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,8 +1,10 @@
 version: "3.7"
 services:
   fafnir-sso:
-    build: webservice
+    build: sso
     container_name: fafnir-sso
+    depends_on:
+      - samlservice
     ports:
       - 8080:8080
       - 6001:6001
@@ -14,3 +16,15 @@ services:
       - MITID_AID=c831a44a-81c4-4ca7-97aa-21f4c5e15b4a
       - MITID_SECRET=a6MJQNl2d5nPdplyLz0JPOI3kvnp2sP6Mr5dBOLfmxSnuZ/Z/ZdHfwu0QLHzkI/6UPWOo/RuQjsTHlKoXmSuaQ==
       - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
+
+  samlservice:
+    image: kristophjunge/test-saml-idp:1.15
+    container_name: samlservice
+    ports:
+      - "8081:8080"
+    environment:
+      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8080/saml2/service-provider-metadata/spring-saml
+      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8080/login/saml2/sso/spring-saml
+      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localhost:8080/logout/saml2/slo
+    volumes:
+      - ./samlservice/config/authsources.php:/var/www/simplesamlphp/config/authsources.php

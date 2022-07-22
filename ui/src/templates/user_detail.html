@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <title>User</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div>
+    <h1>{{#isNew}}Create{{/isNew}}{{^isNew}}Edit{{/isNew}} User</h1>
+    <div>
+        <form action="/iam/usr/{{tableData.subject}}" method="post">
+            <div>
+                <label for="username">Name:</label>
+                <input id="username" type="text" name="name" value="{{tableData.name}}">
+            </div>
+            <div>
+                <label for="userPassword">Password:</label>
+                <input id="userPassword" type="text" name="password" value="{{tableData.password}}">
+            </div>
+            <div>
+                <label for="userMetaId">Meta Id:</label>
+                <input id="userMetaId" type="text" name="metaId" value="{{tableData.metaId}}">
+            </div>
+            <div>
+                <label for="userSubject">Subject:</label>
+                <input id="userSubject" type="text" {{^isNew}}readonly{{/isNew}} name="subject" value="{{tableData.subject}}">
+            </div>
+            <div>
+                {{#isNew}}<input type="hidden" name="created" value="{{tableData.created}}">{{/isNew}}
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

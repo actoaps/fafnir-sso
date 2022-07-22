@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '2.6.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "name.remal.check-updates" version "1.1.4"
+}
+
+sourceCompatibility = 17
+targetCompatibility = 17
+compileJava.options.encoding = 'UTF-8'
+
+def myVersion = System.properties['versionOverride']
+if ((myVersion?.trim())){
+    version = myVersion
+} else {
+    version = "1.0-SNAPSHOT"
+}
+
+bootJar.enabled = false
+jar.enabled = true
+
+applicationDefaultJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6001"]
+
+test {
+    ignoreFailures = false
+    useJUnitPlatform()
+}
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = 'dk.acto.fafnir.iam.Iam'
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    implementation project(':client')
+    implementation project(':ui')
+
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+    implementation 'io.vavr:vavr:0.10.4'
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-codec:commons-codec:1.15'
+
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-mustache"
+
+    implementation 'com.hazelcast:hazelcast:5.1.1'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation project(':client')
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'io.vavr:vavr:0.10.4'
+}
+
+distributions {
+    main {
+        distTar.archiveFileName = "iam.tar"
+        distZip.enabled = false
+        bootDistTar.enabled = false
+        bootDistZip.enabled = false
+    }
+}
