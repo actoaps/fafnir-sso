@@ -12,17 +12,13 @@
     <div>
         <h1>Login:</h1>
         <div>
-            <p class="headline-choose-institution"></p>
-
-            <form action="/login" method="post">
+            <form action="{{loginUrl}}" method="post">
                 <div>
                     <label for="orgId">Pick an organisation:</label>
                     <select name="orgId" id="orgId">
                         {{#orgs}}
-                            <option
-                                    value="{{organisationId}}">{{organisationName}}</option>
+                            <option value="{{organisationId}}">{{organisationName}}</option>
                         {{/orgs}}
-
                     </select>
                     <button class="submitButton" type="submit">
                         Next

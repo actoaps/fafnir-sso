@@ -1,22 +1,22 @@
 package dk.acto.fafnir.sso.provider;
 
-import dk.acto.fafnir.api.model.OrganisationSupport;
+import dk.acto.fafnir.api.model.AuthenticationResult;
+import dk.acto.fafnir.api.model.FailureReason;
+import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AuthenticationService;
-import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
-import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
+import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Optional;
 
 
 @Component
@@ -30,9 +30,10 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
 
     @Override
     public String authenticate() {
-        return "/{orgId}/hazelcast/login";
+        return "hazelcast/login";
     }
 
+    @Override
     public AuthenticationResult callback(final UsernamePasswordCredentials data) {
         var username = hazelcastConf.isTrimUsername()
                 ? data.getUsername().stripTrailing()
@@ -52,6 +53,15 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                 ))
                 .map(AuthenticationResult::success)
                 .orElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
+    }
+
+    public OrganisationData[] getOrganisations(String subject) {
+        return administrationService.getOrganisationsForUser(subject);
+    }
+
+    public Optional<OrganisationData> getOrganisation(String orgId) {
+        return Try.of(() -> administrationService.readOrganisation(orgId))
+                .toJavaOptional();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package dk.acto.fafnir.sso.service;
 
-import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;

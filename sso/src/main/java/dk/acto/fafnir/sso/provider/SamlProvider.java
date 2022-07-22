@@ -27,7 +27,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
 
     @Override
     public String authenticate() {
-        return "/{orgId}/saml/login";
+        return "saml/login";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package dk.acto.fafnir.api.model;
 
 import dk.acto.fafnir.api.util.CryptoUtil;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
