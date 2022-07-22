@@ -44,7 +44,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation('com.fasterxml.jackson.core:jackson-databind:2.13.3')
 
-    implementation 'com.hazelcast:hazelcast:5.1.1'
+    implementation 'com.hazelcast:hazelcast:5.1.2'
     implementation 'com.google.guava:guava:31.1-jre'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
