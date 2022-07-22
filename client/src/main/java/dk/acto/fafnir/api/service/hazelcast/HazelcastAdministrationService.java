@@ -35,8 +35,9 @@ public class HazelcastAdministrationService implements AdministrationService {
         var create = source.toBuilder()
                 .created(Instant.now())
                 .build();
-        userMap.put(source.getSubject(), secure(create));
-        return create;
+        var temp = secure(create);
+        userMap.put(source.getSubject(), temp);
+        return temp;
     }
 
     @Override
@@ -72,8 +73,9 @@ public class HazelcastAdministrationService implements AdministrationService {
                 .map(x -> x.partialUpdate(source))
                 .orElseThrow(UserUpdateFailed::new);
 
-        userMap.put(subject,source.getPassword() == null ? updated : secure(updated));
-        return updated;
+        var temp = source.getPassword() == null ? updated : secure(updated);
+        userMap.put(subject, temp);
+        return temp;
     }
 
     @Override

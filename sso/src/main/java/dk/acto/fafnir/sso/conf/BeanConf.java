@@ -11,6 +11,7 @@ import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.sso.service.AppleApi;
 import dk.acto.fafnir.sso.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.sso.service.MitIdApi;
@@ -98,8 +99,8 @@ public class BeanConf {
     }
 
     @Bean
-    public HazelcastAdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf) {
-        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf);
+    public HazelcastAdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf, PublicKeyProvider publicKeyProvider) {
+        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf, publicKeyProvider);
     }
 
     @Bean

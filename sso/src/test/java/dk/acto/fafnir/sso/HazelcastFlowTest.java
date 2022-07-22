@@ -59,8 +59,7 @@ class HazelcastFlowTest {
                 .metaId("meta")
                 .name("Oscar Mike")
                 .locale(Locale.forLanguageTag("da-DK"))
-                .build()
-                .secure(hazelcastConf.isPasswordIsEncrypted() ? rsaKeyManager.getPublicKey() : null)));
+                .build()));
         Try.run(() -> administrationService.createClaim(
                 OrganisationSubjectPair.builder()
                         .organisationId("default")
