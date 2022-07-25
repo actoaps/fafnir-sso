@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.springframework.boot' version '2.6.6'
+    id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "name.remal.check-updates" version "1.1.4"
 }
@@ -35,7 +35,7 @@ mainClassName = 'dk.acto.fafnir.iam.Iam'
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
-    implementation project(':client')
+    implementation project(':fafnir-client')
     implementation project(':ui')
 
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
@@ -56,7 +56,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation project(':client')
+    testImplementation project(':fafnir-client')
 
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'io.vavr:vavr:0.10.4'
