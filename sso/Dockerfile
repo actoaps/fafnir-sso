@@ -1,5 +1,5 @@
-FROM openjdk:17-jdk-alpine
-
+FROM amazoncorretto:17
+RUN yum install wget -y
 RUN wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar
 
 ADD build/distributions/sso.tar ./
