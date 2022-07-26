@@ -54,14 +54,23 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Build image and publish to Docker
+      - name: Build sso image and publish to Docker
         uses: docker/build-push-action@v2
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: ./webservice
+          context: ./sso
           platforms: linux/amd64,linux/arm64
           push: true
           tags: actoaps/fafnir-sso:${{ steps.spell.outputs.version }},actoaps/fafnir-sso:latest
+
+      - name: Build iam image and publish to Docker
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./iam
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: actoaps/fafnir-iam:${{ steps.spell.outputs.version }},actoaps/fafnir-iam:latest
 
       - name: Release client to Maven Central
         run: |
