@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'org.sonarqube' version '3.0' apply false
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
 subprojects {
@@ -67,5 +68,11 @@ if (System.properties['sonar.login'] != null) {
         }
     }
     build.finalizedBy(sonarAnalysis)
+}
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
 }
 
