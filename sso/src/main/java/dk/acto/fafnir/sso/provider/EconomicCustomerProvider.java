@@ -22,9 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Locale;
 import java.util.Map;
 
-@Component
 @AllArgsConstructor
-@ConditionalOnBean(EconomicConf.class)
 public class EconomicCustomerProvider implements RedirectingAuthenticationProvider<UsernamePasswordCredentials> {
     private final TokenFactory tokenFactory;
     private final RestTemplate restTemplate = new RestTemplate();
