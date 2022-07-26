@@ -11,7 +11,6 @@ import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.sso.model.conf.MitIdConf;
-import dk.acto.fafnir.sso.model.conf.TestConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -27,17 +26,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@Component
 @AllArgsConstructor
-@ConditionalOnBean(name = "mitIdOauth")
 public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
-    @Qualifier("mitIdOauth")
     private final OAuth20Service mitIdOauth;
-    private final MitIdConf mitIdConf;
-    private final TestConf testConf;
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
     private final AdministrationService administrationService;
+    private final String authorityUrl;
+    private final boolean isTest;
 
     @Override
     public String authenticate() {
@@ -80,7 +76,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     }
 
     private Pair<String, String> getUserInfo(String token) {
-        var url = mitIdConf.getAuthorityUrl() + "/connect/userinfo";
+        var url = authorityUrl + "/connect/userinfo";
         var rest = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setBearerAuth(token);
@@ -90,7 +86,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
         return Try.of(() -> objectMapper.readTree(response.getBody()))
                 .map(x -> Pair.of(
                         x.get("sub").asText(),
-                        x.get(testConf.isEnabled() ? "mitid_demo.full_name" : "mitid.full_name").asText()))
+                        x.get(isTest ? "mitid_demo.full_name" : "mitid.full_name").asText()))
                 .getOrNull();
     }
 }

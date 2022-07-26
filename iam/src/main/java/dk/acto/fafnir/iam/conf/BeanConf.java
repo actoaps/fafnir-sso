@@ -96,7 +96,7 @@ public class BeanConf {
                     .subject(user.getSubject())
                     .build();
 
-            Try.of(() -> administrationService.createClaim(
+            var claim = Try.of(() -> administrationService.createClaim(
                             pair,
                             ClaimData.builder()
                                     .claims(List.of("FAFNIR_ADMIN").toArray(String[]::new))
@@ -104,6 +104,8 @@ public class BeanConf {
                     .recover(ClaimAlreadyExists.class, administrationService.readClaims(pair))
                             .toJavaOptional()
                             .orElseThrow(NoClaimData::new);
+
+            log.info(String.format("Successfully created FAFNIR_ADMIN user with following claims: %s", claim));
         };
     }
 }
