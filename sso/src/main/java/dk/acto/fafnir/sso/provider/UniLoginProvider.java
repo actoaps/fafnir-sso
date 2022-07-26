@@ -1,12 +1,10 @@
 package dk.acto.fafnir.sso.provider;
 
 import dk.acto.fafnir.api.model.*;
-import dk.acto.fafnir.api.model.FailureReason;
-import dk.acto.fafnir.sso.util.TokenFactory;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
-import dk.acto.fafnir.sso.model.conf.TestConf;
 import dk.acto.fafnir.sso.provider.unilogin.Institution;
 import dk.acto.fafnir.sso.provider.unilogin.UserRole;
+import dk.acto.fafnir.sso.util.TokenFactory;
 import https.unilogin.Institutionstilknytning;
 import https.wsibruger_unilogin_dk.ws.WsiBruger;
 import https.wsibruger_unilogin_dk.ws.WsiBrugerPortType;
@@ -14,23 +12,18 @@ import https.wsiinst_unilogin_dk.ws.WsiInst;
 import https.wsiinst_unilogin_dk.ws.WsiInstPortType;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Log4j2
-@Component
+@Slf4j
 @AllArgsConstructor
-@ConditionalOnBean(UniLoginHelper.class)
 public class UniLoginProvider {
     private final FafnirConf fafnirConf;
     private final UniLoginHelper uniloginHelper;
     private final TokenFactory tokenFactory;
-    private final Optional<TestConf> testConf;
 
     public String authenticate() {
         return uniloginHelper.getAuthorizationUrl();
@@ -40,7 +33,7 @@ public class UniLoginProvider {
         boolean validAccess = uniloginHelper.isValidAccess(user, timestamp, auth);
         if (validAccess) {
             List<Institution> institutionList = Try.of(() -> this.getInstitutionList(user)).getOrElse(Collections.emptyList());
-            if (institutionList.size() > 1 || (testConf.isPresent() && !institutionList.isEmpty())) {
+            if (institutionList.size() > 1 ) {
                 return uniloginHelper.getChooseInstitutionUrl(user, timestamp, auth);
             } else if (institutionList.size() == 1) {
                 return callbackWithInstitution(user, timestamp, auth, institutionList.get(0).getId());

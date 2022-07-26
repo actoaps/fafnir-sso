@@ -25,11 +25,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Slf4j
-@Component
-@ConditionalOnBean(name = "linkedInOAuth")
 @AllArgsConstructor
 public class LinkedInProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
-    @Qualifier("linkedInOAuth")
     private final OAuth20Service linkedInOAuth;
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
