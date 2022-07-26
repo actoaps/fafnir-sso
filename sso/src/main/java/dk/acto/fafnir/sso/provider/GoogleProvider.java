@@ -23,11 +23,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Slf4j
-@Component
 @AllArgsConstructor
-@ConditionalOnBean(name = "googleOAuth")
 public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
-    @Qualifier("googleOAuth")
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;
     private final AdministrationService administrationService;

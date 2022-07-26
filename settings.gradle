@@ -3,3 +3,4 @@ include 'sso'
 include 'client'
 include 'iam'
 include 'ui'
+project(":client").setName("fafnir-client")

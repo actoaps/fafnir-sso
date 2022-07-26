@@ -17,6 +17,18 @@ services:
       - MITID_SECRET=a6MJQNl2d5nPdplyLz0JPOI3kvnp2sP6Mr5dBOLfmxSnuZ/Z/ZdHfwu0QLHzkI/6UPWOo/RuQjsTHlKoXmSuaQ==
       - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
 
+  fafnir-iam:
+    build: iam
+    container_name: fafnir-iam
+    depends_on:
+      - fafnir-sso
+    ports:
+      - 8082:8082
+    environment:
+      - FAFNIR_SUCCESS=http://localhost:8080/loginredirect
+      - FAFNIR_FAILURE=http://localhost:8080/loginerror
+      - FAFNIR_URL=http://localhost:8080
+
   samlservice:
     image: kristophjunge/test-saml-idp:1.15
     container_name: samlservice

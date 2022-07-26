@@ -17,20 +17,18 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Log4j2
-@Component
+@Slf4j
 @AllArgsConstructor
-@ConditionalOnBean(name = "facebookOAuth")
 public class FacebookProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
-    @Qualifier("facebookOauth")
     private final OAuth20Service facebookOauth;
     private final AdministrationService administrationService;
 
