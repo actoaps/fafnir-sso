@@ -75,7 +75,7 @@ jobs:
       - name: Release client to Maven Central
         run: |
           gpg --export-secret-keys > secring.gpg
-          ./gradlew :fafnir-client:uploadArchives -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD -DversionOverride=$BUILD_ID
+          ./gradlew publishToSonatype closeSonatypeStagingRepository -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -PmyNexusUsername=$USERNAME -PmyNexusPassword=$PASSWORD -DversionOverride=$BUILD_ID
 #          ./gradlew closeAndReleaseRepository -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD
         env:
           KEY_ID: ${{ secrets.MAVEN_GPG_KEY_ID }}
