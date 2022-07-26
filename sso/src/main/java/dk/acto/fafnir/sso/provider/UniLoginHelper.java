@@ -3,6 +3,7 @@ package dk.acto.fafnir.sso.provider;
 import com.github.scribejava.core.model.ParameterList;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.model.conf.UniLoginConf;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -10,8 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Data
-@Component
-@ConditionalOnBean(UniLoginConf.class)
 public class UniLoginHelper {
 	public static final String USER_ID = "user";
 	public static final String TIMESTAMP = "timestamp";

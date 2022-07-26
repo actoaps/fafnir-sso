@@ -20,9 +20,7 @@ import java.security.SecureRandom;
 import java.util.Map;
 
 @Slf4j
-@Component
 @AllArgsConstructor
-@ConditionalOnBean(name = "microsoftIdentityOauth")
 public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
     private final TokenFactory tokenFactory;
     private final OAuth20Service microsoftIdentityOauth;

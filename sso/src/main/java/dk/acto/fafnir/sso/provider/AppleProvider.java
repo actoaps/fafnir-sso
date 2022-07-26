@@ -20,11 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
 @AllArgsConstructor
-@ConditionalOnBean(name = "appleOAuth")
 public class AppleProvider implements RedirectingAuthenticationProvider<TokenCredentials> {
-    @Qualifier("appleOAuth")
     private final OAuth20Service appleOauth;
     private final TokenFactory tokenFactory;
 
