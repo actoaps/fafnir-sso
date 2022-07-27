@@ -83,3 +83,9 @@ nexusPublishing {
         sonatype()
     }
 }
+
+configure(subprojects) { project ->
+    initializeSonatypeStagingRepository {
+        shouldRunAfter(tasks.withType(Sign))
+    }
+}
