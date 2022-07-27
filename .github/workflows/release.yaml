@@ -42,7 +42,7 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
 
-- name: Set up QEMU for multiarch builds
+      - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@master
         with:
           platforms: all
