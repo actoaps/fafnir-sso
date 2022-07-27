@@ -39,6 +39,17 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
+      - name: Release client to Maven Central
+        run: |
+          gpg --export-secret-keys > secring.gpg
+          ./gradlew publishToSonatype closeSonatypeStagingRepository -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -DversionOverride=$BUILD_ID
+        #          ./gradlew closeAndReleaseRepository -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD
+        env:
+          KEY_ID: ${{ secrets.MAVEN_GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
+
       - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@master
         with:
@@ -71,14 +82,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: actoaps/fafnir-iam:${{ steps.spell.outputs.version }},actoaps/fafnir-iam:latest
-
-      - name: Release client to Maven Central
-        run: |
-          gpg --export-secret-keys > secring.gpg
-          ./gradlew publishToSonatype closeSonatypeStagingRepository -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -DversionOverride=$BUILD_ID
-#          ./gradlew closeAndReleaseRepository -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD
-        env:
-          KEY_ID: ${{ secrets.MAVEN_GPG_KEY_ID }}
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
-          BUILD_ID: ${{ steps.spell.outputs.version }}
