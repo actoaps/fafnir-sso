@@ -75,10 +75,10 @@ jobs:
       - name: Release client to Maven Central
         run: |
           gpg --export-secret-keys > secring.gpg
-          ./gradlew publishToSonatype closeSonatypeStagingRepository -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -PmyNexusUsername=$USERNAME -PmyNexusPassword=$PASSWORD -DversionOverride=$BUILD_ID
+          ./gradlew publishToSonatype closeSonatypeStagingRepository -Psigning.keyId=$KEY_ID -Psigning.password="" -Psigning.secretKeyRingFile=../secring.gpg -DversionOverride=$BUILD_ID
 #          ./gradlew closeAndReleaseRepository -PnexusUsername=$USERNAME -PnexusPassword=$PASSWORD
         env:
           KEY_ID: ${{ secrets.MAVEN_GPG_KEY_ID }}
-          USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
