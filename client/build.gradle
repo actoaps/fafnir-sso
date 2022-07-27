@@ -96,12 +96,8 @@ publishing {
 }
 
 signing {
-    required { !project.version.endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
-    if (project.findProperty("signingKey")) {
-        useInMemoryPgpKeys(findProperty("signingKey"), findProperty("signingPassword"))
-    } else {
-        useGpgCmd()
-    }
+    required { !project.version.endsWith("-SNAPSHOT")}
+    useInMemoryPgpKeys(findProperty("signingKey"), "")
     sign publishing.publications.mavenJava
 }
 
