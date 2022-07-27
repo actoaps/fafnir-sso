@@ -4,6 +4,14 @@ plugins {
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
+group = "dk.acto"
+def myVersion = System.properties['versionOverride']
+if ((myVersion?.trim())){
+    version = myVersion
+} else {
+    version = "1.0-SNAPSHOT"
+}
+
 subprojects {
     tasks.withType(Test) {
         testLogging {
@@ -75,4 +83,3 @@ nexusPublishing {
         sonatype()
     }
 }
-
