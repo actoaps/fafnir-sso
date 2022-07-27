@@ -12,6 +12,11 @@ repositories {
     mavenCentral()
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
     ignoreFailures = false
     useJUnitPlatform()
@@ -23,7 +28,6 @@ if ((myVersion?.trim())){
 } else {
     version = "1.0-SNAPSHOT"
 }
-
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -89,6 +93,12 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    required { !project.version.endsWith("-SNAPSHOT")}
+    useInMemoryPgpKeys(findProperty("signingKey"), "")
+    sign publishing.publications.mavenJava
 }
 
 javadoc {
