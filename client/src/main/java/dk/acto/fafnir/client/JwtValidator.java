@@ -1,6 +1,5 @@
 package dk.acto.fafnir.client;
 
-import com.google.common.io.BaseEncoding;
 import dk.acto.fafnir.api.exception.InvalidPublicKey;
 import dk.acto.fafnir.api.model.FafnirUser;
 import dk.acto.fafnir.api.model.UserData;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class JwtValidator {
 
     public JwtAuthentication decodeToken(String authHeader) {
         var decoder = Optional.of(publicKeyProvider.getPublicKey())
-                .map(BaseEncoding.base64()::decode)
+                .map(Base64.getDecoder()::decode)
                 .map(X509EncodedKeySpec::new)
                 .map(x -> Try.of(() -> KeyFactory.getInstance("RSA"))
                         .mapTry(y -> y.generatePublic(x))

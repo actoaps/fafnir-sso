@@ -1,13 +1,10 @@
 package dk.acto.fafnir.api.util;
 
-import com.google.common.io.BaseEncoding;
 import dk.acto.fafnir.api.exception.InvalidPublicKey;
 import dk.acto.fafnir.api.exception.PasswordDecryptionFailed;
 import dk.acto.fafnir.api.exception.PasswordEncryptionFailed;
 import dk.acto.fafnir.api.exception.PasswordHashingFailed;
-import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
-import io.jsonwebtoken.Jwts;
 import io.vavr.control.Try;
 import org.bouncycastle.crypto.generators.BCrypt;
 
@@ -42,13 +39,13 @@ public final class CryptoUtil {
 
     public static String hashPassword(String password) {
         return Try.of(() -> BCrypt.passwordToByteArray(password.toCharArray()))
-                .map(x -> Base64.getEncoder().encodeToString(x))
+                .map(Base64.getEncoder()::encodeToString)
                 .getOrElseThrow(PasswordHashingFailed::new);
     }
 
     public static PublicKey toPublicKey(PublicKeyProvider provider) {
         return Optional.of(provider.getPublicKey())
-                .map(BaseEncoding.base64()::decode)
+                .map(Base64.getDecoder()::decode)
                 .map(X509EncodedKeySpec::new)
                 .map(x -> Try.of(() -> KeyFactory.getInstance("RSA"))
                         .mapTry(y -> y.generatePublic(x))

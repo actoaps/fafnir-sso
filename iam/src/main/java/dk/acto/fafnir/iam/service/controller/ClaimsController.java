@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -36,7 +37,7 @@ public class ClaimsController {
                         .subject(userData.getSubject())
                         .organisationId(orgId)
                         .build())))
-                .toList();
+                .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
                 "isUser", true
@@ -54,7 +55,7 @@ public class ClaimsController {
                         .subject(subject)
                         .organisationId(organisationData.getOrganisationId())
                         .build())))
-                .toList();
+                .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
                 "isUser", false

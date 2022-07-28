@@ -7,22 +7,16 @@ import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.api.model.FailureReason;
-import dk.acto.fafnir.sso.util.TokenFactory;
-import dk.acto.fafnir.api.model.AuthenticationResult;
-import dk.acto.fafnir.sso.model.conf.MitIdConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
+import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
