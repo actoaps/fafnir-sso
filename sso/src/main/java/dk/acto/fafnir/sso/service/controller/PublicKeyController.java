@@ -1,7 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
-import com.google.common.io.BaseEncoding;
-import dk.acto.fafnir.api.crypto.RsaKeyManager;
+import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("public-key")
 public class PublicKeyController {
-	RsaKeyManager rsaKeyManager;
+	PublicKeyProvider publicKeyProvider;
 
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
 	public String getPublicKey() {
-		return BaseEncoding.base64().omitPadding().encode(
-				rsaKeyManager.getPublicKey().getEncoded()
-		);
+		return publicKeyProvider.getPublicKey();
 	}
 }

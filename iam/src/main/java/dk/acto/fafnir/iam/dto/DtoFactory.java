@@ -4,7 +4,6 @@ import dk.acto.fafnir.api.model.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;

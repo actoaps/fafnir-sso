@@ -1,7 +1,6 @@
 package dk.acto.fafnir.api.model;
 
 import dk.acto.fafnir.api.util.CryptoUtil;
-import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -12,7 +11,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 @Value
