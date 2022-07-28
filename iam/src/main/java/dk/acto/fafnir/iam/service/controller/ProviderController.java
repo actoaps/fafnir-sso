@@ -1,8 +1,6 @@
 package dk.acto.fafnir.iam.service.controller;
 
 import dk.acto.fafnir.api.exception.InvalidConfiguration;
-import dk.acto.fafnir.api.model.OrganisationSupport;
-import dk.acto.fafnir.api.provider.ProviderInformation;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
