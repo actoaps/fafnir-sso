@@ -23,6 +23,11 @@ minifyCss {
     dest = "${projectDir}/dist/static/css/styles.css"
 }
 
+task copyAssets(type: Copy) {
+    from "${projectDir}/src/assets"
+    into "${projectDir}/dist/static/assets"
+}
+
 sourceSets {
     main {
         resources {
@@ -31,6 +36,7 @@ sourceSets {
     }
 }
 
-processResources.dependsOn compileSass, copyTemplates
+
+processResources.dependsOn compileSass, copyTemplates, copyAssets
 compileSass.finalizedBy minifyCss
 clean.finalizedBy cleanDist
