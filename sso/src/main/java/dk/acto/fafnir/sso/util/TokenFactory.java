@@ -2,18 +2,18 @@ package dk.acto.fafnir.sso.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.google.common.io.BaseEncoding;
-import dk.acto.fafnir.api.exception.*;
-import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
+import dk.acto.fafnir.api.exception.*;
+import dk.acto.fafnir.api.model.ClaimData;
+import dk.acto.fafnir.api.model.OrganisationData;
+import dk.acto.fafnir.api.model.ProviderMetaData;
+import dk.acto.fafnir.api.model.UserData;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.PrivateKey;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 
 @Component

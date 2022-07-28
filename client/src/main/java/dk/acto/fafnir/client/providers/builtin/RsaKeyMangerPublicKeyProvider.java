@@ -5,13 +5,15 @@ import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 
+import java.util.Base64;
+
 @AllArgsConstructor
 public class RsaKeyMangerPublicKeyProvider implements PublicKeyProvider {
     private final RsaKeyManager rsaKeyManager;
 
     @Override
     public String getPublicKey() {
-        return BaseEncoding.base64().omitPadding().encode(
+        return Base64.getEncoder().withoutPadding().encodeToString(
                 rsaKeyManager.getPublicKey().getEncoded());
     }
 }

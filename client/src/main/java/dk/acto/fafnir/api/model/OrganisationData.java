@@ -22,7 +22,7 @@ public class OrganisationData implements Serializable {
     ProviderConfiguration providerConfiguration;
     Instant created;
 
-    public final static OrganisationData DEFAULT = OrganisationData.builder()
+    public static final OrganisationData DEFAULT = OrganisationData.builder()
             .created(Instant.now())
             .organisationId("default")
             .organisationName("Default Organisation")
