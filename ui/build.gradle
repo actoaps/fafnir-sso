@@ -37,6 +37,6 @@ sourceSets {
 }
 
 
-processResources.dependsOn compileSass, copyTemplates, copyAssets
+processResources.dependsOn compileSass, copyAssets, copyTemplates
 compileSass.finalizedBy minifyCss
 clean.finalizedBy cleanDist
