@@ -9,28 +9,11 @@ compileSass {
     sourceDir = project.file("${projectDir}/src/scss")
 }
 
-task cleanDist(type: Delete) {
-    delete "${projectDir}/dist"
-}
-
-task copyTemplates(type: Copy) {
-    from "${projectDir}/src/templates"
-    into "${projectDir}/dist/templates"
-}
-
 minifyCss {
     source = "${buildDir}/tmp/css/styles.css"
-    dest = "${projectDir}/dist/static/css/styles.css"
+    dest = "${buildDir}/resources/main/static/css/styles.css"
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDirs = ["${projectDir}/dist"]
-        }
-    }
-}
-
-processResources.dependsOn compileSass, copyTemplates
+processResources.dependsOn compileSass
 compileSass.finalizedBy minifyCss
-clean.finalizedBy cleanDist
+clean.finalizedBy
