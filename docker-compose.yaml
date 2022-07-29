@@ -4,10 +4,10 @@ services:
     build: sso
     container_name: fafnir-sso
     depends_on:
-      - samlservice
+      - saml-service
     ports:
-      - 8080:8080
-      - 6001:6001
+      - "8080:8080"
+      - "6001:6001"
     environment:
       - FAFNIR_SUCCESS=http://localhost:8080/loginredirect
       - FAFNIR_FAILURE=http://localhost:8080/loginerror
@@ -23,20 +23,18 @@ services:
     depends_on:
       - fafnir-sso
     ports:
-      - 8082:8082
+      - "8082:8082"
     environment:
       - FAFNIR_SUCCESS=http://localhost:8080/loginredirect
       - FAFNIR_FAILURE=http://localhost:8080/loginerror
       - FAFNIR_URL=http://localhost:8080
 
-  samlservice:
+  saml-service:
     image: kristophjunge/test-saml-idp:1.15
-    container_name: samlservice
+    container_name: saml-service
     ports:
       - "8081:8080"
     environment:
-      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8080/saml2/service-provider-metadata/spring-saml
-      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8080/login/saml2/sso/spring-saml
-      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localhost:8080/logout/saml2/slo
+      - SIMPLESAMLPHP_SP_ENTITY_ID=acto-saml
     volumes:
       - ./samlservice/config/authsources.php:/var/www/simplesamlphp/config/authsources.php
