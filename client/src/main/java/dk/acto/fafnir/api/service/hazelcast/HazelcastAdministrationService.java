@@ -113,9 +113,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     @Override
     public OrganisationData readOrganisation(TennantIdentifier identifier) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        return orgMap.values(entry -> identifier.matches(entry.getValue().getProviderConfiguration()))
-                .stream().findAny()
-                .orElseThrow(NoSuchOrganisation::new);
+        return orgMap.values().stream().filter(x -> identifier.matches(x.getProviderConfiguration())).
+                findAny().orElseThrow(NoSuchOrganisation::new);
     }
 
     @Override
