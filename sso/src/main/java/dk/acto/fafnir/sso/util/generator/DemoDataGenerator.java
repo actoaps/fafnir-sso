@@ -87,7 +87,7 @@ public class DemoDataGenerator {
                 .organisationId("7")
                 .organisationName("SAML Org")
                 .providerConfiguration(ProviderConfiguration.builder()
-                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .providerId(MetadataProvider.SAML.getProviderId())
                         .values(Map.of(
                                 "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
                                 "Registration Id", "spring-saml"

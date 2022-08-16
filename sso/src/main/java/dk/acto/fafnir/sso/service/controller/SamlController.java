@@ -33,7 +33,7 @@ public class SamlController {
         return new RedirectView(provider.authenticate());
     }
 
-    @GetMapping("saml/callback")
+    @GetMapping("callback")
     public RedirectView callback(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal) {
         return new RedirectView(provider.callback(SamlCredentials.builder()
                         .registrationId(principal.getRelyingPartyRegistrationId())
@@ -41,7 +41,7 @@ public class SamlController {
                 .build()).getUrl(fafnirConf));
     }
 
-    @GetMapping(value = "saml/login", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView login() {
         return new ModelAndView("organisation_picker", Map.of(
                 "loginUrl", provider.authenticate(),
@@ -49,9 +49,9 @@ public class SamlController {
         ));
     }
 
-    @PostMapping(value = "saml/login", produces = MediaType.TEXT_HTML_VALUE)
+    @PostMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginRedirect(@RequestParam String orgId) {
-        var registrationId = provider.getSamlRegistrationIds(orgId);
+        var registrationId = provider.getSamlRegistrationId(orgId);
         return new ModelAndView("redirect:/saml2/authenticate/" + registrationId);
     }
 

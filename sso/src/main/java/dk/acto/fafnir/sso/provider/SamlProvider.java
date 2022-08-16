@@ -25,7 +25,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
 
     @Override
     public String authenticate() {
-        return "saml/login";
+        return "/saml/login";
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<SamlCrede
         return AuthenticationResult.success(jwt);
     }
 
-    public String getSamlRegistrationIds(String orgId) {
+    public String getSamlRegistrationId(String orgId) {
         var org = administrationService.readOrganisation(orgId);
 
         return Optional.of(org.getProviderConfiguration())
