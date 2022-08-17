@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="en">
+
+<head>
+    <script type="application/javascript">
+        sessionStorage.setItem('jwt-token', window.location.hash.substring(1))
+        navigator.serviceWorker.register('/js/sw.js')
+            .then(reg => console.log('Registered service worker:', reg))
+            .catch(err => console.error('Could not register service worker:', err))
+    </script>
+    <title>Successful login...</title>
+    {{> metadata}}
+</head>
+<body>
+<div>
+    <div>
+        Redirecting...
+    </div>
+</div>
+</body>
+</html>
