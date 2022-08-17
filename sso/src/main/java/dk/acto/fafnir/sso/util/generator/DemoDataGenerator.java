@@ -1,16 +1,17 @@
 package dk.acto.fafnir.sso.util.generator;
 
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.ProviderConfiguration;
+import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.SamlProvider;
+import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Map;
 
 @Component
@@ -87,7 +88,7 @@ public class DemoDataGenerator {
                 .organisationId("7")
                 .organisationName("SAML Org")
                 .providerConfiguration(ProviderConfiguration.builder()
-                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .providerId(MetadataProvider.SAML.getProviderId())
                         .values(Map.of(
                                 "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
                                 "Registration Id", "spring-saml"
@@ -103,5 +104,26 @@ public class DemoDataGenerator {
         administrationService.createOrganisation(peTest);
         administrationService.createOrganisation(kaTest);
         administrationService.createOrganisation(samlTest);
+
+        var testUser = UserData.builder()
+                .created(Instant.now())
+                .subject("admin@acto.dk")
+                .name("admin")
+                .password("pass")
+                .locale(Locale.ENGLISH)
+                .metaId("1")
+                .build();
+
+        var orgPair = OrganisationSubjectPair.builder()
+                .organisationId("1")
+                .subject("admin@acto.dk")
+                .build();
+
+        var claim = ClaimData.builder()
+                .claims(new String[]{"admin"})
+                .build();
+
+        administrationService.createUser(testUser);
+        administrationService.createClaim(orgPair, claim);
     }
 }
