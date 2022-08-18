@@ -2,6 +2,7 @@ package dk.acto.fafnir.sso.service;
 
 import dk.acto.fafnir.api.exception.NoSuchProvider;
 import dk.acto.fafnir.api.model.ProviderMetaData;
+import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.api.provider.ProviderInformation;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,17 @@ public class SsoProviderService implements ProviderService {
                 .map(ProviderInformation::getMetaData)
                 .filter(metaData -> metaData.getProviderId().equals(providerId))
                 .findAny()
+                .orElseThrow(NoSuchProvider::new);
+    }
+
+    @Override
+    public String getAuthenticationUrlForProvider(String providerId) {
+        return providerInformationSet.stream()
+                .filter(pi -> pi.getMetaData().getProviderId().equals(providerId))
+                .filter(RedirectingAuthenticationProvider.class::isInstance)
+                .map(RedirectingAuthenticationProvider.class::cast)
+                .map(RedirectingAuthenticationProvider::authenticate)
+                .findFirst()
                 .orElseThrow(NoSuchProvider::new);
     }
 }

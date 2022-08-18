@@ -37,7 +37,7 @@ public interface AdministrationService {
 
     OrganisationData createOrganisation(OrganisationData source);
     OrganisationData readOrganisation(String orgId);
-    OrganisationData readOrganisation(TennantIdentifier identifier);
+    OrganisationData readOrganisation(TenantIdentifier identifier);
     OrganisationData updateOrganisation(OrganisationData source);
     OrganisationData deleteOrganisation(String source);
 
