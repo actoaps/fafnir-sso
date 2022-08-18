@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 
 @AllArgsConstructor
 public class RestfulPublicKeyProvider implements PublicKeyProvider {
-    final private String fafnirUrl;
-    final private String fafnirPort;
+    private final String fafnirUrl;
+    private final String fafnirPort;
 
     @Override
     public String getPublicKey() {

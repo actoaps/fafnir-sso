@@ -26,4 +26,9 @@ public class IamProviderService implements ProviderService {
                     .findAny()
                     .orElseThrow(NoSuchProvider::new);
     }
+
+    @Override
+    public String getAuthenticationUrlForProvider(String providerId) {
+        throw new NoSuchProvider();
+    }
 }

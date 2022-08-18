@@ -8,6 +8,7 @@ import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,11 +17,13 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
+@PreAuthorize("isAuthenticated()")
 public class ClaimsController {
     private final ProviderService providerService;
     private final AdministrationService administrationService;
@@ -36,7 +39,7 @@ public class ClaimsController {
                         .subject(userData.getSubject())
                         .organisationId(orgId)
                         .build())))
-                .toList();
+                .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
                 "isUser", true
@@ -54,7 +57,7 @@ public class ClaimsController {
                         .subject(subject)
                         .organisationId(organisationData.getOrganisationId())
                         .build())))
-                .toList();
+                .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
                 "isUser", false

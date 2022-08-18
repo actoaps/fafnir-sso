@@ -2,7 +2,6 @@ package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
-import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
@@ -19,9 +18,9 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class HazelcastAdministrationService implements AdministrationService {
-    public final static String USER_POSTFIX = "-fafnir-user";
-    public final static String ORG_POSTFIX = "-fafnir-organisation";
-    public final static String CLAIM_POSTFIX = "-fafnir-claim";
+    public static final String USER_POSTFIX = "-fafnir-user";
+    public static final String ORG_POSTFIX = "-fafnir-organisation";
+    public static final String CLAIM_POSTFIX = "-fafnir-claim";
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
     private PublicKeyProvider publicKeyProvider;
@@ -112,7 +111,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public OrganisationData readOrganisation(TennantIdentifier identifier) {
+    public OrganisationData readOrganisation(TenantIdentifier identifier) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
         return orgMap.values(entry -> identifier.matches(entry.getValue().getProviderConfiguration()))
                 .stream().findAny()

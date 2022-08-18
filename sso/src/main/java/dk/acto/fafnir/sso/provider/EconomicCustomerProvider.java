@@ -11,12 +11,10 @@ import dk.acto.fafnir.sso.provider.economic.EconomicCustomer;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Locale;

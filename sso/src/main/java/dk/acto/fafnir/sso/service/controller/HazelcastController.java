@@ -1,8 +1,11 @@
 package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.conf.FafnirConf;
+import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
+import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -17,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -27,7 +32,8 @@ import java.util.TreeMap;
 public class HazelcastController {
     private final HazelcastProvider provider;
     private final FafnirConf fafnirConf;
-
+    private final AdministrationService administrationService;
+    private final ProviderService providerService;
     @GetMapping
     public RedirectView authenticate() {
         return new RedirectView(provider.authenticate());
@@ -64,6 +70,20 @@ public class HazelcastController {
         orgs.ifPresent(s -> model.put("orgs", s));
 
         return new ModelAndView("hazelcast_login", model);
+    }
+
+    @GetMapping(value = "alt", produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView alternativePicker() {
+        return new ModelAndView("organisation_picker", Map.of(
+                "loginUrl", "hazelcast/alt",
+                "orgs", administrationService.readOrganisations()
+        ));
+    }
+
+    @PostMapping(value = "alt", produces = MediaType.TEXT_HTML_VALUE)
+    public RedirectView alternativeRedirect(@RequestParam String orgId) {
+        var org = administrationService.readOrganisation(orgId);
+        return new RedirectView("/" + providerService.getAuthenticationUrlForProvider(org.getProviderConfiguration().getProviderId()));
     }
 
     @PostConstruct
