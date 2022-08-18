@@ -1,6 +1,5 @@
 package dk.acto.fafnir.iam.security.conf;
 
-import dk.acto.fafnir.client.JwtFilter;
 import dk.acto.fafnir.client.JwtValidator;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;

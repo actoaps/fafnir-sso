@@ -14,6 +14,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -26,7 +27,11 @@ public class JwtCookieFilter extends GenericFilterBean {
 
         var cast = (HttpServletRequest) request;
 
-        Arrays.stream(cast.getCookies()).filter(x -> x.getName().equals("jwt")).findAny()
+        Arrays.stream(
+                Optional.ofNullable(cast.getCookies())
+                        .orElse(new Cookie[]{})
+                )
+                .filter(x -> x.getName().equals("jwt")).findAny()
                 .map(Cookie::getValue)
                 .map(validator::decodeToken)
                 .ifPresent(x -> SecurityContextHolder.getContext().setAuthentication(x));
