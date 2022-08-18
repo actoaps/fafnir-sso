@@ -91,7 +91,7 @@ public class DemoDataGenerator {
                         .providerId(MetadataProvider.SAML.getProviderId())
                         .values(Map.of(
                                 "Metadata Location", "http://localhost:8081/simplesaml/saml2/idp/metadata.php",
-                                "Registration Id", "spring-saml"
+                                "Registration Id", "acto-saml"
                         ))
                         .build()
                 )

@@ -26,7 +26,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
 
     @Override
     public String authenticate() {
-        return "saml/login";
+        return "/saml/login";
     }
 
     @Override
