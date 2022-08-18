@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true, securedEnabled = true)
 public class WebSecurityConf extends WebSecurityConfigurerAdapter {
 
-    private final JwtFilter jwtFilter;
+    private final JwtCookieFilter jwtFilter;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

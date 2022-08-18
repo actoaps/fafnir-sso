@@ -28,9 +28,4 @@ public class FafnirConfiguration {
         return new JwtValidator(publicKeyProvider, authoritiesProvider);
     }
 
-    @Bean
-    public JwtFilter jwtFilter(JwtValidator jwtValidator) {
-        return new JwtFilter(jwtValidator);
-    }
-
 }

@@ -4,10 +4,8 @@
 
 <head>
     <script type="application/javascript">
-        sessionStorage.setItem('jwt-token', window.location.hash.substring(1))
-        navigator.serviceWorker.register('/js/sw.js')
-            .then(reg => console.log('Registered service worker:', reg))
-            .catch(err => console.error('Could not register service worker:', err))
+        document.cookie = "jwt=" + window.location.hash.substring(1) + ';max-age=86400;path=/;samesite=lax;secure'
+        setTimeout(() => window.location.replace('/iam/usr/page/1'), 500)
     </script>
     <title>Successful login...</title>
     {{> metadata}}
