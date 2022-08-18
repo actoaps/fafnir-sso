@@ -1,5 +1,5 @@
 package dk.acto.fafnir.api.model;
 
-public interface TennantIdentifier {
+public interface TenantIdentifier {
     boolean matches(ProviderConfiguration test);
 }

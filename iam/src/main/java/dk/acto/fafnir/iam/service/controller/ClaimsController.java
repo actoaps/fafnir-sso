@@ -8,6 +8,7 @@ import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
+@PreAuthorize("isAuthenticated()")
 public class ClaimsController {
     private final ProviderService providerService;
     private final AdministrationService administrationService;
