@@ -1,14 +1,13 @@
 package dk.acto.fafnir.iam.service.controller;
 
 import dk.acto.fafnir.api.exception.InvalidConfiguration;
-import dk.acto.fafnir.api.model.OrganisationSupport;
-import dk.acto.fafnir.api.provider.ProviderInformation;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,6 +20,7 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/iam/org/{orgId}/pro")
+@PreAuthorize("isAuthenticated()")
 public class ProviderController {
 
     private final AdministrationService administrationService;

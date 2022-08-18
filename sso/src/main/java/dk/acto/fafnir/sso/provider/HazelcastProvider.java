@@ -30,7 +30,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
 
     @Override
     public String authenticate() {
-        return "hazelcast/login";
+        return "/hazelcast/login";
     }
 
     @Override
