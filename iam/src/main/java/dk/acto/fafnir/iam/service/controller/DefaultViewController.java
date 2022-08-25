@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
 public class DefaultViewController {
     private final AdministrationService administrationService;
 
