@@ -1,5 +1,6 @@
 package dk.acto.fafnir.iam.security.conf;
 
+import dk.acto.fafnir.iam.security.JwtCookieFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
