@@ -1,4 +1,4 @@
-package dk.acto.fafnir.iam.security.conf;
+package dk.acto.fafnir.iam.security;
 
 import dk.acto.fafnir.client.JwtValidator;
 import lombok.AllArgsConstructor;
@@ -27,10 +27,8 @@ public class JwtCookieFilter extends GenericFilterBean {
 
         var cast = (HttpServletRequest) request;
 
-        Arrays.stream(
-                Optional.ofNullable(cast.getCookies())
-                        .orElse(new Cookie[]{})
-                )
+        Arrays.stream(Optional.ofNullable(cast.getCookies())
+                        .orElse(new Cookie[]{}))
                 .filter(x -> x.getName().equals("jwt")).findAny()
                 .map(Cookie::getValue)
                 .map(validator::decodeToken)

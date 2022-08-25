@@ -1,6 +1,5 @@
 package dk.acto.fafnir.client.providers.builtin;
 
-import com.google.common.io.BaseEncoding;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
