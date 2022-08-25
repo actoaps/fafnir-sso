@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/iam/org")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
 public class OrganisationController {
     private final AdministrationService administrationService;
     private final DtoFactory dtoFactory;

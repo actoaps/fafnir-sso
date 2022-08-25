@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
 public class ClaimsController {
     private final ProviderService providerService;
     private final AdministrationService administrationService;

@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/usr")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
 public class UserController {
     private final AdministrationService administrationService;
     private final DtoFactory dtoFactory;
