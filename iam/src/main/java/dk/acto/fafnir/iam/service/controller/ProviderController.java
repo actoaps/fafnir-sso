@@ -20,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/iam/org/{orgId}/pro")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
 public class ProviderController {
 
     private final AdministrationService administrationService;

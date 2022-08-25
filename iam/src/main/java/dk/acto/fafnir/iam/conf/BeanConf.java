@@ -13,6 +13,7 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.client.providers.builtin.RestfulPublicKeyProvider;
+import dk.acto.fafnir.iam.security.IAMRoles;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,7 +100,7 @@ public class BeanConf {
             var claim = Try.of(() -> administrationService.createClaim(
                             pair,
                             ClaimData.builder()
-                                    .claims(List.of("FAFNIR_ADMIN").toArray(String[]::new))
+                                    .claims(List.of(IAMRoles.FAFNIR_ADMIN.toString()).toArray(String[]::new))
                                     .build()))
                     .recover(ClaimAlreadyExists.class, administrationService.readClaims(pair))
                             .toJavaOptional()
