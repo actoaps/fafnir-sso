@@ -1,7 +1,6 @@
 package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.config.Config;
-import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
 import dk.acto.fafnir.api.exception.NoSuchClaim;
 import dk.acto.fafnir.api.exception.NoSuchOrganisation;
@@ -11,9 +10,7 @@ import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
-import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
@@ -195,11 +192,9 @@ class HazelcastAdministrationServiceTest {
                 .isInstanceOf(NoSuchOrganisation.class);
         subject.createOrganisation(fgorg);
         var temp = subject.createClaim(fgpair, fgclaims);
-        assertThat(temp).isNotNull();
-        assertThat(temp).isEqualTo(fgclaims);
+        assertThat(temp).isNotNull().isEqualTo(fgclaims);
         var read = subject.readClaims(fgpair);
-        assertThat(read).isNotNull();
-        assertThat(read).isEqualTo(temp);
+        assertThat(read).isNotNull().isEqualTo(temp);
     }
 
     @Test
