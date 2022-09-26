@@ -3,9 +3,6 @@ package dk.acto.fafnir.sso.util.generator;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
-import dk.acto.fafnir.sso.provider.HazelcastProvider;
-import dk.acto.fafnir.sso.provider.SamlProvider;
-import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,8 +16,6 @@ import java.util.Map;
 @Profile("demo")
 public class DemoDataGenerator {
     private final AdministrationService administrationService;
-    private final HazelcastProvider hazelcastProvider;
-    private final SamlProvider samlProvider;
 
     public void generateData() {
         var actoTest = OrganisationData.builder()
@@ -33,7 +28,7 @@ public class DemoDataGenerator {
                         .build()
                 )
                 .build();
-        var HTML24Test = OrganisationData.builder()
+        var html24Test = OrganisationData.builder()
                 .created(Instant.now())
                 .organisationId("2")
                 .organisationName("HTML24")
@@ -98,7 +93,7 @@ public class DemoDataGenerator {
                 .build();
 
         administrationService.createOrganisation(actoTest);
-        administrationService.createOrganisation(HTML24Test);
+        administrationService.createOrganisation(html24Test);
         administrationService.createOrganisation(jhTest);
         administrationService.createOrganisation(omTest);
         administrationService.createOrganisation(peTest);

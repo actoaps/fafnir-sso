@@ -1,11 +1,9 @@
 package dk.acto.fafnir.sso;
 
-import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.model.ClaimData;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
-import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.client.JwtValidator;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
@@ -29,19 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestConfig.class)
 class HazelcastFlowTest {
-    private static final Pattern JWT_MATCHER = Pattern.compile("/success#(.+)$");
+    private static final Pattern JWT_MATCHER = Pattern.compile("/loginredirect#(.+)$");
 
     @Autowired
     private AdministrationService administrationService;
 
     @Autowired
-    private RsaKeyManager rsaKeyManager;
-
-    @Autowired
     private HazelcastProvider hazelcastProvider;
-
-    @Autowired
-    private HazelcastConf hazelcastConf;
 
     @Autowired
     private FafnirConf fafnirConf;
@@ -78,7 +70,7 @@ class HazelcastFlowTest {
                 .organisation("default")
                 .build());
         var url = result.getUrl(fafnirConf);
-        assertThat(url).contains("/success#");
+        assertThat(url).contains("/loginredirect#");
         var matcher = JWT_MATCHER.matcher(url);
         assertThat(matcher.find()).isTrue();
         var jwt = matcher.group(1);
@@ -104,6 +96,6 @@ class HazelcastFlowTest {
                 .organisation(OrganisationData.DEFAULT.getOrganisationId())
                 .build());
         var url = result.getUrl(fafnirConf);
-        assertThat(url).contains("/fail#");
+        assertThat(url).contains("/loginerror#");
     }
 }
