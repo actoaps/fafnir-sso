@@ -2,11 +2,11 @@ plugins {
     id 'java'
     id 'application'
     id 'org.springframework.boot' version '2.7.4'
-    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+sourceCompatibility = 18
+targetCompatibility = 18
 compileJava.options.encoding = 'UTF-8'
 
 def myVersion = System.properties['versionOverride']
