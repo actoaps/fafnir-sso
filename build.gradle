@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.sonarqube' version '3.0' apply false
+    id 'org.sonarqube' version '3.4.0.2513' apply false
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
@@ -31,7 +31,7 @@ subprojects {
 
     plugins.withId('java') {
         jacoco {
-            toolVersion = "0.8.7"
+            toolVersion = "0.8.8"
         }
 
         jacocoTestReport {

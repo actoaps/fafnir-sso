@@ -18,7 +18,7 @@ public class InMemoryKeyManager implements RsaKeyManager {
 
     public InMemoryKeyManager() {
         var keys = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
-                .andThen(x -> x.initialize(1024, new SecureRandom()))
+                .andThen(x -> x.initialize(2048, new SecureRandom()))
                 .map(KeyPairGenerator::generateKeyPair)
                 .get();
         publicKey = (RSAPublicKey) keys.getPublic();
