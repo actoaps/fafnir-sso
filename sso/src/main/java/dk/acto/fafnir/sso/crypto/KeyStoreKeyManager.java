@@ -63,7 +63,7 @@ public class KeyStoreKeyManager implements RsaKeyManager {
 
     private KeyStore createKeyStore(String keyStorePassword, String keyPassword) {
         var keyPair = Try.of(() -> KeyPairGenerator.getInstance("RSA"))
-                .andThen(x -> x.initialize(1024, new SecureRandom()))
+                .andThen(x -> x.initialize(2048, new SecureRandom()))
                 .map(KeyPairGenerator::generateKeyPair)
                 .get();
         var cert = createCertificate(keyPair);

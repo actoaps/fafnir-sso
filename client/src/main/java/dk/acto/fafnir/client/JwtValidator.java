@@ -37,19 +37,20 @@ public class JwtValidator {
                         .mapTry(y -> y.generatePublic(x))
                         .toJavaOptional()
                         .orElseThrow(InvalidPublicKey::new))
-                .map(Jwts.parser()::setSigningKey)
+                .map(x -> Jwts.parserBuilder().setSigningKey(x).build())
                 .orElseThrow(InvalidPublicKey::new);
 
         var claims = Try.of(() -> auth.matcher(authHeader))
-            .filter(Matcher::matches)
-            .map(x -> x.group(2))
-            .mapTry(decoder::parseClaimsJws)
-            .map(Jwt::getBody).getOrNull();
+                .filter(Matcher::matches)
+                .map(x -> x.group(2))
+                .mapTry(decoder::parseClaimsJws)
+                .map(Jwt::getBody)
+                .getOrNull();
 
         return Optional.ofNullable(claims).map(c -> JwtAuthentication.builder()
-                .details(mapClaims(claims))
-                .authorities(ap.mapAuthorities(claims))
-                .build())
+                        .details(mapClaims(claims))
+                        .authorities(ap.mapAuthorities(claims))
+                        .build())
                 .orElse(null);
     }
 
@@ -69,7 +70,7 @@ public class JwtValidator {
                 .build();
     }
 
-    private String[] mapRoles (Object roles) {
+    private String[] mapRoles(Object roles) {
         var builder = Stream.<String>builder();
 
         Optional.ofNullable(roles)
