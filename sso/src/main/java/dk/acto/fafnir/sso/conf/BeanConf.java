@@ -239,8 +239,8 @@ public class BeanConf {
     @Bean
     public FafnirConf fafnirConf(
             @Value("${FAFNIR_URL:http://localhost:8080}") String url,
-            @Value("${FAFNIR_SUCCESS:http://localhost:8080/success}") String success,
-            @Value("${FAFNIR_FAILURE:http://localhost:8080/fail}") String failure) {
+            @Value("${FAFNIR_SUCCESS:http://localhost:8080/loginredirect}") String success,
+            @Value("${FAFNIR_FAILURE:http://localhost:8080/loginerror}") String failure) {
         return new FafnirConf(url, success, failure);
     }
 

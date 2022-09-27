@@ -7,8 +7,8 @@ import dk.acto.fafnir.api.model.ProviderMetaData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
+import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.AuthenticationService;
-import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
@@ -26,7 +26,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     private final TokenFactory tokenFactory;
     private final AuthenticationService authenticationService;
     private final HazelcastConf hazelcastConf;
-    private final HazelcastAdministrationService administrationService;
+    private final AdministrationService administrationService;
 
     @Override
     public String authenticate() {

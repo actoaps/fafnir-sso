@@ -2,7 +2,6 @@ package dk.acto.fafnir.api.service;
 
 import dk.acto.fafnir.api.model.OrganisationSupport;
 import dk.acto.fafnir.api.model.ProviderMetaData;
-import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 
 public interface ProviderService {
     default boolean supportsClaims(String providerId) {
