@@ -83,7 +83,7 @@ public class KeyStoreKeyManager implements RsaKeyManager {
 
     private X509Certificate createCertificate(KeyPair keyPair) {
         // Prepare the information required for generating an X.509 certificate.
-        X500Name owner = new X500Name("CN=Fafnir Server");
+        var owner = new X500Name("CN=Fafnir Server");
         var signer = Try.of(() -> new JcaContentSignerBuilder("SHA256WithRSAEncryption")
                 .build(keyPair.getPrivate()))
                 .getOrElseThrow(NoSuchSignatureAlgorithm::new);
