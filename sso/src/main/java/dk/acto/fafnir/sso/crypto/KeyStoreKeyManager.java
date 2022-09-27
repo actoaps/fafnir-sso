@@ -40,7 +40,7 @@ import java.util.Date;
 @Primary
 @ConditionalOnProperty(name = {"KEYSTORE_PASS", "KEY_PASS"})
 public class KeyStoreKeyManager implements RsaKeyManager {
-    private static final String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks;" : "./fafnir.jks";
+    private static final String KEYSTORE_FILENAME = Files.exists(Path.of("/var/lib/fafnir/")) ? "/var/lib/fafnir/fafnir.jks" : "./fafnir.jks";
     private static final String KEY_ALIAS = "FAFNIR";
     private final X509Certificate certificate;
     private final RSAPrivateKey privateKey;
