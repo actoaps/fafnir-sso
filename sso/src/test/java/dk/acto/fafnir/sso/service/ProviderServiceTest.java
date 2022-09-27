@@ -21,7 +21,7 @@ class ProviderServiceTest {
     void getAcceptedProviders() {
         var result = providerService.getAcceptedProviders();
         assertThat(result).isNotNull();
-        assertThat(result.length).isGreaterThan(0);
+        assertThat(result.length).isPositive();
         assertThat(result).contains("hazelcast");
     }
 
