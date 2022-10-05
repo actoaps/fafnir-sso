@@ -28,7 +28,6 @@ public class WebSecurityConf {
                 (RelyingPartyRegistrationResolver) new DefaultRelyingPartyRegistrationResolver(updateableRelyingPartyRegistrationRepository),
                 new OpenSamlMetadataResolver());
 
-
         http.httpBasic().disable();
         http.formLogin().disable();
         http.csrf().disable();

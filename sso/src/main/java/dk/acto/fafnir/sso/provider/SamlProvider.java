@@ -2,6 +2,7 @@ package dk.acto.fafnir.sso.provider;
 
 import dk.acto.fafnir.api.exception.MissingRequiredSamlAttribute;
 import dk.acto.fafnir.api.exception.OrganisationNotUsingSaml;
+import dk.acto.fafnir.api.exception.SamlAttributeIsEmpty;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
@@ -51,7 +52,9 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
                         .filter(x -> !x.getKey().equals("email"))
                         .filter(x -> !x.getKey().equals("subject"))
                         .filter(x -> !x.getKey().equals("name"))
-                        .map(x -> x.getKey() + "=" + x.getValue().stream().findFirst())
+                        .map(x -> x.getKey() + "=" + x.getValue().stream()
+                                .findFirst()
+                                .orElseThrow(SamlAttributeIsEmpty::new))
                         .toArray(String[]::new))
                 .build();
 
