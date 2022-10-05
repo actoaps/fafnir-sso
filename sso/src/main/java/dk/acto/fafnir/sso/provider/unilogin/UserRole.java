@@ -1,17 +1,12 @@
 package dk.acto.fafnir.sso.provider.unilogin;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
+@Value
 @Builder
-@EqualsAndHashCode
 public class UserRole {
-	private final String name;
-	private final String type;
+	String name;
+	String type;
 
 	@Override
 	public String toString() {

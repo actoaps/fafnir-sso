@@ -1,5 +1,6 @@
 package dk.acto.fafnir.api.model;
 
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -26,6 +27,9 @@ public class OrganisationData implements Serializable {
             .created(Instant.now())
             .organisationId("default")
             .organisationName("Default Organisation")
+            .providerConfiguration(ProviderConfiguration.builder()
+                    .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                    .build())
             .build();
 
     public OrganisationData partialUpdate(OrganisationData updated) {
