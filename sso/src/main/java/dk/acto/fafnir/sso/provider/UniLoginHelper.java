@@ -45,7 +45,7 @@ public class UniLoginHelper {
 	}
 
 	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
-		ParameterList builder = new ParameterList();
+		var builder = new ParameterList();
 		builder.add(USER_ID, userId);
 		builder.add(TIMESTAMP, timestamp);
 		builder.add(STATE_AUTH_ENCODED, auth);
@@ -53,7 +53,7 @@ public class UniLoginHelper {
 	}
 
 	public String getAuthorizationUrl() {
-		ParameterList builder = new ParameterList();
+		var builder = new ParameterList();
 		builder.add(CLIENT_ID, getApiKey());
 		builder.add(CLIENT_SECRET, getApiSecret());
 		builder.add(PATH, Base64.encodeBase64String(getCallback().getBytes()));
