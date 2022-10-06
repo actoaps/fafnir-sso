@@ -51,13 +51,6 @@ if (System.properties['sonar.login'] != null) {
     apply plugin: 'org.sonarqube'
 
     subprojects {
-        plugins.withId('com.github.node-gradle.node') {
-            sonarqube {
-                properties {
-                    property "sonar.sources", "src"
-                }
-            }
-        }
         plugins.withId('java') {
             sonarqube {
                 properties {
