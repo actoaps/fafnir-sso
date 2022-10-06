@@ -51,7 +51,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-saml2-service-provider'
 
-    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.0'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.1'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 	implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
