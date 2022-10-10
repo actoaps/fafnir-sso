@@ -1,7 +1,6 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
@@ -27,9 +26,9 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
     public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
 
-        DecodedJWT jwtToken = JWT.decode(code);
-        String subject = jwtToken.getClaims().get("sub").asString();
-        String displayName = jwtToken.getClaims().get("email").asString();
+        var jwtToken = JWT.decode(code);
+        var subject = jwtToken.getClaims().get("sub").asString();
+        var displayName = jwtToken.getClaims().get("email").asString();
 
         var subjectActual = UserData.builder()
                 .subject(subject)
@@ -38,7 +37,7 @@ public class AppleProvider implements RedirectingAuthenticationProvider<TokenCre
         var orgActual = OrganisationData.DEFAULT;
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return AuthenticationResult.success(jwt);
     }

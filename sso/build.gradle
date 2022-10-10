@@ -36,6 +36,8 @@ mainClassName = 'dk.acto.fafnir.sso.Sso'
 
 dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
 	implementation project(':ui')
 	implementation project(':fafnir-client')
