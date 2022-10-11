@@ -145,6 +145,7 @@ This will build the whole project. Now to run both IAM & SSO, you can run the Co
 ```Bash
 docker compose up -d --build
 ```
-You should now be able to access the project. By default the Compose project, generates an admin user with the
-credentials: `FAFNIR_ADMIN:pass`. You can just open the [Hazelcast provider](http://localhost:8080/hazelcast/login) and
-login with those credentials. From there you should get redirected to the IAM dashboard.
+You should now be able to access the project. The default compose project includes the `IAM_ADMIN_PASSWORD` environment
+variable. This will give you access to IAM via the credentials: `ADMIN:pass`. You can now just open the
+[Hazelcast provider](http://localhost:8080/hazelcast/login) and login with those credentials. From there you should get
+redirected to the IAM dashboard.
