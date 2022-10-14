@@ -8,7 +8,4 @@ public class EconomicCustomer {
     private String currency;
     private String email;
     private String name;
-
-    public static class CustomerWrapper extends CollectionWrapper<EconomicCustomer>{
-    }
 }

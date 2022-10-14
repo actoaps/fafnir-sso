@@ -74,7 +74,7 @@ public class HazelcastController {
     public ModelAndView alternativePicker() {
         return new ModelAndView("organisation_picker", Map.of(
                 "loginUrl", "/hazelcast/alt",
-                "orgs", administrationService.readOrganisations()
+                "orgs", provider.getOrganisationsForProvider()
         ));
     }
 

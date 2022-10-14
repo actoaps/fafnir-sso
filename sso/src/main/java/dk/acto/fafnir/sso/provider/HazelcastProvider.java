@@ -16,7 +16,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -55,13 +58,23 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                 .orElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
     }
 
-    public OrganisationData[] getOrganisations(String subject) {
-        return administrationService.getOrganisationsForUser(subject);
+    public List<OrganisationData> getOrganisations(String subject) {
+        return Arrays.stream(administrationService.getOrganisationsForUser(subject))
+                .filter(x -> x.getProviderConfiguration().getProviderId()
+                        .equals(MetadataProvider.HAZELCAST.getProviderId()))
+                .collect(Collectors.toList());
     }
 
     public Optional<OrganisationData> getOrganisation(String orgId) {
         return Try.of(() -> administrationService.readOrganisation(orgId))
                 .toJavaOptional();
+    }
+
+    public List<OrganisationData> getOrganisationsForProvider() {
+        return Arrays.stream(administrationService.readOrganisations())
+                .filter(x -> x.getProviderConfiguration().getProviderId()
+                        .equals(MetadataProvider.HAZELCAST.getProviderId()))
+                .collect(Collectors.toList());
     }
 
     @Override

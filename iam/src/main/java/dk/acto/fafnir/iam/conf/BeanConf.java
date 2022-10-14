@@ -79,7 +79,7 @@ public class BeanConf {
             var user = Try.of(() -> administrationService.createUser(UserData.builder()
                             .name("Fafnir Admin")
                             .password(password)
-                            .subject("FAFNIR_ADMIN")
+                            .subject("ADMIN")
                             .created(Instant.now())
                             .locale(Locale.US)
                             .build()))

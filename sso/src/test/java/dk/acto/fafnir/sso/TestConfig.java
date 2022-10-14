@@ -1,6 +1,5 @@
 package dk.acto.fafnir.sso;
 
-import com.google.common.io.BaseEncoding;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.client.JwtValidator;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;

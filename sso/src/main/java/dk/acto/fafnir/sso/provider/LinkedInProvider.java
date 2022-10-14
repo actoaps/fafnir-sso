@@ -2,7 +2,6 @@ package dk.acto.fafnir.sso.provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -33,7 +32,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
 
     public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
-        OAuth2AccessToken token = Option.of(code)
+        var token = Option.of(code)
                 .toTry()
                 .mapTry(linkedInOAuth::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
@@ -42,8 +41,8 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-        final OAuthRequest profileRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/me");
-        final OAuthRequest emailRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))");
+        final var profileRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/me");
+        final var emailRequest = new OAuthRequest(Verb.GET, "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))");
         linkedInOAuth.signRequest(token, profileRequest);
         linkedInOAuth.signRequest(token, emailRequest);
         var profileResult = Try.of(() -> linkedInOAuth.execute(profileRequest).getBody())
@@ -52,9 +51,9 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
         var emailResult = Try.of(() -> linkedInOAuth.execute(emailRequest).getBody())
                 .mapTry(objectMapper::readTree)
                 .getOrNull();
-        String firstName = profileResult.get("localizedFirstName").asText();
-        String lastName = profileResult.get("localizedLastName").asText();
-        String subject = Optional.ofNullable(emailResult.get("elements"))
+        var firstName = profileResult.get("localizedFirstName").asText();
+        var lastName = profileResult.get("localizedLastName").asText();
+        var subject = Optional.ofNullable(emailResult.get("elements"))
                 .map(x -> x.get(0))
                 .map(x -> x.get("handle~"))
                 .map(x -> x.get("emailAddress"))
@@ -72,7 +71,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
         var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return AuthenticationResult.success(jwt);
     }

@@ -1,15 +1,14 @@
-version: "3.7"
+version: "3.8"
+
 services:
   fafnir-sso:
     build: sso
     container_name: fafnir-sso
-    depends_on:
-      - saml-service
     ports:
       - "8080:8080"
       - "6001:6001"
     environment:
-      - FAFNIR_SUCCESS=http://localhost:8080/loginredirect # Set to http://localhost:8082/success to use fafnir-iam.
+      - FAFNIR_SUCCESS=http://localhost:8082/success
       - FAFNIR_FAILURE=http://localhost:8080/loginerror
       - FAFNIR_URL=http://localhost:8080
       - TEST_ENABLED=true
@@ -28,14 +27,3 @@ services:
       - FAFNIR_URL=fafnir-sso
       - FAFNIR_PORT=8080
       - IAM_ADMIN_PASSWORD=pass
-
-  saml-service:
-    image: kristophjunge/test-saml-idp:1.15
-    container_name: saml-service
-    ports:
-      - "8081:8080"
-    environment:
-      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8080/saml2/service-provider-metadata/acto-saml
-      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8080/login/saml2/sso/acto-saml
-    volumes:
-      - ./samlservice/config/authsources.php:/var/www/simplesamlphp/config/authsources.php

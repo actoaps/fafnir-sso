@@ -1,7 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.conf.FafnirConf;
-import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.provider.SamlProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class SamlController {
     private final SamlProvider provider;
     private final FafnirConf fafnirConf;
-    private final AdministrationService administrationService;
 
     @GetMapping
     public RedirectView authenticate() {
@@ -46,13 +44,13 @@ public class SamlController {
     public ModelAndView login() {
         return new ModelAndView("organisation_picker", Map.of(
                 "loginUrl", provider.authenticate(),
-                "orgs", administrationService.readOrganisations()
+                "orgs", provider.getOrgsForProvider()
         ));
     }
 
     @PostMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public RedirectView loginRedirect(@RequestParam String orgId) {
-        var registrationId = provider.getSamlRegistrationIds(orgId);
+        var registrationId = provider.getSamlRegistrationId(orgId);
         return new RedirectView("/saml2/authenticate/" + registrationId, true);
     }
 

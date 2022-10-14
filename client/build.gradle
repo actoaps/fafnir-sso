@@ -32,6 +32,7 @@ if ((myVersion?.trim())){
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 

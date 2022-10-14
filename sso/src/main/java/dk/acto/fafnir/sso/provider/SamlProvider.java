@@ -15,7 +15,10 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -63,7 +66,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
         return AuthenticationResult.success(jwt);
     }
 
-    public String getSamlRegistrationIds(String orgId) {
+    public String getSamlRegistrationId(String orgId) {
         var org = administrationService.readOrganisation(orgId);
 
         return Optional.of(org.getProviderConfiguration())
@@ -73,6 +76,13 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
                 )
                 .map(RelyingPartyRegistration::getRegistrationId)
                 .orElseThrow(OrganisationNotUsingSaml::new);
+    }
+
+    public List<OrganisationData> getOrgsForProvider() {
+        return Arrays.stream(administrationService.readOrganisations())
+                .filter(x -> x.getProviderConfiguration().getProviderId()
+                        .equals(MetadataProvider.SAML.getProviderId()))
+                .collect(Collectors.toList());
     }
 
     @Override
