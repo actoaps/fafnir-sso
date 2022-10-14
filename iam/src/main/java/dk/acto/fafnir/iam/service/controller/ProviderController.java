@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 @Slf4j
@@ -54,7 +55,9 @@ public class ProviderController {
         var model = Map.of(
                 "provider", providerMetadata,
                 "supportsClaims", providerService.supportsClaims(providerMetadata.getProviderId()),
-                "providerConf", providerConf.getValues().entrySet(),
+                "providerConf", Optional.ofNullable(providerConf.getValues())
+                        .map(Map::entrySet)
+                        .orElse(Set.of()),
                 "organisation", organisation
         );
         return new ModelAndView("provider_conf", model);
@@ -64,10 +67,9 @@ public class ProviderController {
     public ModelAndView confirmProviderConfig(@PathVariable String orgId, @RequestParam Map<String, String> providerDataMap){
         var org = administrationService.readOrganisation(orgId);
         var providerConf = dtoFactory.fromMap(providerDataMap);
-        org = org.toBuilder()
+        administrationService.updateOrganisation(org.toBuilder()
                 .providerConfiguration(providerConf)
-                .build();
-        administrationService.updateOrganisation(org);
+                .build());
         return new ModelAndView("redirect:/iam/org/page/1");
     }
 

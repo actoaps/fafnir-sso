@@ -1,7 +1,6 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -30,7 +29,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
 
     public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
-        OAuth2AccessToken token = Option.of(code)
+        var token = Option.of(code)
                 .toTry()
                 .mapTry(facebookOauth::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
@@ -39,14 +38,13 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-        final OAuthRequest facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name,id");
+        final var facebookRequest = new OAuthRequest(Verb.GET, "https://graph.facebook.com/v3.0/me?fields=email,name,id");
         facebookOauth.signRequest(token, facebookRequest);
         var result = Try.of(() -> facebookOauth.execute(facebookRequest).getBody())
                 .mapTry(objectMapper::readTree)
                 .getOrNull();
         var subject = result.get("email").asText();
         var displayName = result.get("name").asText();
-        var id = result.get("id").asText();
         if (subject == null || subject.isEmpty()) {
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
@@ -58,7 +56,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
         return AuthenticationResult.success(jwt);
     }
 
