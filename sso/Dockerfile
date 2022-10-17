@@ -1,4 +1,4 @@
-FROM amazoncorretto:18-alpine
+FROM amazoncorretto:18
 
 RUN wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar
 
