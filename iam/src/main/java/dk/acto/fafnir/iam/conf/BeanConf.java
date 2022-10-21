@@ -83,7 +83,7 @@ public class BeanConf {
                             .created(Instant.now())
                             .locale(Locale.US)
                             .build()))
-                    .recover(UserAlreadyExists.class, administrationService.readUser("FAFNIR_ADMIN"))
+                    .recover(UserAlreadyExists.class, administrationService.readUser("ADMIN"))
                     .toJavaOptional()
                     .orElseThrow(NoUser::new);
 
@@ -106,7 +106,7 @@ public class BeanConf {
                             .toJavaOptional()
                             .orElseThrow(NoClaimData::new);
 
-            log.info(String.format("Successfully created FAFNIR_ADMIN user with following claims: %s", claim));
+            log.info(String.format("Successfully created ADMIN user with following claims: %s", claim));
         };
     }
 }
