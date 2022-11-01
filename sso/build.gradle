@@ -78,7 +78,7 @@ dependencies {
 
 	//WSDL / Apache-cxf stuff
 	runtimeOnly 'org.apache.cxf:cxf-rt-frontend-jaxws:3.5.3'
-	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.5.3'
+	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.5.4'
 }
 
 task downloadWSDLWsiBruger(type: Download) {
