@@ -4,6 +4,7 @@ import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.model.OrganisationData;
 import dk.acto.fafnir.api.model.ProviderMetaData;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
@@ -30,10 +31,11 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     private final AuthenticationService authenticationService;
     private final HazelcastConf hazelcastConf;
     private final AdministrationService administrationService;
+    private final FafnirConf fafnirConf;
 
     @Override
     public String authenticate() {
-        return "/hazelcast/login";
+        return fafnirConf.buildUrl("/hazelcast/login");
     }
 
     @Override

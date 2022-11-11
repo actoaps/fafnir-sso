@@ -30,14 +30,14 @@ public class SamlController {
 
     @GetMapping
     public RedirectView authenticate() {
-        return new RedirectView(provider.authenticate(), true);
+        return new RedirectView(provider.authenticate());
     }
 
     @GetMapping("callback")
     public RedirectView callback(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal) {
         return new RedirectView(provider.callback(
                 principal
-        ).getUrl(fafnirConf), true);
+        ).getUrl(fafnirConf));
     }
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
@@ -51,7 +51,7 @@ public class SamlController {
     @PostMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public RedirectView loginRedirect(@RequestParam String orgId) {
         var registrationId = provider.getSamlRegistrationId(orgId);
-        return new RedirectView("/saml2/authenticate/" + registrationId, true);
+        return new RedirectView(fafnirConf.buildUrl("/saml2/authenticate/" + registrationId));
     }
 
     @PostConstruct
