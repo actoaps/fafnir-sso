@@ -4,6 +4,7 @@ import dk.acto.fafnir.api.exception.MissingRequiredSamlAttribute;
 import dk.acto.fafnir.api.exception.OrganisationNotUsingSaml;
 import dk.acto.fafnir.api.exception.SamlAttributeIsEmpty;
 import dk.acto.fafnir.api.model.*;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
@@ -27,10 +28,11 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
     private final UpdateableRelyingPartyRegistrationRepository relyingPartyRegistrations;
     private final TokenFactory tokenFactory;
     private final AdministrationService administrationService;
+    private final FafnirConf fafnirConf;
 
     @Override
     public String authenticate() {
-        return "/saml/login";
+        return fafnirConf.buildUrl("/saml/login");
     }
 
     @Override

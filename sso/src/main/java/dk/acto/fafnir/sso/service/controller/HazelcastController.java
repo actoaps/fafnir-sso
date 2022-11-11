@@ -49,7 +49,7 @@ public class HazelcastController {
         email.ifPresent(s -> redirectAttributes.addFlashAttribute("email", s));
         orgId.ifPresent(s -> redirectAttributes.addFlashAttribute("orgId", s));
 
-        return new RedirectView("/hazelcast/login", true);
+        return new RedirectView(fafnirConf.buildUrl("/hazelcast/login"));
     }
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
@@ -73,7 +73,7 @@ public class HazelcastController {
     @GetMapping(value = "alt", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView alternativePicker() {
         return new ModelAndView("organisation_picker", Map.of(
-                "loginUrl", "/hazelcast/alt",
+                "loginUrl", fafnirConf.buildUrl("/hazelcast/alt"),
                 "orgs", provider.getOrganisationsForProvider()
         ));
     }
@@ -81,7 +81,7 @@ public class HazelcastController {
     @PostMapping(value = "alt", produces = MediaType.TEXT_HTML_VALUE)
     public RedirectView alternativeRedirect(@RequestParam String orgId) {
         var org = administrationService.readOrganisation(orgId);
-        return new RedirectView(providerService.getAuthenticationUrlForProvider(org.getProviderConfiguration().getProviderId()), true);
+        return new RedirectView(providerService.getAuthenticationUrlForProvider(org.getProviderConfiguration().getProviderId()));
     }
 
     @PostConstruct
