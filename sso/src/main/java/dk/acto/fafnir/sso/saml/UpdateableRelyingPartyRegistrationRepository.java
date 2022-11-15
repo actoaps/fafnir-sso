@@ -26,7 +26,8 @@ public class UpdateableRelyingPartyRegistrationRepository
     }
 
     public Optional<RelyingPartyRegistration> findById(String registrationId) {
-        return Optional.ofNullable(relyingPartyProperties.get(registrationId));
+        return Optional.ofNullable(registrationId)
+                .map(relyingPartyProperties::get);
     }
 
     @Override

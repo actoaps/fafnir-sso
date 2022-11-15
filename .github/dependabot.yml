@@ -15,6 +15,21 @@ updates:
     schedule:
       interval: "monthly"
 
+  - package-ecosystem: "gradle"
+    directory: "/iam"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/iam"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "gradle"
+    directory: "/ui"
+    schedule:
+      interval: "monthly"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
