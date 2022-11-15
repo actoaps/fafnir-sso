@@ -4,8 +4,8 @@ plugins {
     id "signing"
 }
 
-sourceCompatibility = 18
-targetCompatibility = 18
+sourceCompatibility = 17
+targetCompatibility = 17
 compileJava.options.encoding = "UTF-8"
 
 repositories {
@@ -43,13 +43,13 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    implementation 'com.hazelcast:hazelcast:5.1.4'
+    implementation 'com.hazelcast:hazelcast:5.2.0'
     implementation 'com.google.guava:guava:31.1-jre'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     implementation 'org.springframework:spring-context:5.3.23'
-    implementation 'org.springframework.security:spring-security-web:5.7.3'
+    implementation 'org.springframework.security:spring-security-web:5.7.5'
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.1')

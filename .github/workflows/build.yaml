@@ -17,13 +17,14 @@ jobs:
 
       - name: Calculate version
         id: spell
-        uses: actoaps/version-spell@v4
+        uses: actoaps/version-spell@v5
 
-      - name: Setup JDK 18
+      - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '18'
+          java-version: '17'
+          cache: gradle
 
       - name: Gradle Build
         run: |

@@ -1,5 +1,5 @@
 plugins {
-    id "io.miret.etienne.sass" version "1.3.0"
+    id "io.miret.etienne.sass" version "1.4.1"
     id "com.magnetichq.gradle.css" version "3.0.2"
     id "java-library"
 }

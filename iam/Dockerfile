@@ -1,4 +1,4 @@
-FROM amazoncorretto:18
+FROM amazoncorretto:17
 
 RUN yum install wget -y
 RUN wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar

@@ -17,13 +17,14 @@ jobs:
 
       - name: Calculate version
         id: spell
-        uses: actoaps/version-spell@v4
+        uses: actoaps/version-spell@v5
 
-      - name: Setup JDK 18
+      - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '18'
+          java-version: '17'
+          cache: gradle
 
       - name: Gradle Build
         run: |
@@ -44,11 +45,8 @@ jobs:
 
       - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@v2
-        with:
-          platforms: arm64,amd64
 
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
@@ -60,15 +58,19 @@ jobs:
       - name: Build sso image and publish to Docker
         uses: docker/build-push-action@v3
         with:
+          cache-to: type=gha,mode=max
+          cache-from: type=gha
           context: ./sso
-          platforms: amd64,arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: actoaps/fafnir-sso:${{ steps.spell.outputs.version }},actoaps/fafnir-sso:latest
 
       - name: Build iam image and publish to Docker
         uses: docker/build-push-action@v3
         with:
+          cache-to: type=gha,mode=max
+          cache-from: type=gha
           context: ./iam
-          platforms: amd64,arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: actoaps/fafnir-iam:${{ steps.spell.outputs.version }},actoaps/fafnir-iam:latest
