@@ -8,24 +8,22 @@
 </head>
 
 <body>
-<div>
+<div class="login">
+    <h1>Login:</h1>
     <div>
-        <h1>Login:</h1>
-        <div>
-            <form action="{{loginUrl}}" method="post">
-                <div>
-                    <label for="orgId">Pick an organisation:</label>
-                    <select name="orgId" id="orgId">
-                        {{#orgs}}
-                            <option value="{{organisationId}}">{{organisationName}}</option>
-                        {{/orgs}}
-                    </select>
-                    <button class="submitButton" type="submit">
-                        Next
-                    </button>
-                </div>
-            </form>
-        </div>
+        <form action="{{loginUrl}}" method="post">
+            <div>
+                <label for="orgId">Pick an organisation:</label>
+                <select name="orgId" id="orgId">
+                    {{#orgs}}
+                    <option value="{{organisationId}}">{{organisationName}}</option>
+                    {{/orgs}}
+                </select>
+                <button class="submitButton" type="submit">
+                    Next
+                </button>
+            </div>
+        </form>
 
     </div>
 </div>
