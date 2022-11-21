@@ -32,13 +32,15 @@ public class HazelcastController {
     private final FafnirConf fafnirConf;
     private final AdministrationService administrationService;
     private final ProviderService providerService;
+
     @GetMapping
     public RedirectView authenticate() {
         return new RedirectView(provider.authenticate());
     }
 
     @PostMapping("login")
-    public RedirectView callback(@RequestParam(required = false) Optional<String> email, @RequestParam(required = false) Optional<String> password, @RequestParam(required = false) Optional<String> orgId, RedirectAttributes redirectAttributes) {
+    public RedirectView callback(@RequestParam(required = false) Optional<String> email, @RequestParam(required = false) Optional<String> password,
+                                 @RequestParam(required = false) Optional<String> orgId, RedirectAttributes redirectAttributes) {
         if (email.isPresent() && orgId.isPresent() && password.isPresent()) {
             return new RedirectView(provider.callback(UsernamePasswordCredentials.builder()
                     .username(email.get())
@@ -65,7 +67,12 @@ public class HazelcastController {
         var model = new TreeMap<String, Object>();
         email.ifPresent(s -> model.put("email", s));
         org.ifPresent(s -> model.put("org", s));
-        orgs.ifPresent(s -> model.put("orgs", s));
+        orgs.ifPresent(s -> {
+            if (s.size() == 1) {
+                model.put("org", s.get(0));
+            }
+            model.put("orgs", s);
+        });
 
         return new ModelAndView("hazelcast_login", model);
     }
