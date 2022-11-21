@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("success")
+@RequestMapping("iam/success")
 public class SuccessController {
 
     @GetMapping
