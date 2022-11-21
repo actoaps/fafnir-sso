@@ -52,13 +52,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    implementation 'com.hazelcast:hazelcast:5.2.0'
+    implementation 'com.hazelcast:hazelcast:5.2.1'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
     testImplementation project(':fafnir-client')
 
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
