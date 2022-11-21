@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<div>
+<div class="login">
     <h1>Login:</h1>
     <div>
         <form action="/hazelcast/login" method="post">
@@ -36,12 +36,14 @@
                 <input type="password" name="password" id="password">
                 <br>
                 {{/org}}
-                <a href="/hazelcast/login">Reset</a>
                 <button class="submitButton" type="submit">
                     {{#org}}Login{{/org}}{{^org}}Next &gt;{{/org}}
                 </button>
                 <br>
-                <a href="/hazelcast/alt">More Options</a>
+                <div>
+                    <a href="/hazelcast/login">Reset</a>
+                    <a href="/hazelcast/alt">More Options</a>
+                </div>
             </div>
         </form>
     </div>

@@ -58,19 +58,53 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-h1 { font-size: 38px}
-h2 { font-size: 32px }
-h3 { font-size: 28px }
-h4 { font-size: 24px }
-h5 { font-size: 20px }
-h6 { font-size: 17px }
+h1 {
+    font-size: 38px
+}
 
-h1 { font-size: 2.35em }
-h2 { font-size: 2.00em }
-h3 { font-size: 1.75em }
-h4 { font-size: 1.5em }
-h5 { font-size: 1.25em }
-h6 { font-size: 1em }
+h2 {
+    font-size: 32px
+}
+
+h3 {
+    font-size: 28px
+}
+
+h4 {
+    font-size: 24px
+}
+
+h5 {
+    font-size: 20px
+}
+
+h6 {
+    font-size: 17px
+}
+
+h1 {
+    font-size: 2.35em
+}
+
+h2 {
+    font-size: 2.00em
+}
+
+h3 {
+    font-size: 1.75em
+}
+
+h4 {
+    font-size: 1.5em
+}
+
+h5 {
+    font-size: 1.25em
+}
+
+h6 {
+    font-size: 1em
+}
 
 p {
     margin-top: 0px;
@@ -192,7 +226,8 @@ textarea {
     border: 1px solid $primary;
     cursor: pointer;
 
-    min-height: 48px;
+    min-height: 44px;
+    margin-block: $spacer-1 $spacer-2;
 
     &[disabled] {
         cursor: default;
@@ -206,6 +241,7 @@ textarea {
         outline: 0;
     }
 }
+
 textarea, select, input {
     color: $color-text;
     padding: $spacer-1 $spacer-2; /* The 6px vertically centers text on FF, ignored by Webkit */
@@ -229,4 +265,9 @@ label, legend, fieldset {
     display: block;
     margin-bottom: $spacer-1;
     font-weight: 600;
+}
+
+a + a, a + button, a + input {
+    margin-inline-start: 12px;
+
 }
