@@ -15,6 +15,10 @@ services:
       - MITID_AID=c831a44a-81c4-4ca7-97aa-21f4c5e15b4a
       - MITID_SECRET=a6MJQNl2d5nPdplyLz0JPOI3kvnp2sP6Mr5dBOLfmxSnuZ/Z/ZdHfwu0QLHzkI/6UPWOo/RuQjsTHlKoXmSuaQ==
       - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
+      - KEYSTORE_PASS=fafnir
+      - KEY_PASS=fafnir
+    volumes:
+      - ./fafnir-storage:/var/lib/fafnir
 
   fafnir-iam:
     build: iam
