@@ -49,7 +49,7 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     implementation 'org.springframework:spring-context:5.3.23'
-    implementation 'org.springframework.security:spring-security-web:5.7.5'
+    implementation 'org.springframework.security:spring-security-web:6.0.0'
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.1')
