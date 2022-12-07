@@ -15,5 +15,6 @@ public class ProviderConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
     String providerId;
-    Map<String, String> values;
+    @Builder.Default
+    Map<String, String> values = Map.of();
 }
