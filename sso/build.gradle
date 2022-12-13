@@ -71,8 +71,8 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
     implementation 'org.glassfish:jakarta.el:5.0.0-M1'
 
-	implementation 'com.github.scribejava:scribejava-apis:8.3.2'
-	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.2'
+	implementation 'com.github.scribejava:scribejava-apis:8.3.3'
+	implementation 'com.github.scribejava:scribejava-httpclient-okhttp:8.3.3'
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 

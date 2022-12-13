@@ -1,9 +1,7 @@
 package dk.acto.fafnir.api.service;
 
-import com.hazelcast.map.listener.MapListener;
 import dk.acto.fafnir.api.model.*;
-
-import java.util.UUID;
+import reactor.core.publisher.ConnectableFlux;
 
 
 public interface AdministrationService {
@@ -171,51 +169,32 @@ public interface AdministrationService {
     UserData[] getUsersForOrganisation(String orgId);
 
     /**
-     * Creates a listener, which will be called everytime a user gets created.
+     * Gets a ConnectableFlux which produces with every new user created. The Flux does not complete.
      *
-     * @param listener the user listener.
-     * @return the listener's UUID - used for deregistering the listener.
+     * @return the ConnectableFlux.
      */
-    UUID createUserListener(MapListener listener);
+    ConnectableFlux<UserData> getUserFlux();
 
     /**
-     * Removes an existing userListener.
+     * Gets a ConnectableFlux which produces with every new organisation created. The Flux does not complete.
      *
-     * @param id the listener's UUID.
-     * @return true if the listener was removed - false otherwise.
+     * @return the ConnectableFlux.
      */
-    Boolean removeUserListener(UUID id);
+    ConnectableFlux<OrganisationData> getOrganisationFlux();
 
     /**
-     * Creates a listener, which will be called everytime claims get created.
+     * Gets a ConnectableFlux which produces with every new user deleted from the
+     * administration service. The Flux does not complete.
      *
-     * @param listener the claims listener.
-     * @return the listener's UUID - used for deregistering the listener.
+     * @return the ConnectableFlux of subjects.
      */
-    UUID createClaimsListener(MapListener listener);
+    ConnectableFlux<String> getUserDeletionFlux();
 
     /**
-     * Removes an existing claimsListener.
+     * Gets a ConnectableFlux which produces with every new organisation deleted from the
+     * administration service. The Flux does not complete.
      *
-     * @param id the listener's UUID.
-     * @return true if the listener was removed - false otherwise.
+     * @return the ConnectableFlux of organisationIds.
      */
-    Boolean removeClaimsListener(UUID id);
-
-    /**
-     * Creates a listener, which will be called everytime an organisation gets created.
-     *
-     * @param listener the org listener.
-     * @return the listener's UUID - used for deregistering the listener.
-     */
-    UUID createOrgListener(MapListener listener);
-
-    /**
-     * Removes an existing orgListener.
-     *
-     * @param id the listener's UUID.
-     * @return true if the listener was removed - false otherwise.
-     */
-    Boolean removeOrgListener(UUID id);
-
+    ConnectableFlux<String> getOrganisationDeletionFlux();
 }
