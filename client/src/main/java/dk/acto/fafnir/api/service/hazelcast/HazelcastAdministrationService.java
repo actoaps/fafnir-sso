@@ -2,7 +2,8 @@ package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
-import com.hazelcast.map.listener.MapListener;
+import com.hazelcast.map.listener.EntryAddedListener;
+import com.hazelcast.map.listener.EntryRemovedListener;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
@@ -11,11 +12,12 @@ import dk.acto.fafnir.api.util.CryptoUtil;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.ConnectableFlux;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -25,7 +27,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     public static final String CLAIM_POSTFIX = "-fafnir-claim";
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
-    private PublicKeyProvider publicKeyProvider;
+    private final PublicKeyProvider publicKeyProvider;
 
     @Override
     public UserData createUser(final UserData source) {
@@ -230,40 +232,41 @@ public class HazelcastAdministrationService implements AdministrationService {
         return (long) orgMap.entrySet().size();
     }
 
+
     @Override
-    public UUID createUserListener(MapListener listener) {
+    public ConnectableFlux<UserData> getUserFlux() {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        return userMap.addEntryListener(listener, true);
+
+        return Flux.<UserData>create(x -> userMap.addEntryListener(
+                (EntryAddedListener<String, UserData>) d -> x.next(d.getValue()), true
+        )).publish();
     }
 
     @Override
-    public Boolean removeUserListener(UUID id) {
+    public ConnectableFlux<OrganisationData> getOrganisationFlux() {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+
+        return Flux.<OrganisationData>create(x -> orgMap.addEntryListener(
+                (EntryAddedListener<String, OrganisationData>) d -> x.next(d.getValue()), true
+        )).publish();
+    }
+
+    @Override
+    public ConnectableFlux<String> getUserDeletionFlux() {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
-        return userMap.removeEntryListener(id);
+
+        return Flux.<String>create(x -> userMap.addEntryListener(
+                (EntryRemovedListener<String, UserData>) d -> x.next(d.getKey()), false
+        )).publish();
     }
 
     @Override
-    public UUID createClaimsListener(MapListener listener) {
-        IMap<String, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimMap.addEntryListener(listener, true);
-    }
-
-    @Override
-    public Boolean removeClaimsListener(UUID id) {
-        IMap<String, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimMap.removeEntryListener(id);
-    }
-
-    @Override
-    public UUID createOrgListener(MapListener listener) {
+    public ConnectableFlux<String> getOrganisationDeletionFlux() {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        return orgMap.addEntryListener(listener, true);
-    }
 
-    @Override
-    public Boolean removeOrgListener(UUID id) {
-        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        return orgMap.removeEntryListener(id);
+        return Flux.<String>create(x -> orgMap.addEntryListener(
+                (EntryRemovedListener<String, OrganisationData>) d -> x.next(d.getKey()), false
+        )).publish();
     }
 
     private UserData secure(UserData source) {
@@ -271,4 +274,5 @@ public class HazelcastAdministrationService implements AdministrationService {
                 ? CryptoUtil.toPublicKey(publicKeyProvider)
                 : null);
     }
+
 }
