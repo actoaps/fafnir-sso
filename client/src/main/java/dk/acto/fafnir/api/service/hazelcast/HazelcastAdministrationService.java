@@ -2,6 +2,8 @@ package dk.acto.fafnir.api.service.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import com.hazelcast.map.listener.EntryAddedListener;
+import com.hazelcast.map.listener.EntryRemovedListener;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
@@ -10,6 +12,8 @@ import dk.acto.fafnir.api.util.CryptoUtil;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.ConnectableFlux;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.Comparator;
@@ -23,7 +27,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     public static final String CLAIM_POSTFIX = "-fafnir-claim";
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
-    private PublicKeyProvider publicKeyProvider;
+    private final PublicKeyProvider publicKeyProvider;
 
     @Override
     public UserData createUser(final UserData source) {
@@ -148,7 +152,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     public ClaimData createClaim(final OrganisationSubjectPair pair, final ClaimData source) {
         readUser(pair.getSubject());
         readOrganisation(pair.getOrganisationId());
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (claimMap.containsKey(pair)) {
             throw new ClaimAlreadyExists();
         }
@@ -158,8 +162,8 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData readClaims(final OrganisationSubjectPair pair) {
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        if (!claimMap.containsKey(pair)){
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
         }
         return claimMap.get(pair);
@@ -167,7 +171,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData updateClaims(final OrganisationSubjectPair pair, final ClaimData source) {
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
         }
@@ -177,7 +181,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public ClaimData deleteClaims(final OrganisationSubjectPair pair) {
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
         }
@@ -188,7 +192,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public OrganisationData[] getOrganisationsForUser(String subject) {
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimMap.keySet().stream().filter(x -> x.getSubject().equals(subject))
                 .map(OrganisationSubjectPair::getOrganisationId)
                 .map(this::readOrganisation)
@@ -197,7 +201,7 @@ public class HazelcastAdministrationService implements AdministrationService {
 
     @Override
     public UserData[] getUsersForOrganisation(String orgId) {
-        IMap<OrganisationSubjectPair,ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
+        IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         return claimMap.keySet().stream()
                 .filter(x -> x.getOrganisationId().equals(orgId))
                 .map(OrganisationSubjectPair::getSubject)
@@ -228,9 +232,47 @@ public class HazelcastAdministrationService implements AdministrationService {
         return (long) orgMap.entrySet().size();
     }
 
-    private UserData secure (UserData source) {
+
+    @Override
+    public ConnectableFlux<UserData> getUserFlux() {
+        IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
+
+        return Flux.<UserData>create(x -> userMap.addEntryListener(
+                (EntryAddedListener<String, UserData>) d -> x.next(d.getValue()), true
+        )).publish();
+    }
+
+    @Override
+    public ConnectableFlux<OrganisationData> getOrganisationFlux() {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+
+        return Flux.<OrganisationData>create(x -> orgMap.addEntryListener(
+                (EntryAddedListener<String, OrganisationData>) d -> x.next(d.getValue()), true
+        )).publish();
+    }
+
+    @Override
+    public ConnectableFlux<String> getUserDeletionFlux() {
+        IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
+
+        return Flux.<String>create(x -> userMap.addEntryListener(
+                (EntryRemovedListener<String, UserData>) d -> x.next(d.getKey()), false
+        )).publish();
+    }
+
+    @Override
+    public ConnectableFlux<String> getOrganisationDeletionFlux() {
+        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
+
+        return Flux.<String>create(x -> orgMap.addEntryListener(
+                (EntryRemovedListener<String, OrganisationData>) d -> x.next(d.getKey()), false
+        )).publish();
+    }
+
+    private UserData secure(UserData source) {
         return source.secure(hazelcastConf.isPasswordIsEncrypted()
                 ? CryptoUtil.toPublicKey(publicKeyProvider)
                 : null);
     }
+
 }
