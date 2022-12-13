@@ -1,7 +1,7 @@
 plugins {
-    id "java-library"
-    id "maven-publish"
-    id "signing"
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
 sourceCompatibility = 17
@@ -30,14 +30,14 @@ if ((myVersion?.trim())){
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
-    implementation "io.vavr:vavr:0.10.4"
-    annotationProcessor "io.vavr:vavr:0.10.4"
+    implementation 'io.vavr:vavr:0.10.4'
+    annotationProcessor 'io.vavr:vavr:0.10.4'
 
     compileOnly 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -50,6 +50,9 @@ dependencies {
 
     implementation 'org.springframework:spring-context:5.3.23'
     implementation 'org.springframework.security:spring-security-web:5.7.5'
+
+    implementation 'io.projectreactor:reactor-core:3.5.0'
+    testImplementation 'io.projectreactor:reactor-test:3.5.0'
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.1')

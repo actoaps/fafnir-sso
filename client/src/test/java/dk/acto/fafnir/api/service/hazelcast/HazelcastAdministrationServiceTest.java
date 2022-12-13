@@ -5,13 +5,14 @@ import com.hazelcast.core.Hazelcast;
 import dk.acto.fafnir.api.exception.NoSuchClaim;
 import dk.acto.fafnir.api.exception.NoSuchOrganisation;
 import dk.acto.fafnir.api.exception.NoSuchUser;
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.OrganisationSubjectPair;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
+import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +20,82 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class HazelcastAdministrationServiceTest {
     private final HazelcastAdministrationService subject = getService();
+
+    private static HazelcastAdministrationService getService() {
+        var config = new Config();
+        config.setProperty("hazelcast.shutdownhook.enabled", "false");
+        var network = config.getNetworkConfig();
+        network.getJoin().getMulticastConfig().setEnabled(false);
+        network.getJoin().getTcpIpConfig().setEnabled(true);
+        var instance = Hazelcast.newHazelcastInstance(config);
+
+        return new HazelcastAdministrationService(
+                instance,
+                new HazelcastConf(true,
+                        false,
+                        true,
+                        "TEST"
+                ),
+                () -> null
+        );
+    }
+
+    @Test
+    void testFlux() {
+        StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+
+        var userData1 = UserData.builder()
+                .subject("FLUX_1")
+                .password("abob")
+                .name("Alpha Bravo")
+                .build();
+        var userData2 = UserData.builder()
+                .subject("FLUX_2")
+                .password("abob")
+                .name("Alpha Bravo")
+                .build();
+        var userData3 = UserData.builder()
+                .subject("FLUX_3")
+                .password("abob")
+                .name("Alpha Bravo")
+                .build();
+
+        StepVerifier.create(subject.getUserFlux().autoConnect())
+                .then(() -> subject.createUser(userData1))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData1.getSubject()))
+                .then(() -> subject.createUser(userData2))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData2.getSubject()))
+                .then(() -> subject.createUser(userData3))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData3.getSubject()))
+                .thenCancel()
+                .verify();
+
+        var orgData1 = OrganisationData.builder()
+                .organisationId("FLUX_1")
+                .providerConfiguration(ProviderConfiguration.builder()
+                        .providerId(MetadataProvider.HAZELCAST.getProviderId())
+                        .build())
+                .organisationName("Flux Test 1")
+                .created(Instant.now())
+                .build();
+        StepVerifier.create(subject.getOrganisationFlux().autoConnect())
+                .then(() -> subject.createOrganisation(orgData1))
+                .assertNext(x -> assertThat(x.getOrganisationId()).isEqualTo(orgData1.getOrganisationId()))
+                .thenCancel()
+                .verify();
+
+        StepVerifier.create(subject.getUserDeletionFlux().autoConnect())
+                .then(() -> subject.deleteUser(userData1.getSubject()))
+                .assertNext(x -> assertThat(x).isEqualTo(userData1.getSubject()))
+                .thenCancel()
+                .verify();
+
+        StepVerifier.create(subject.getOrganisationDeletionFlux().autoConnect())
+                .then(() -> subject.deleteOrganisation(orgData1.getOrganisationId()))
+                .assertNext(x -> assertThat(x).isEqualTo(orgData1.getOrganisationId()))
+                .thenCancel()
+                .verify();
+    }
 
     @Test
     void createAndReadUser() {
@@ -52,8 +129,8 @@ class HazelcastAdministrationServiceTest {
                 .build();
 
         var result = Stream.of(
-                subject.createUser(bc),
-                subject.createUser(cd))
+                        subject.createUser(bc),
+                        subject.createUser(cd))
                 .toArray(UserData[]::new);
 
         assertThat(subject.readUsers()).contains(result);
@@ -123,7 +200,7 @@ class HazelcastAdministrationServiceTest {
                 .build();
 
         var result = Stream.of(subject.createOrganisation(acto),
-                subject.createOrganisation(bt))
+                        subject.createOrganisation(bt))
                 .toArray(OrganisationData[]::new);
 
         assertThat(subject.readOrganisations()).contains(result);
@@ -180,7 +257,7 @@ class HazelcastAdministrationServiceTest {
                 .claims(Stream.of("Picker", "Grinner", "Lover", "Sinner")
                         .toArray(String[]::new))
                 .build();
-        var fgpair =                 OrganisationSubjectPair.builder()
+        var fgpair = OrganisationSubjectPair.builder()
                 .subject(fg.getSubject())
                 .organisationId(fgorg.getOrganisationId())
                 .build();
@@ -254,24 +331,5 @@ class HazelcastAdministrationServiceTest {
         assertThat(result).isEqualTo(hiclaims);
         assertThatThrownBy(() -> subject.deleteClaims(hipair))
                 .isInstanceOf(NoSuchClaim.class);
-    }
-
-    private static HazelcastAdministrationService getService() {
-        var config = new Config();
-        config.setProperty("hazelcast.shutdownhook.enabled", "false");
-        var network = config.getNetworkConfig();
-        network.getJoin().getMulticastConfig().setEnabled(false);
-        network.getJoin().getTcpIpConfig().setEnabled(true);
-        var instance = Hazelcast.newHazelcastInstance(config);
-
-        return new HazelcastAdministrationService(
-                instance,
-                new HazelcastConf(true,
-                        false,
-                        true,
-                        "TEST"
-                ),
-                () -> null
-        );
     }
 }

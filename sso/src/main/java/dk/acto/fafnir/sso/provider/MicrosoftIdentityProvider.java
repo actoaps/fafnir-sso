@@ -1,19 +1,22 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import dk.acto.fafnir.api.exception.MSIdentityAttributeMissing;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import io.vavr.control.Option;
+import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -33,9 +36,7 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
 
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
-        var token = Option.of(data.getCode())
-                .toTry()
-                .mapTry(JWT::decode)
+        var token = Try.of(() -> JWT.decode(data.getCode()))
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
 
@@ -43,18 +44,24 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-        var subject = token.getClaims().get("email").asString();
-        var displayName = token.getClaims().get("name").asString();
-        var tenantId = token.getClaim("tid").asString();
+        var subject = Optional.ofNullable(token.getClaim("email"))
+                .map(Claim::asString)
+                .orElseThrow(MSIdentityAttributeMissing::new);
+        var displayName = Optional.ofNullable(token.getClaim("name"))
+                .map(Claim::asString)
+                .orElseThrow(MSIdentityAttributeMissing::new);
+        var tenantId = Optional.ofNullable(token.getClaim("tid"))
+                .map(Claim::asString)
+                .orElseThrow(MSIdentityAttributeMissing::new);
 
         var subjectActual = UserData.builder()
                 .subject(subject)
                 .name(displayName)
                 .build();
-        var orgActual = administrationService.readOrganisation(test -> test.getValues().get("TenantId").equals(tenantId));
+        var orgActual = administrationService.readOrganisation(test -> tenantId.equals(test.getValues().get("TenantId")));
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return AuthenticationResult.success(jwt);
     }

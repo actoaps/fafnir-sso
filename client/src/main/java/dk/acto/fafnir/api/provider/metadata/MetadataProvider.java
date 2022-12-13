@@ -11,8 +11,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MetadataProvider {
-    private MetadataProvider() {
-    }
 
     // From: https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
     private static final String PERSONAL_TENANT_GUID = "9188040d-6c67-4c5b-b112-36a304b66dad";

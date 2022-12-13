@@ -20,8 +20,8 @@ public class JwtFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         var cast = (HttpServletRequest) request;
+
         Optional.ofNullable(cast.getHeader("Authorization"))
                 .map(validator::decodeToken)
                 .ifPresent(x -> SecurityContextHolder.getContext().setAuthentication(x));
