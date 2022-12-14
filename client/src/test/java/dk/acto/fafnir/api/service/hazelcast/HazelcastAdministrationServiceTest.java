@@ -67,6 +67,8 @@ class HazelcastAdministrationServiceTest {
                 .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData2.getSubject()))
                 .then(() -> subject.createUser(userData3))
                 .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData3.getSubject()))
+                .then(() -> subject.updateUser(userData3.toBuilder().password("newpass").build()))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData3.getSubject()))
                 .thenCancel()
                 .verify();
 
@@ -93,6 +95,31 @@ class HazelcastAdministrationServiceTest {
         StepVerifier.create(subject.getOrganisationDeletionFlux().autoConnect())
                 .then(() -> subject.deleteOrganisation(orgData1.getOrganisationId()))
                 .assertNext(x -> assertThat(x).isEqualTo(orgData1.getOrganisationId()))
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void fluxNoUpdate() {
+        StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+
+        var userData1 = UserData.builder()
+                .subject("FLUX_UPDATE_1")
+                .password("abob")
+                .name("Alpha Bravo")
+                .build();
+        var userData2 = UserData.builder()
+                .subject("FLUX_UPDATE_2")
+                .password("abob")
+                .name("Alpha Bravo")
+                .build();
+
+        StepVerifier.create(subject.getUserFlux(false).autoConnect())
+                .then(() -> subject.createUser(userData1))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData1.getSubject()))
+                .then(() -> subject.updateUser(userData1.toBuilder().password("newpass").build()))
+                .then(() -> subject.createUser(userData2))
+                .assertNext(x -> assertThat(x.getSubject()).isEqualTo(userData2.getSubject()))
                 .thenCancel()
                 .verify();
     }
