@@ -170,17 +170,35 @@ public interface AdministrationService {
 
     /**
      * Gets a ConnectableFlux which produces with every new user created. The Flux does not complete.
+     * By default it will also publish on update. See {@link #getUserFlux(Boolean)}.
      *
      * @return the ConnectableFlux.
      */
     ConnectableFlux<UserData> getUserFlux();
 
     /**
-     * Gets a ConnectableFlux which produces with every new organisation created. The Flux does not complete.
+     * Gets a ConnectableFlux which produces with every new user created. The Flux does not complete.
+     *
+     * @param publishOnUpdate whether this flux should publish on update.
+     * @return the ConnectableFlux.
+     */
+    ConnectableFlux<UserData> getUserFlux(Boolean publishOnUpdate);
+
+    /**
+     * Gets a ConnectableFlux which produces with every new organisation created/updated. The Flux does not complete.
+     * By default it will also publish on update. See {@link #getOrganisationFlux(Boolean)}.
      *
      * @return the ConnectableFlux.
      */
     ConnectableFlux<OrganisationData> getOrganisationFlux();
+
+    /**
+     * Gets a ConnectableFlux which produces with every new organisation created/updated. The Flux does not complete.
+     *
+     * @param publishOnUpdate whether this flux should publish on update.
+     * @return the ConnectableFlux.
+     */
+    ConnectableFlux<OrganisationData> getOrganisationFlux(Boolean publishOnUpdate);
 
     /**
      * Gets a ConnectableFlux which produces with every new user deleted from the

@@ -4,6 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.map.listener.EntryAddedListener;
 import com.hazelcast.map.listener.EntryRemovedListener;
+import com.hazelcast.map.listener.EntryUpdatedListener;
 import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
@@ -232,23 +233,38 @@ public class HazelcastAdministrationService implements AdministrationService {
         return (long) orgMap.entrySet().size();
     }
 
-
     @Override
     public ConnectableFlux<UserData> getUserFlux() {
+        return getUserFlux(true);
+    }
+
+    @Override
+    public ConnectableFlux<UserData> getUserFlux(Boolean publishOnUpdate) {
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
 
-        return Flux.<UserData>create(x -> userMap.addEntryListener(
-                (EntryAddedListener<String, UserData>) d -> x.next(d.getValue()), true
-        )).publish();
+        return Flux.<UserData>create(x -> {
+            userMap.addEntryListener((EntryAddedListener<String, UserData>) d -> x.next(d.getValue()), true);
+            if (publishOnUpdate) {
+                userMap.addEntryListener((EntryUpdatedListener<String, UserData>) d -> x.next(d.getValue()), true);
+            }
+        }).publish();
     }
 
     @Override
     public ConnectableFlux<OrganisationData> getOrganisationFlux() {
+        return getOrganisationFlux(true);
+    }
+
+    @Override
+    public ConnectableFlux<OrganisationData> getOrganisationFlux(Boolean publishOnUpdate) {
         IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
 
-        return Flux.<OrganisationData>create(x -> orgMap.addEntryListener(
-                (EntryAddedListener<String, OrganisationData>) d -> x.next(d.getValue()), true
-        )).publish();
+        return Flux.<OrganisationData>create(x -> {
+            orgMap.addEntryListener((EntryAddedListener<String, OrganisationData>) d -> x.next(d.getValue()), true);
+            if (publishOnUpdate) {
+                orgMap.addEntryListener((EntryUpdatedListener<String, OrganisationData>) d -> x.next(d.getValue()), true);
+            }
+        }).publish();
     }
 
     @Override
