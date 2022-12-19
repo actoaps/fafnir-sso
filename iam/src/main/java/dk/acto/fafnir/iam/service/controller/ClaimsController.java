@@ -7,7 +7,6 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
-@Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/clm")
 @PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
@@ -36,9 +34,9 @@ public class ClaimsController {
                 .map(userData -> dtoFactory.toInfo(
                         orgId,
                         userData, administrationService.readClaims(OrganisationSubjectPair.builder()
-                        .subject(userData.getSubject())
-                        .organisationId(orgId)
-                        .build())))
+                                .subject(userData.getSubject())
+                                .organisationId(orgId)
+                                .build())))
                 .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
@@ -54,9 +52,9 @@ public class ClaimsController {
                 .map(organisationData -> dtoFactory.toInfo(
                         subject,
                         organisationData, administrationService.readClaims(OrganisationSubjectPair.builder()
-                        .subject(subject)
-                        .organisationId(organisationData.getOrganisationId())
-                        .build())))
+                                .subject(subject)
+                                .organisationId(organisationData.getOrganisationId())
+                                .build())))
                 .collect(Collectors.toList());
         var model = Map.of(
                 "tableData", transformed,
@@ -88,7 +86,7 @@ public class ClaimsController {
         var claims = administrationService.readClaims(OrganisationSubjectPair.builder()
                         .organisationId(orgId)
                         .subject(subject)
-                .build())
+                        .build())
                 .getClaims();
         var model = Map.of("users", users,
                 "organisations", organisations,

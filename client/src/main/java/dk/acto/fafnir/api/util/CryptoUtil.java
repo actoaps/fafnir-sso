@@ -18,9 +18,6 @@ import java.util.Base64;
 import java.util.Optional;
 
 public final class CryptoUtil {
-    private CryptoUtil() {
-    }
-
     public static String decryptPassword(String encrypted, PrivateKey privateKey) {
         return Try.of(() -> Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING"))
                 .andThenTry(x -> x.init(Cipher.DECRYPT_MODE, privateKey))

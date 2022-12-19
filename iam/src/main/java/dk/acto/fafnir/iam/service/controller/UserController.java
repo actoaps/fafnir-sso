@@ -6,7 +6,6 @@ import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,6 @@ import java.time.Instant;
 import java.util.Map;
 
 @Controller
-@Slf4j
 @AllArgsConstructor
 @RequestMapping("iam/usr")
 @PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
@@ -31,7 +29,7 @@ public class UserController {
         var maxValue = administrationService.countOrganisations();
         var pageActual = Slice.cropPage(pageNumber, maxValue);
         if (!pageActual.equals(pageNumber - 1)) {
-            return new ModelAndView("redirect:/iam/usr/page/" + (pageActual +1));
+            return new ModelAndView("redirect:/iam/usr/page/" + (pageActual + 1));
         }
         var result = administrationService.readUsers(pageActual);
         var model = dtoFactory.calculatePageData(pageActual, maxValue, "/iam/org");
@@ -70,7 +68,7 @@ public class UserController {
 
     @PostMapping("{subject}")
     public RedirectView updateUser(@ModelAttribute UserData user, @PathVariable String subject) {
-        if (! subject.equals(user.getSubject())) {
+        if (!subject.equals(user.getSubject())) {
             throw new UserUpdateFailed();
         }
         administrationService.updateUser(user);

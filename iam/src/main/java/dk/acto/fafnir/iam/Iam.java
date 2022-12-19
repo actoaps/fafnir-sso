@@ -1,8 +1,6 @@
 package dk.acto.fafnir.iam;
 
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,8 +9,6 @@ import org.springframework.context.annotation.Profile;
 import java.security.Security;
 
 @SpringBootApplication
-@AllArgsConstructor
-@Slf4j
 @Profile("!test")
 public class Iam {
 

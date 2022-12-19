@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @AllArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true, securedEnabled = true)
+@EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 public class WebSecurityConf {
 
     private final JwtCookieFilter jwtFilter;

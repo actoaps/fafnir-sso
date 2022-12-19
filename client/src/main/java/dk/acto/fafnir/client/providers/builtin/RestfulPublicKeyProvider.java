@@ -17,7 +17,7 @@ public class RestfulPublicKeyProvider implements PublicKeyProvider {
 
     @Override
     public String getPublicKey() {
-        var url = Try.of(() -> new URL(String.format("http://%s:%s/public-key", fafnirUrl, fafnirPort)))
+        var url = Try.of(() -> new URL(String.format("%s:%s/public-key", fafnirUrl, fafnirPort)))
                         .toJavaOptional()
                                 .orElseThrow(InvalidConfiguration::new);
 
