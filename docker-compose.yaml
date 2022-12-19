@@ -28,6 +28,6 @@ services:
     ports:
       - "8082:8080"
     environment:
-      - FAFNIR_URL=fafnir-sso
+      - FAFNIR_URL=http://fafnir-sso
       - FAFNIR_PORT=8080
       - IAM_ADMIN_PASSWORD=pass
