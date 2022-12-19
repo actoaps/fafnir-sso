@@ -1,7 +1,7 @@
 package dk.acto.fafnir.iam.dto;
 
 import dk.acto.fafnir.api.model.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-@Service
+@Component
 public class DtoFactory {
 
     public Map<String, Object> calculatePageData(Long pageActual, Long maxValue, String baseUrl) {
