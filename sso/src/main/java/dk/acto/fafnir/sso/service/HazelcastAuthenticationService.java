@@ -11,7 +11,6 @@ import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AuthenticationService;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,13 +18,12 @@ import java.util.Optional;
 import static dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService.CLAIM_POSTFIX;
 import static dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService.USER_POSTFIX;
 
-@Value
 @AllArgsConstructor
 @Service
 public class HazelcastAuthenticationService implements AuthenticationService {
-    HazelcastInstance hazelcastInstance;
-    HazelcastConf hazelcastConf;
-    RsaKeyManager rsaKeyManager;
+    private final HazelcastInstance hazelcastInstance;
+    private final HazelcastConf hazelcastConf;
+    private final RsaKeyManager rsaKeyManager;
 
     @Override
     public ClaimData authenticate(final String orgId, final String username, final String password) {

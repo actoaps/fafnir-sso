@@ -1,7 +1,6 @@
 package dk.acto.fafnir.api.model;
 
 import dk.acto.fafnir.api.util.CryptoUtil;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,7 +13,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Value
-@AllArgsConstructor
 @Builder(toBuilder = true)
 public class UserData implements Serializable {
     @Serial
@@ -29,10 +27,9 @@ public class UserData implements Serializable {
 
     public UserData secure(final PublicKey publicKey) {
         return this.toBuilder()
-                        .password(
-        Optional.ofNullable(publicKey)
-                .map(pk -> CryptoUtil.encryptPassword(password, pk))
-                .orElse(CryptoUtil.hashPassword(this.getPassword())))
+                .password(Optional.ofNullable(publicKey)
+                        .map(pk -> CryptoUtil.encryptPassword(password, pk))
+                        .orElse(CryptoUtil.hashPassword(this.getPassword())))
                 .build();
     }
 
@@ -49,7 +46,8 @@ public class UserData implements Serializable {
                 .password(Optional.ofNullable(updated.getPassword()).orElse(password))
                 .metaId(Optional.ofNullable(updated.getMetaId()).orElse(metaId))
                 .locale(Optional.ofNullable(updated.getLocale()).orElse(locale))
-                .created(Optional.ofNullable(created).or(() -> Optional.ofNullable(updated.getCreated()))
+                .created(Optional.ofNullable(created)
+                        .or(() -> Optional.ofNullable(updated.getCreated()))
                         .orElse(Instant.now()))
                 .build();
     }

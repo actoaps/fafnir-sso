@@ -60,7 +60,7 @@ public class BeanConf {
 
     @Bean
     public PublicKeyProvider publicKeyProvider(
-            @Value("${FAFNIR_URL:localhost}") final String fafnirUrl,
+            @Value("${FAFNIR_URL:http://localhost}") final String fafnirUrl,
             @Value("${FAFNIR_PORT:8080}") final String fafnirPort) {
         return new RestfulPublicKeyProvider(fafnirUrl, fafnirPort);
     }

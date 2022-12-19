@@ -6,7 +6,6 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @Controller
-@Slf4j
 @AllArgsConstructor
 @RequestMapping("/iam/org/{orgId}/pro")
 @PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
@@ -45,7 +43,7 @@ public class ProviderController {
     }
 
     @GetMapping("/conf")
-    public ModelAndView editProviderConfig(@PathVariable String orgId, @RequestParam(required = false) Optional<String> providerId){
+    public ModelAndView editProviderConfig(@PathVariable String orgId, @RequestParam(required = false) Optional<String> providerId) {
         var organisation = administrationService.readOrganisation(orgId);
         var providerConf = providerId.map(providerService::getProviderMetaData)
                 .map(MetadataProvider::empty)
@@ -64,7 +62,7 @@ public class ProviderController {
     }
 
     @PostMapping("/conf")
-    public ModelAndView confirmProviderConfig(@PathVariable String orgId, @RequestParam Map<String, String> providerDataMap){
+    public ModelAndView confirmProviderConfig(@PathVariable String orgId, @RequestParam Map<String, String> providerDataMap) {
         var org = administrationService.readOrganisation(orgId);
         var providerConf = dtoFactory.fromMap(providerDataMap);
         administrationService.updateOrganisation(org.toBuilder()
