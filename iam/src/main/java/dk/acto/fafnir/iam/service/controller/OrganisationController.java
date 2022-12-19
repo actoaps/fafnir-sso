@@ -6,7 +6,6 @@ import dk.acto.fafnir.api.model.Slice;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.iam.dto.DtoFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import java.time.Instant;
 import java.util.Map;
 
 @Controller
-@Slf4j
 @AllArgsConstructor
 @RequestMapping("/iam/org")
 @PreAuthorize("hasAuthority(T(dk.acto.fafnir.iam.security.IAMRoles).FAFNIR_ADMIN.toString())")
@@ -29,7 +27,7 @@ public class OrganisationController {
         var maxValue = administrationService.countOrganisations();
         var pageActual = Slice.cropPage(pageNumber, maxValue);
         if (!pageActual.equals(pageNumber - 1)) {
-            return new ModelAndView("redirect:/iam/org/page/" + (pageActual +1));
+            return new ModelAndView("redirect:/iam/org/page/" + (pageActual + 1));
         }
         var result = administrationService.readOrganisations(pageActual);
         var model = dtoFactory.calculatePageData(pageActual, maxValue, "/iam/org");
@@ -64,7 +62,7 @@ public class OrganisationController {
 
     @PostMapping("{orgId}")
     public ModelAndView updateOrganisation(@ModelAttribute OrganisationData org, @PathVariable String orgId) {
-        if(!orgId.equals(org.getOrganisationId())) {
+        if (!orgId.equals(org.getOrganisationId())) {
             throw new OrganisationUpdateFailed();
         }
         administrationService.updateOrganisation(org);
