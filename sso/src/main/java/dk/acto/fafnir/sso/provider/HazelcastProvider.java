@@ -10,6 +10,8 @@ import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.AuthenticationService;
+import dk.acto.fafnir.sso.dto.HazelcastLoginInfo;
+import dk.acto.fafnir.sso.dto.LoginResponseInfo;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
@@ -40,24 +42,37 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
 
     @Override
     public AuthenticationResult callback(final UsernamePasswordCredentials data) {
+        return authenticate(data)
+                .map(AuthenticationResult::success)
+                .orElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
+    }
+
+    public LoginResponseInfo callback(final HazelcastLoginInfo info) {
+        var data = UsernamePasswordCredentials.builder()
+                .password(info.getPassword())
+                .username(info.getEmail())
+                .organisation(info.getOrgId())
+                .build();
+
+        return authenticate(data)
+                .map(x -> LoginResponseInfo.builder().jwt(x).build())
+                .orElse(LoginResponseInfo.builder().error(FailureReason.AUTHENTICATION_FAILED).build());
+    }
+
+    public Optional<String> authenticate(final UsernamePasswordCredentials data) {
         var username = hazelcastConf.isTrimUsername()
                 ? data.getUsername().stripTrailing()
                 : data.getUsername();
         var password = data.getPassword();
         var organisation = data.getOrganisation();
 
-        var subject = administrationService.readUser(username);
-        var org = administrationService.readOrganisation(organisation);
-        return Try.of(() -> authenticationService.authenticate(organisation, username, password))
-                .toJavaOptional()
-                .map(claimData -> tokenFactory.generateToken(
-                        subject,
-                        org,
-                        claimData,
-                        getMetaData()
-                ))
-                .map(AuthenticationResult::success)
-                .orElse(AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED));
+        return Try.of(() -> {
+            var subject = administrationService.readUser(username);
+            var org = administrationService.readOrganisation(organisation);
+            var claimData = authenticationService.authenticate(organisation, username, password);
+
+            return tokenFactory.generateToken(subject, org, claimData, getMetaData());
+        }).toJavaOptional();
     }
 
     public List<OrganisationData> getOrganisations(String subject) {

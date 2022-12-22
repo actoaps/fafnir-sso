@@ -3,6 +3,8 @@ package dk.acto.fafnir.sso.service.controller;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
+import dk.acto.fafnir.sso.dto.HazelcastLoginInfo;
+import dk.acto.fafnir.sso.dto.LoginResponseInfo;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import lombok.AllArgsConstructor;
@@ -10,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -38,7 +37,13 @@ public class HazelcastController {
         return new RedirectView(provider.authenticate());
     }
 
-    @PostMapping("login")
+    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public LoginResponseInfo login(@RequestBody HazelcastLoginInfo info) {
+        return provider.callback(info);
+    }
+
+    @PostMapping(value = "login")
     public RedirectView callback(@RequestParam(required = false) Optional<String> email, @RequestParam(required = false) Optional<String> password,
                                  @RequestParam(required = false) Optional<String> orgId, RedirectAttributes redirectAttributes) {
         if (email.isPresent() && orgId.isPresent() && password.isPresent()) {
