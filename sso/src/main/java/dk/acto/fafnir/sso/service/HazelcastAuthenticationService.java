@@ -10,6 +10,7 @@ import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AuthenticationService;
+import dk.acto.fafnir.api.service.CryptoService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class HazelcastAuthenticationService implements AuthenticationService {
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
     private final RsaKeyManager rsaKeyManager;
+    private final CryptoService cryptoService;
 
     @Override
     public ClaimData authenticate(final String orgId, final String username, final String password) {
@@ -34,7 +36,8 @@ public class HazelcastAuthenticationService implements AuthenticationService {
 
         var user = Optional.ofNullable(userMap.get(username))
                 .orElseThrow(NoSuchUser::new);
-        if (!user.canAuthenticate(password, pk)){
+
+        if (!cryptoService.matches(password, user.getPassword(), pk)) {
             throw new PasswordMismatch();
         }
 
@@ -42,6 +45,6 @@ public class HazelcastAuthenticationService implements AuthenticationService {
                         .organisationId(orgId)
                         .subject(user.getSubject())
                 .build(), ClaimData.empty());
-
     }
+
 }
