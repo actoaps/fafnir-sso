@@ -9,6 +9,7 @@ import dk.acto.fafnir.api.exception.*;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.CryptoService;
 import dk.acto.fafnir.api.util.CryptoUtil;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     private final HazelcastInstance hazelcastInstance;
     private final HazelcastConf hazelcastConf;
     private final PublicKeyProvider publicKeyProvider;
+    private final CryptoService cryptoService;
 
     @Override
     public UserData createUser(final UserData source) {
@@ -286,9 +288,11 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     private UserData secure(UserData source) {
-        return source.secure(hazelcastConf.isPasswordIsEncrypted()
-                ? CryptoUtil.toPublicKey(publicKeyProvider)
-                : null);
+        var pk = hazelcastConf.isPasswordIsEncrypted() ? CryptoUtil.toPublicKey(publicKeyProvider) : null;
+
+        return source.toBuilder()
+                .password(cryptoService.encodePassword(source.getPassword(), pk))
+                .build();
     }
 
 }
