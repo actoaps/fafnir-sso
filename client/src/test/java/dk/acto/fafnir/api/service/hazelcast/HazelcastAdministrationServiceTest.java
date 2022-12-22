@@ -36,7 +36,8 @@ class HazelcastAdministrationServiceTest {
                         true,
                         "TEST"
                 ),
-                () -> null
+                () -> null,
+                new CryptoServiceImpl()
         );
     }
 
