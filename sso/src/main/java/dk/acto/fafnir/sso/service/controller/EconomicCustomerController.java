@@ -38,7 +38,7 @@ public class EconomicCustomerController{
 
     @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView loginView() {
-        return new ModelAndView("economic_login.html");
+        return new ModelAndView("economic_login");
     }
 
     @PostConstruct

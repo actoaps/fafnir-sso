@@ -10,6 +10,8 @@ import dk.acto.fafnir.api.model.OrganisationSubjectPair;
 import dk.acto.fafnir.api.model.UserData;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.api.service.CryptoService;
+import dk.acto.fafnir.api.service.hazelcast.CryptoServiceImpl;
 import dk.acto.fafnir.api.service.hazelcast.HazelcastAdministrationService;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.client.providers.builtin.RestfulPublicKeyProvider;
@@ -66,8 +68,14 @@ public class BeanConf {
     }
 
     @Bean
-    public AdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf, PublicKeyProvider publicKeyProvider) {
-        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf, publicKeyProvider);
+    public CryptoService cryptoService() {
+        return new CryptoServiceImpl();
+    }
+
+    @Bean
+    public AdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf,
+                                                       PublicKeyProvider publicKeyProvider, CryptoService cryptoService) {
+        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf, publicKeyProvider, cryptoService);
     }
 
     @Bean
