@@ -14,7 +14,7 @@
         <form action="/hazelcast/login" method="post">
             <div>
                 <label for="email">Username / email:</label>
-                <input type="text" name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
+                <input {{#usernameIsEmail}}type="email"{{/usernameIsEmail}}{{^usernameIsEmai}}type="text"{{/usernameIsEmai}} name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
                 <br>
                 {{#email}}
                 <label for="orgId">Organisation:</label>

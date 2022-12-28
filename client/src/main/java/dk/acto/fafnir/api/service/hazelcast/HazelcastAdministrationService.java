@@ -33,7 +33,9 @@ public class HazelcastAdministrationService implements AdministrationService {
     private final CryptoService cryptoService;
 
     @Override
-    public UserData createUser(final UserData source) {
+    public UserData createUser(final UserData src) {
+        var source = hazelcastRules(src);
+
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         if (userMap.containsKey(source.getSubject())) {
             throw new UserAlreadyExists();
@@ -47,7 +49,9 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public UserData readUser(String subject) {
+    public UserData readUser(final String source) {
+        var subject = hazelcastRules(source);
+
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         return Optional.ofNullable(userMap.get(subject))
                 .orElseThrow(NoSuchUser::new);
@@ -70,12 +74,13 @@ public class HazelcastAdministrationService implements AdministrationService {
     @Override
     public UserData updateUser(final UserData source) {
         var subject = Optional.ofNullable(source.getSubject())
+                .map(this::hazelcastRules)
                 .orElseThrow(NoSubject::new);
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         if (!userMap.containsKey(subject)) {
             throw new NoSuchUser();
         }
-        var updated = Optional.of(userMap.get(subject))
+        var updated = Optional.ofNullable(userMap.get(subject))
                 .map(x -> x.partialUpdate(source))
                 .orElseThrow(UserUpdateFailed::new);
 
@@ -85,7 +90,9 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public UserData deleteUser(String subject) {
+    public UserData deleteUser(final String source) {
+        var subject = hazelcastRules(source);
+
         IMap<String, UserData> userMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + USER_POSTFIX);
         if (!userMap.containsKey(subject)) {
             throw new NoSuchUser();
@@ -152,7 +159,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public ClaimData createClaim(final OrganisationSubjectPair pair, final ClaimData source) {
+    public ClaimData createClaim(final OrganisationSubjectPair pairSource, final ClaimData source) {
+        var pair = hazelcastRules(pairSource);
         readUser(pair.getSubject());
         readOrganisation(pair.getOrganisationId());
         IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
@@ -164,7 +172,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public ClaimData readClaims(final OrganisationSubjectPair pair) {
+    public ClaimData readClaims(final OrganisationSubjectPair source) {
+        var pair = hazelcastRules(source);
         IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
@@ -173,7 +182,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public ClaimData updateClaims(final OrganisationSubjectPair pair, final ClaimData source) {
+    public ClaimData updateClaims(final OrganisationSubjectPair pairSource, final ClaimData source) {
+        var pair = hazelcastRules(pairSource);
         IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
@@ -183,7 +193,8 @@ public class HazelcastAdministrationService implements AdministrationService {
     }
 
     @Override
-    public ClaimData deleteClaims(final OrganisationSubjectPair pair) {
+    public ClaimData deleteClaims(final OrganisationSubjectPair source) {
+        var pair = hazelcastRules(source);
         IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
         if (!claimMap.containsKey(pair)) {
             throw new NoSuchClaim();
@@ -196,7 +207,7 @@ public class HazelcastAdministrationService implements AdministrationService {
     @Override
     public OrganisationData[] getOrganisationsForUser(String subject) {
         IMap<OrganisationSubjectPair, ClaimData> claimMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + CLAIM_POSTFIX);
-        return claimMap.keySet().stream().filter(x -> x.getSubject().equals(subject))
+        return claimMap.keySet().stream().filter(x -> x.getSubject().equals(hazelcastRules(subject)))
                 .map(OrganisationSubjectPair::getOrganisationId)
                 .map(this::readOrganisation)
                 .toArray(OrganisationData[]::new);
@@ -292,6 +303,29 @@ public class HazelcastAdministrationService implements AdministrationService {
 
         return source.toBuilder()
                 .password(cryptoService.encodePassword(source.getPassword(), pk))
+                .build();
+    }
+
+    private String hazelcastRules(final String source) {
+        var subject = hazelcastConf.isTrimUsername()
+                ? source.trim()
+                : source;
+        return hazelcastConf.isUsernameIsEmail()
+                ? subject.toLowerCase()
+                : subject;
+    }
+
+    private OrganisationSubjectPair hazelcastRules(final OrganisationSubjectPair source) {
+        var subject = hazelcastRules(source.getSubject());
+        return source.toBuilder()
+                .subject(subject)
+                .build();
+    }
+
+    private UserData hazelcastRules(final UserData source) {
+        var subject = hazelcastRules(source.getSubject());
+        return source.toBuilder()
+                .subject(subject)
                 .build();
     }
 
