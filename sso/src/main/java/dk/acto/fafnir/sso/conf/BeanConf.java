@@ -89,8 +89,7 @@ public class BeanConf {
                 .callback(fafnirConf.getUrl() + "/google/callback")
                 .defaultScope("openid email profile")
                 .build(GoogleApi20.instance()))
-                .map(oAuth20Service -> new GoogleProvider(
-                        oAuth20Service, tokenFactory, administrationService))
+                .map(oAuth20Service -> new GoogleProvider(oAuth20Service, tokenFactory, administrationService))
                 .toJavaOptional()
                 .orElseThrow(GoogleConfigurationBroken::new);
     }

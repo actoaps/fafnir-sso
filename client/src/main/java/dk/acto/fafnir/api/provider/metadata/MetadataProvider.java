@@ -39,7 +39,7 @@ public class MetadataProvider {
             .providerName("Google")
             .providerId("google")
             .organisationSupport(OrganisationSupport.NATIVE)
-            .inputs(List.of("Organisation Domain"))
+            .inputs(List.of("Organisation Domain", "Catchall Organisation"))
             .build();
 
     public static final ProviderMetaData HAZELCAST = ProviderMetaData.builder()
@@ -60,7 +60,7 @@ public class MetadataProvider {
             .providerName(String.format("Microsoft (Personal TenantId is : %s)", PERSONAL_TENANT_GUID))
             .providerId("msidentity")
             .organisationSupport(OrganisationSupport.NATIVE)
-            .inputs(List.of("TenantId"))
+            .inputs(List.of("TenantId", "Catchall Organisation"))
             .build();
 
     public static final ProviderMetaData MIT_ID = ProviderMetaData.builder()
