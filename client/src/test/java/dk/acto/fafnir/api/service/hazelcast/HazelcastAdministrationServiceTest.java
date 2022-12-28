@@ -31,7 +31,7 @@ class HazelcastAdministrationServiceTest {
 
         return new HazelcastAdministrationService(
                 instance,
-                new HazelcastConf(true,
+                new HazelcastConf(false,
                         false,
                         true,
                         "TEST"

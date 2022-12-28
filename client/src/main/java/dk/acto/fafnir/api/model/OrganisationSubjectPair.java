@@ -7,7 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class OrganisationSubjectPair implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
