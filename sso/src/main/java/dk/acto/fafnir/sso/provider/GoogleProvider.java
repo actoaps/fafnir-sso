@@ -1,9 +1,7 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
@@ -29,7 +27,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
-        final OAuth2AccessToken token = Option.of(code)
+        final var token = Option.of(code)
                 .toTry()
                 .mapTry(googleOauth::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
@@ -38,7 +36,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-        DecodedJWT jwtToken = JWT.decode(((OpenIdOAuth2AccessToken) token).getOpenIdToken());
+        var jwtToken = JWT.decode(((OpenIdOAuth2AccessToken) token).getOpenIdToken());
         var subject = jwtToken.getClaims().get("email").asString();
         var displayName = jwtToken.getClaims().get("name").asString();
         var providerValue = jwtToken.getClaim("hd").asString();
@@ -47,10 +45,12 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .subject(subject)
                 .name(displayName)
                 .build();
-        var orgActual = administrationService.readOrganisation(test -> test.getValues().get("hd").equals(providerValue));
+        var orgActual = administrationService.readOrganisation(
+                test -> providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation"))
+        );
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return AuthenticationResult.success(jwt);
     }
