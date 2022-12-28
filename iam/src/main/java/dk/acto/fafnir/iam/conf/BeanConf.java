@@ -82,16 +82,17 @@ public class BeanConf {
     @ConditionalOnProperty(name = "IAM_ADMIN_PASSWORD")
     public CommandLineRunner commandLineRunner(
             AdministrationService administrationService,
+            @Value("${IAM_ADMIN_SUBJECT:ADMIN}") String subject,
             @Value("${IAM_ADMIN_PASSWORD}") String password) {
         return args -> {
             var user = Try.of(() -> administrationService.createUser(UserData.builder()
                             .name("Fafnir Admin")
                             .password(password)
-                            .subject("ADMIN")
+                            .subject(subject)
                             .created(Instant.now())
                             .locale(Locale.US)
                             .build()))
-                    .recover(UserAlreadyExists.class, administrationService.readUser("ADMIN"))
+                    .recover(UserAlreadyExists.class, administrationService.readUser(subject))
                     .toJavaOptional()
                     .orElseThrow(NoUser::new);
 
@@ -114,7 +115,7 @@ public class BeanConf {
                             .toJavaOptional()
                             .orElseThrow(NoClaimData::new);
 
-            log.info(String.format("Successfully created ADMIN user with following claims: %s", claim));
+            log.info(String.format("Successfully created %s user with following claims: %s", subject, claim));
         };
     }
 }

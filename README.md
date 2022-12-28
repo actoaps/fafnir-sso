@@ -119,6 +119,7 @@ instance will try connect to other instances on the same network).
   * FAFNIR_PORT - The PORT for the Fafnir-SSO instance, default is `8080`.
   * HAZELCAST_TCP_IP_ADDRESS - The Hazelcast instance URI. By default it will run an embedded instance. (The embedded
     instance will try connect to other instances on the same network).
+  * IAM_ADMIN_SUBECT - The subject to generate for the `FAFNIR_ADMIN` user, default is `ADMIN`.
   * IAM_ADMIN_PASSWORD - If this is present, IAM will autogenerate a Hazelcast user with the claim `FAFNIR_ADMIN` which
 gives access to the IAM dashboard.
 
@@ -137,7 +138,7 @@ We also provide a Java library for interacting with Fafnir-SSO. It is called the
 [fafnir-client](https://mvnrepository.com/artifact/dk.acto/fafnir-client). And can be installed with Maven or Gradle.
 
 ## Building from Source
-Ensure that you have JDK 18 and Docker installed. Now, to build you need to run:
+Ensure that you have JDK 17 and Docker installed. Now, to build you need to run:
 ```Bash
 .\gradlew build
 ```
