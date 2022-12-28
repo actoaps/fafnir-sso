@@ -26,9 +26,4 @@ public class FafnirConfiguration {
                 .orElse(List.of());
     }
 
-    @Bean
-    public JwtValidator jwtValidator(PublicKeyProvider publicKeyProvider, AuthoritiesProvider authoritiesProvider) {
-        return new JwtValidator(publicKeyProvider, authoritiesProvider);
-    }
-
 }
