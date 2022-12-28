@@ -42,16 +42,6 @@ public class BeanConf {
     }
 
     @Bean
-    @Primary
-    public HazelcastConf hazelcastConf(
-            @Value("${HAZELCAST_MAP_NAME:fafnir-users}") String mapName,
-            @Value("${HAZELCAST_USERNAME_IS_EMAIL:false}") boolean userNameIsEmail,
-            @Value("${HAZELCAST_PASSWORD_IS_ENCRYPTED:false}") boolean passwordIsEncrypted,
-            @Value("${HAZELCAST_TRIM_USERNAME:false}") boolean trimUsername) {
-        return new HazelcastConf(userNameIsEmail, passwordIsEncrypted, trimUsername, mapName);
-    }
-
-    @Bean
     @ConditionalOnProperty(name = "HAZELCAST_TCP_IP_ADDRESS")
     public ClientConfig hazelcastInstanceConf(@Value("${HAZELCAST_TCP_IP_ADDRESS}") String address) {
         log.info("Hazelcast TCP/IP Connection Configured...");
@@ -65,17 +55,6 @@ public class BeanConf {
             @Value("${FAFNIR_URL:http://localhost}") final String fafnirUrl,
             @Value("${FAFNIR_PORT:8080}") final String fafnirPort) {
         return new RestfulPublicKeyProvider(fafnirUrl, fafnirPort);
-    }
-
-    @Bean
-    public CryptoService cryptoService() {
-        return new CryptoServiceImpl();
-    }
-
-    @Bean
-    public AdministrationService administrationService(HazelcastInstance hazelcastInstance, HazelcastConf hazelcastConf,
-                                                       PublicKeyProvider publicKeyProvider, CryptoService cryptoService) {
-        return new HazelcastAdministrationService(hazelcastInstance, hazelcastConf, publicKeyProvider, cryptoService);
     }
 
     @Bean
