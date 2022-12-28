@@ -1,6 +1,7 @@
 package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.conf.FafnirConf;
+import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
 import dk.acto.fafnir.sso.dto.HazelcastLoginInfo;
@@ -28,6 +29,7 @@ import java.util.TreeMap;
 @AllArgsConstructor
 public class HazelcastController {
     private final HazelcastProvider provider;
+    private final HazelcastConf hazelcastConf;
     private final FafnirConf fafnirConf;
     private final AdministrationService administrationService;
     private final ProviderService providerService;
@@ -70,6 +72,7 @@ public class HazelcastController {
                 .filter(x -> orgId.isEmpty());
         var org = orgId.flatMap(provider::getOrganisation);
         var model = new TreeMap<String, Object>();
+        model.put("usernameIsEmail", hazelcastConf.isUsernameIsEmail());
         email.ifPresent(s -> model.put("email", s));
         org.ifPresent(s -> model.put("org", s));
         orgs.ifPresent(s -> {

@@ -60,9 +60,7 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
     }
 
     public Optional<String> authenticate(final UsernamePasswordCredentials data) {
-        var username = hazelcastConf.isTrimUsername()
-                ? data.getUsername().stripTrailing()
-                : data.getUsername();
+        var username = hazelcastRules(data.getUsername());
         var password = data.getPassword();
         var organisation = data.getOrganisation();
 
@@ -92,6 +90,15 @@ public class HazelcastProvider implements RedirectingAuthenticationProvider<User
                 .filter(x -> x.getProviderConfiguration().getProviderId()
                         .equals(MetadataProvider.HAZELCAST.getProviderId()))
                 .collect(Collectors.toList());
+    }
+
+    private String hazelcastRules(final String source) {
+        var username = hazelcastConf.isTrimUsername()
+                ? source.stripTrailing()
+                : source;
+        return hazelcastConf.isUsernameIsEmail()
+                ? username.toLowerCase()
+                : username;
     }
 
     @Override
