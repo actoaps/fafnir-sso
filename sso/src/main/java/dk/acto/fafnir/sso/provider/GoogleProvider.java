@@ -1,6 +1,7 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
 import com.github.scribejava.apis.openid.OpenIdOAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.model.*;
@@ -12,6 +13,8 @@ import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -39,7 +42,9 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
         var jwtToken = JWT.decode(((OpenIdOAuth2AccessToken) token).getOpenIdToken());
         var subject = jwtToken.getClaims().get("email").asString();
         var displayName = jwtToken.getClaims().get("name").asString();
-        var providerValue = jwtToken.getClaim("hd").asString();
+        var providerValue = Optional.ofNullable(jwtToken.getClaim("hd"))
+                .map(Claim::asString)
+                .orElse("");
 
         var subjectActual = UserData.builder()
                 .subject(subject)
