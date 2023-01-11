@@ -1,8 +1,6 @@
 package dk.acto.fafnir.iam.security.conf;
 
-import dk.acto.fafnir.client.JwtValidator;
 import dk.acto.fafnir.client.providers.AuthoritiesProvider;
-import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import io.vavr.control.Try;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

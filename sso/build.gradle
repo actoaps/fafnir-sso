@@ -1,11 +1,13 @@
 plugins {
 	id 'java'
 	id 'application'
-	id 'com.github.bjornvester.wsdl2java' version '1.2'
 	id 'de.undercouch.download' version '5.3.0'
-    id 'org.springframework.boot' version '2.7.5'
+    id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
+	id "io.mateo.cxf-codegen" version "1.0.3"
 }
+
+import io.mateo.cxf.codegen.wsdl2java.Wsdl2Java
 
 sourceCompatibility = 17
 targetCompatibility = 17
@@ -30,6 +32,7 @@ test {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://build.shibboleth.net/maven/releases/' } // For OpenSAML
 }
 
 mainClassName = 'dk.acto.fafnir.sso.Sso'
@@ -53,7 +56,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-saml2-service-provider'
 
-    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.1'
+	implementation 'org.opensaml:opensaml-core:4.2.0'
+	implementation 'org.opensaml:opensaml-saml-api:4.2.0'
+	implementation 'org.opensaml:opensaml-saml-impl:4.2.0'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 	implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
@@ -76,31 +81,51 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 
-	//WSDL / Apache-cxf stuff
-	runtimeOnly 'org.apache.cxf:cxf-rt-frontend-jaxws:3.5.4'
-	runtimeOnly 'org.apache.cxf:cxf-rt-transports-http:3.5.4'
+	// WSDL / Apache-cxf stuff
+	implementation "jakarta.xml.ws:jakarta.xml.ws-api:4.0.0"
+	implementation "jakarta.annotation:jakarta.annotation-api:2.1.1"
+	cxfCodegen platform("org.apache.cxf:cxf-bom:4.0.0")
+	cxfCodegen 'org.apache.cxf:cxf-rt-frontend-jaxws:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-rt-transports-http:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-core:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-tools-common:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-tools-wsdlto-core:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:4.0.0'
+	cxfCodegen 'org.apache.cxf:cxf-tools-wsdlto-frontend-javascript:4.0.0'
 }
 
-task downloadWSDLWsiBruger(type: Download) {
+tasks.register('downloadWSDLWsiBruger', Download) {
 	src 'https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL'
 	dest 'src/main/resources/wsdl/wsibruger_v6.wsdl'
 }
-task downloadWSDLWsiInst(type: Download) {
+
+tasks.register('downloadWSDLWsiInst', Download) {
 	src 'https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL'
 	dest 'src/main/resources/wsdl/wsiinst_v5.wsdl'
 }
 
-wsdl2java {
-	wsdlDir = layout.projectDirectory.dir("src/main/resources/wsdl")
-	cxfVersion = "3.5.4"
-	includesWithOptions = [
-			"**/wsibruger_v6.wsdl" : ["-wsdlLocation", "https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL"],
-			"**/wsiinst_v5.wsdl" : ["-wsdlLocation", "https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL"]
-	]
-	options = ["-encoding", "UTF-8"]
+tasks.register('genWsiBruger', Wsdl2Java) {
+	toolOptions {
+		markGenerated.set(true)
+		outputDir.set(file("$buildDir/generated/sources/wsdl"))
+		wsdl.set(file('src/main/resources/wsdl/wsibruger_v6.wsdl'))
+		encoding.set("UTF-8")
+	}
+	dependsOn downloadWSDLWsiBruger, downloadWSDLWsiInst
 }
 
-tasks.wsdl2java.dependsOn tasks.downloadWSDLWsiBruger, tasks.downloadWSDLWsiInst
+tasks.register('genWsiInst', Wsdl2Java) {
+	toolOptions {
+		markGenerated.set(true)
+		outputDir.set(file("$buildDir/generated/sources/wsdl"))
+		wsdl.set(file('src/main/resources/wsdl/wsiinst_v5.wsdl'))
+		encoding.set("UTF-8")
+	}
+	dependsOn downloadWSDLWsiBruger, downloadWSDLWsiInst
+}
+
+compileJava.dependsOn wsdl2java
 
 distributions {
 	main {
