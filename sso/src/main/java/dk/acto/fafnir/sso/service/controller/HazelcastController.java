@@ -8,6 +8,7 @@ import dk.acto.fafnir.sso.dto.HazelcastLoginInfo;
 import dk.acto.fafnir.sso.dto.LoginResponseInfo;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
