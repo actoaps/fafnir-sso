@@ -9,6 +9,7 @@ import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
@@ -25,6 +26,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
     private final TokenFactory tokenFactory;
     private final ObjectMapper objectMapper;
     private final AdministrationService administrationService;
+    private final ProviderConf providerConf;
 
     public String authenticate() {
         return linkedInOAuth.getAuthorizationUrl();
@@ -58,6 +60,7 @@ public class LinkedInProvider implements RedirectingAuthenticationProvider<Token
                 .map(x -> x.get("handle~"))
                 .map(x -> x.get("emailAddress"))
                 .map(JsonNode::asText)
+                .map(providerConf::applySubjectRules)
                 .orElse(null);
 
         if (subject == null || subject.isEmpty()) {
