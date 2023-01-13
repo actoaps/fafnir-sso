@@ -8,9 +8,11 @@ import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
     private final OAuth20Service googleOauth;
     private final TokenFactory tokenFactory;
     private final AdministrationService administrationService;
+    private final ProviderConf providerConf;
 
     public String authenticate() {
         return googleOauth.getAuthorizationUrl();
@@ -29,10 +32,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
 
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
-        var code = data.getCode();
-        final var token = Option.of(code)
-                .toTry()
-                .mapTry(googleOauth::getAccessToken)
+        var token = Try.of(() -> googleOauth.getAccessToken(data.getCode()))
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
         if (token == null) {
@@ -47,7 +47,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .orElse("");
 
         var subjectActual = UserData.builder()
-                .subject(subject)
+                .subject(providerConf.applySubjectRules(subject))
                 .name(displayName)
                 .build();
         var orgActual = administrationService.readOrganisation(

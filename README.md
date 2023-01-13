@@ -113,6 +113,8 @@ Fafnir-SSO and Fafnir-IAM also have some configuration options:
 instance will try connect to other instances on the same network).
   * KEYTSTORE_PASS - The [keystore password](#persistent-key-storage).
   * KEY_PASS - The [key password](#persistent-key-storage).
+  * PROVIDER_LOWERCASE_SUBJECT - If set to true, it will transform all subjects returned from the providers to lowercase,
+default is `false`. Hazelcast is seperate, see Hazelcast specific configuration.
 
 * Fafnir-IAM
   * FAFNIR_URL - The URL used to get the public key from the SSO instance, default is `http://localhost`
