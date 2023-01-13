@@ -18,13 +18,13 @@ public class RestfulPublicKeyProvider implements PublicKeyProvider {
     @Override
     public String getPublicKey() {
         var url = Try.of(() -> new URL(String.format("%s:%s/public-key", fafnirUrl, fafnirPort)))
-                        .toJavaOptional()
-                                .orElseThrow(InvalidConfiguration::new);
+                .toJavaOptional()
+                .orElseThrow(InvalidConfiguration::new);
 
         return Try.withResources(url::openStream)
-                        .of(InputStream::readAllBytes)
+                .of(InputStream::readAllBytes)
                 .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
-                                .toJavaOptional()
+                .toJavaOptional()
                 .orElseThrow(InvalidPublicKey::new);
     }
 }

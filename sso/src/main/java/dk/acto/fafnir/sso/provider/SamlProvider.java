@@ -1,13 +1,14 @@
 package dk.acto.fafnir.sso.provider;
 
-import dk.acto.fafnir.api.exception.MissingRequiredSamlAttribute;
 import dk.acto.fafnir.api.exception.OrganisationNotUsingSaml;
+import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.exception.SamlAttributeIsEmpty;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.saml.UpdateableRelyingPartyRegistrationRepository;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
     private final TokenFactory tokenFactory;
     private final AdministrationService administrationService;
     private final FafnirConf fafnirConf;
+    private final ProviderConf providerConf;
 
     @Override
     public String authenticate() {
@@ -40,7 +42,8 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
         var subject = Optional.ofNullable(data.getFirstAttribute("email"))
                 .or(() -> Optional.ofNullable(data.getFirstAttribute("subject")))
                 .map(String::valueOf)
-                .orElseThrow(MissingRequiredSamlAttribute::new);
+                .map(providerConf::applySubjectRules)
+                .orElseThrow(ProviderAttributeMissing::new);
         var name = Optional.ofNullable(data.getFirstAttribute("name"))
                 .map(String::valueOf)
                 .orElse(subject);

@@ -7,6 +7,7 @@ import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
@@ -28,6 +29,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     private final AdministrationService administrationService;
     private final String authorityUrl;
     private final boolean isTest;
+    private final ProviderConf providerConf;
 
     @Override
     public String authenticate() {
@@ -37,7 +39,7 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
         var code = data.getCode();
-        final OAuth2AccessToken token = Option.of(code)
+        final var token = Option.of(code)
                 .toTry()
                 .mapTry(mitIdOauth::getAccessToken)
                 .onFailure(x -> log.error("Authentication failed", x))
@@ -53,13 +55,13 @@ public class MitIdProvider implements RedirectingAuthenticationProvider<TokenCre
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
         var subjectActual = UserData.builder()
-                .subject(userInfo.getLeft())
+                .subject(providerConf.applySubjectRules(userInfo.getLeft()))
                 .name(userInfo.getRight())
                 .build();
         var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
         var claimsActual = ClaimData.empty();
 
-        String jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
 
         return AuthenticationResult.success(jwt);
     }

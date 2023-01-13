@@ -15,10 +15,10 @@ public class TestProvider implements RedirectingAuthenticationProvider<TokenCred
 
     @Override
     public String authenticate() {
-        String jwt = tokenFactory.generateToken(UserData.builder()
-                                .subject("test")
-                                .name("Testy McTestface")
-                                .build(),
+        var jwt = tokenFactory.generateToken(UserData.builder()
+                        .subject("test")
+                        .name("Testy McTestface")
+                        .build(),
                 OrganisationData.DEFAULT,
                 ClaimData.empty(),
                 getMetaData());
