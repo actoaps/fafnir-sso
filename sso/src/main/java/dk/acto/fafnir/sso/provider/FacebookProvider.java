@@ -1,19 +1,26 @@
 package dk.acto.fafnir.sso.provider;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -22,16 +29,14 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
     private final ObjectMapper objectMapper;
     private final OAuth20Service facebookOauth;
     private final AdministrationService administrationService;
+    private final ProviderConf providerConf;
 
     public String authenticate() {
         return facebookOauth.getAuthorizationUrl();
     }
 
     public AuthenticationResult callback(TokenCredentials data) {
-        var code = data.getCode();
-        var token = Option.of(code)
-                .toTry()
-                .mapTry(facebookOauth::getAccessToken)
+        var token = Try.of(() -> facebookOauth.getAccessToken(data.getCode()))
                 .onFailure(x -> log.error("Authentication failed", x))
                 .getOrNull();
         if (token == null) {
@@ -50,7 +55,7 @@ public class FacebookProvider implements RedirectingAuthenticationProvider<Token
         }
 
         var subjectActual = UserData.builder()
-                .subject(subject)
+                .subject(providerConf.applySubjectRules(subject))
                 .name(displayName)
                 .build();
         var orgActual = administrationService.readOrganisation(test -> test.getProviderId().equals(getMetaData().getProviderId()));
