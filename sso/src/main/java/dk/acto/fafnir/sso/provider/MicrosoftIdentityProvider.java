@@ -3,11 +3,12 @@ package dk.acto.fafnir.sso.provider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dk.acto.fafnir.api.exception.MSIdentityAttributeMissing;
+import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import io.vavr.control.Try;
@@ -24,6 +25,7 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
     private final TokenFactory tokenFactory;
     private final OAuth20Service microsoftIdentityOauth;
     private final AdministrationService administrationService;
+    private final ProviderConf providerConf;
     private final SecureRandom random = new SecureRandom();
 
     @Override
@@ -46,13 +48,14 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
 
         var subject = Optional.ofNullable(token.getClaim("email"))
                 .map(Claim::asString)
-                .orElseThrow(MSIdentityAttributeMissing::new);
+                .map(providerConf::applySubjectRules)
+                .orElseThrow(ProviderAttributeMissing::new);
         var displayName = Optional.ofNullable(token.getClaim("name"))
                 .map(Claim::asString)
-                .orElseThrow(MSIdentityAttributeMissing::new);
+                .orElseThrow(ProviderAttributeMissing::new);
         var tenantId = Optional.ofNullable(token.getClaim("tid"))
                 .map(Claim::asString)
-                .orElseThrow(MSIdentityAttributeMissing::new);
+                .orElseThrow(ProviderAttributeMissing::new);
 
         var subjectActual = UserData.builder()
                 .subject(subject)
