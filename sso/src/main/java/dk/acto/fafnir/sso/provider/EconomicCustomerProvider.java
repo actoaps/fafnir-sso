@@ -6,6 +6,7 @@ import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.model.conf.EconomicConf;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.UsernamePasswordCredentials;
 import dk.acto.fafnir.sso.provider.economic.EconomicCustomer;
 import dk.acto.fafnir.sso.util.TokenFactory;
@@ -26,6 +27,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
     private final RestTemplate restTemplate = new RestTemplate();
     private final EconomicConf economicConf;
     private final AdministrationService administrationService;
+    private final ProviderConf providerConf;
     private final Map<String, Locale> localeMap = Map.of(
             "NOK", Locale.forLanguageTag("no-NO"),
             "SEK", Locale.forLanguageTag("sv-SE"),
@@ -54,7 +56,7 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .filter(x -> x.getEmail() != null)
                 .filter(x -> x.getEmail().equals(email))
                 .map(x -> tokenFactory.generateToken(UserData.builder()
-                                .subject(x.getCustomerNumber())
+                                .subject(providerConf.applySubjectRules(x.getCustomerNumber()))
                                 .name(x.getName())
                                 .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
                                 .build(),

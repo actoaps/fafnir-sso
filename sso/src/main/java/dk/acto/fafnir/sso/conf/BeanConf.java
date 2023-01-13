@@ -14,6 +14,7 @@ import dk.acto.fafnir.client.providers.AuthoritiesProvider;
 import dk.acto.fafnir.client.providers.PublicKeyProvider;
 import dk.acto.fafnir.client.providers.builtin.RsaKeyMangerPublicKeyProvider;
 import dk.acto.fafnir.sso.model.conf.EconomicConf;
+import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.model.conf.UniLoginConf;
 import dk.acto.fafnir.sso.provider.*;
 import dk.acto.fafnir.sso.service.AppleApi;
@@ -43,10 +44,11 @@ public class BeanConf {
             @Value("${ECONOMIC_AST}") final String secret,
             @Value("${ECONOMIC_AGT}") final String grant,
             final TokenFactory tokenFactory,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising Economic Customer Configuration...");
         var conf = new EconomicConf(secret, grant);
-        return new EconomicCustomerProvider(tokenFactory, conf, administrationService);
+        return new EconomicCustomerProvider(tokenFactory, conf, administrationService, providerConf);
     }
 
     @Bean
@@ -57,7 +59,8 @@ public class BeanConf {
             final FafnirConf fafnirConf,
             final TokenFactory tokenFactory,
             final ObjectMapper objectMapper,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising Facebook Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
                         .apiSecret(secret)
@@ -65,7 +68,7 @@ public class BeanConf {
                         .defaultScope("email")
                         .build(FacebookApi.instance()))
                 .map(oAuth20Service -> new FacebookProvider(
-                        tokenFactory, objectMapper, oAuth20Service, administrationService
+                        tokenFactory, objectMapper, oAuth20Service, administrationService, providerConf
                 ))
                 .toJavaOptional()
                 .orElseThrow(FacebookConfigurationBroken::new);
@@ -78,14 +81,15 @@ public class BeanConf {
             @Value("${GOOGLE_SECRET}") final String secret,
             final FafnirConf fafnirConf,
             final TokenFactory tokenFactory,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising Google Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
                         .apiSecret(secret)
                         .callback(fafnirConf.getUrl() + "/google/callback")
                         .defaultScope("openid email profile")
                         .build(GoogleApi20.instance()))
-                .map(oAuth20Service -> new GoogleProvider(oAuth20Service, tokenFactory, administrationService))
+                .map(oAuth20Service -> new GoogleProvider(oAuth20Service, tokenFactory, administrationService, providerConf))
                 .toJavaOptional()
                 .orElseThrow(GoogleConfigurationBroken::new);
     }
@@ -98,7 +102,8 @@ public class BeanConf {
             final FafnirConf fafnirConf,
             final TokenFactory tokenFactory,
             final ObjectMapper objectMapper,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising LinkedIn Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
                         .apiSecret(secret)
@@ -106,7 +111,7 @@ public class BeanConf {
                         .defaultScope("r_liteprofile r_emailaddress") //r_fullprofile
                         .build(LinkedInApi20.instance()))
                 .map(oAuth20Service -> new LinkedInProvider(
-                        oAuth20Service, tokenFactory, objectMapper, administrationService))
+                        oAuth20Service, tokenFactory, objectMapper, administrationService, providerConf))
                 .toJavaOptional()
                 .orElseThrow(LinkedInConfigurationBroken::new);
     }
@@ -138,6 +143,13 @@ public class BeanConf {
     }
 
     @Bean
+    public ProviderConf providerConf(@Value("${PROVIDER_LOWERCASE_SUBJECT:false}") Boolean lowercaseSubject) {
+        return ProviderConf.builder()
+                .lowercaseSubject(lowercaseSubject)
+                .build();
+    }
+
+    @Bean
     public AuthoritiesProvider authoritiesProvider() {
         return claims -> List.of();
     }
@@ -159,7 +171,8 @@ public class BeanConf {
             @Value("${APPLE_AID}") final String appId,
             @Value("${APPLE_SECRET}") final String secret,
             final FafnirConf fafnirConf,
-            final TokenFactory tokenFactory
+            final TokenFactory tokenFactory,
+            final ProviderConf providerConf
     ) {
         log.info("Initialising Apple Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
@@ -168,7 +181,7 @@ public class BeanConf {
                         .defaultScope("openid name email")
                         .responseType("code id_token")
                         .build(new AppleApi()))
-                .map(oAuth20Service -> new AppleProvider(oAuth20Service, tokenFactory))
+                .map(oAuth20Service -> new AppleProvider(oAuth20Service, tokenFactory, providerConf))
                 .toJavaOptional()
                 .orElseThrow(AppleConfigurationBroken::new);
     }
@@ -183,7 +196,8 @@ public class BeanConf {
             final FafnirConf fafnirConf,
             final TokenFactory tokenFactory,
             final ObjectMapper objectMapper,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising MitID Configuration...");
         return Try.of(() -> new ServiceBuilder(clientId)
                         .apiSecret(secret)
@@ -196,7 +210,8 @@ public class BeanConf {
                         objectMapper,
                         administrationService,
                         authorityUrl,
-                        test.isPresent()))
+                        test.isPresent(),
+                        providerConf))
                 .toJavaOptional()
                 .orElseThrow(MitIdConfigurationBroken::new);
     }
@@ -209,7 +224,8 @@ public class BeanConf {
             @Value("${MSID_TENANT}") final String tenant,
             final FafnirConf fafnirConf,
             final TokenFactory tokenFactory,
-            final AdministrationService administrationService) {
+            final AdministrationService administrationService,
+            final ProviderConf providerConf) {
         log.info("Initialising Microsoft Identity Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
                         .apiSecret(secret)
@@ -218,7 +234,7 @@ public class BeanConf {
                         .defaultScope("openid email profile")
                         .build(new MicrosoftIdentityApi(tenant)))
                 .map(oAuth20Service -> new MicrosoftIdentityProvider(
-                        tokenFactory, oAuth20Service, administrationService))
+                        tokenFactory, oAuth20Service, administrationService, providerConf))
                 .toJavaOptional()
                 .orElseThrow(MicrosoftConfigurationBroken::new);
     }
