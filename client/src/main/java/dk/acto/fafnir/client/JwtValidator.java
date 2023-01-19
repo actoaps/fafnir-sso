@@ -63,6 +63,7 @@ public class JwtValidator {
                                 .map(Locale::forLanguageTag)
                                 .orElse(null))
                         .metaId(claims.get("mId", String.class))
+                        .providerOrg(claims.get("provider_org", String.class))
                         .created(claims.getIssuedAt().toInstant())
                         .build())
                 .organisationId(claims.get("org_id", String.class))
