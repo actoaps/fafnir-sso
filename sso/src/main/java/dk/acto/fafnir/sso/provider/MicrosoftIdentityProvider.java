@@ -62,7 +62,8 @@ public class MicrosoftIdentityProvider implements RedirectingAuthenticationProvi
                 .name(displayName)
                 .build();
         var orgActual = administrationService.readOrganisation(
-                test -> tenantId.equals(test.getValues().get("TenantId")) || "true".equals(test.getValues().get("Catchall Organisation"))
+                test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
+                        (tenantId.equals(test.getValues().get("TenantId")) || "true".equals(test.getValues().get("Catchall Organisation")))
         );
         var claimsActual = ClaimData.empty();
 
