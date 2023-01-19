@@ -56,7 +56,7 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
         );
         var claimsActual = ClaimData.empty();
 
-        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
 
         return AuthenticationResult.success(jwt);
     }
