@@ -19,6 +19,7 @@ public class UserData implements Serializable {
     String password;
     String name;
     String metaId;
+    String providerOrg;
     Locale locale;
     Instant created;
 
@@ -28,6 +29,7 @@ public class UserData implements Serializable {
                 .name(Optional.ofNullable(updated.getName()).orElse(name))
                 .password(Optional.ofNullable(updated.getPassword()).orElse(password))
                 .metaId(Optional.ofNullable(updated.getMetaId()).orElse(metaId))
+                .providerOrg(Optional.ofNullable(updated.providerOrg).orElse(providerOrg))
                 .locale(Optional.ofNullable(updated.getLocale()).orElse(locale))
                 .created(Optional.ofNullable(created)
                         .or(() -> Optional.ofNullable(updated.getCreated()))
