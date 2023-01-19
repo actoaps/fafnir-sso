@@ -51,11 +51,12 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
                 .name(displayName)
                 .build();
         var orgActual = administrationService.readOrganisation(
-                test -> providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation"))
+                test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
+                        (providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation")))
         );
         var claimsActual = ClaimData.empty();
 
-        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
 
         return AuthenticationResult.success(jwt);
     }
