@@ -41,6 +41,7 @@ public class SamlProvider implements RedirectingAuthenticationProvider<Saml2Auth
     public AuthenticationResult callback(Saml2AuthenticatedPrincipal data) {
         var subject = Optional.ofNullable(data.getFirstAttribute("email"))
                 .or(() -> Optional.ofNullable(data.getFirstAttribute("subject")))
+                .or(() -> Optional.ofNullable(data.getName()))
                 .map(String::valueOf)
                 .map(providerConf::applySubjectRules)
                 .orElseThrow(ProviderAttributeMissing::new);
