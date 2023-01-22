@@ -1,6 +1,7 @@
 package dk.acto.fafnir.sso.provider.unilogin;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
 @Value
 @Builder
