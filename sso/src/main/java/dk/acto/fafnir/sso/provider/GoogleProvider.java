@@ -11,7 +11,6 @@ import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.util.TokenFactory;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
