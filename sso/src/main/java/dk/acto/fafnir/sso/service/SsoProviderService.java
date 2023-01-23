@@ -2,9 +2,9 @@ package dk.acto.fafnir.sso.service;
 
 import dk.acto.fafnir.api.exception.NoSuchProvider;
 import dk.acto.fafnir.api.model.ProviderMetaData;
+import dk.acto.fafnir.api.provider.ProviderInformation;
 import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
 import dk.acto.fafnir.api.service.ProviderService;
-import dk.acto.fafnir.api.provider.ProviderInformation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
