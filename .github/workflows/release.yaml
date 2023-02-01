@@ -56,7 +56,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build sso image and publish to Docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           cache-to: type=gha,mode=max
           cache-from: type=gha
@@ -66,7 +66,7 @@ jobs:
           tags: actoaps/fafnir-sso:${{ steps.spell.outputs.version }},actoaps/fafnir-sso:latest
 
       - name: Build iam image and publish to Docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           cache-to: type=gha,mode=max
           cache-from: type=gha
