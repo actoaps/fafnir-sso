@@ -56,7 +56,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-saml2-service-provider'
 
-	implementation 'org.opensaml:opensaml-core:4.2.0'
+	implementation 'org.opensaml:opensaml-core:4.3.0'
 	implementation 'org.opensaml:opensaml-saml-api:4.2.0'
 	implementation 'org.opensaml:opensaml-saml-impl:4.2.0'
 
