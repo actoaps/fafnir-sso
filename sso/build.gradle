@@ -57,7 +57,7 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-saml2-service-provider'
 
 	implementation 'org.opensaml:opensaml-core:4.2.0'
-	implementation 'org.opensaml:opensaml-saml-api:4.2.0'
+	implementation 'org.opensaml:opensaml-saml-api:4.3.0'
 	implementation 'org.opensaml:opensaml-saml-impl:4.2.0'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
