@@ -12,7 +12,7 @@ val myVersion: String? = System.getProperty("versionOverride")
 if (myVersion?.trim()?.isNotEmpty() == true) {
     project.version = myVersion
 } else {
-    project.version = "2.0-SNAPSHOT"
+    project.version = "4.0-SNAPSHOT"
 }
 
 subprojects {
