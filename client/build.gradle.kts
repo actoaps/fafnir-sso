@@ -51,9 +51,9 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            from(components["java"])
             groupId = "dk.acto"
             artifactId = "fafnir-client"
-            from(components["java"])
 
             pom {
                 name.set("Fafnir SSO Client")
@@ -72,6 +72,16 @@ publishing {
                         id.set("EliasJorgensen")
                         name.set("Elias Jørgensen")
                         email.set("ej@acto.dk")
+                    }
+                    developer {
+                        id.set("omarhachach")
+                        name.set("Omar A. Hachach")
+                        email.set("oh@acto.dk")
+                    }
+                    developer {
+                        id.set("FlameDuck")
+                        name.set("Mikkel Løkke")
+                        email.set("ml@acto.dk")
                     }
                 }
 
@@ -92,7 +102,7 @@ signing {
     val x = project.version as String
     require(!x.endsWith("-SNAPSHOT"))
     useInMemoryPgpKeys(findProperty("signingKey") as String?, "")
-    sign(publishing.publications.findByName("mavenJava"))
+    sign(publishing.publications["mavenJava"])
 }
 
 tasks.test {

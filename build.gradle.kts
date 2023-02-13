@@ -30,3 +30,7 @@ nexusPublishing {
         sonatype()
     }
 }
+
+tasks.getByName("initializeSonatypeStagingRepository") {
+    shouldRunAfter(tasks.withType<Sign>())
+}
