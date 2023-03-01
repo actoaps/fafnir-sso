@@ -52,7 +52,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-mustache"
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation 'com.hazelcast:hazelcast:5.2.1'
+    implementation 'com.hazelcast:hazelcast:5.2.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
