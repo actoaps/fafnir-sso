@@ -9,11 +9,11 @@
 
 <body>
 <div class="login">
-    <h1>Login:</h1>
+    <h1>Log ind:</h1>
     <div>
         <form action="/hazelcast/login" method="post">
             <div>
-                <label for="email">Username / email:</label>
+                <label for="email">Brugernavn / email:</label>
                 <input {{#usernameIsEmail}}type="email"{{/usernameIsEmail}}{{^usernameIsEmai}}type="text"{{/usernameIsEmai}} name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
                 <br>
                 {{#email}}
@@ -32,17 +32,17 @@
                 <br>
                 {{/email}}
                 {{#org}}
-                <label for="password">Password:</label>
+                <label for="password">Adgangskode:</label>
                 <input type="password" name="password" id="password">
                 <br>
                 {{/org}}
                 <button class="submitButton" type="submit">
-                    {{#org}}Login{{/org}}{{^org}}Next &gt;{{/org}}
+                    {{#org}}Login{{/org}}{{^org}}Næste &gt;{{/org}}
                 </button>
                 <br>
                 <div>
-                    <a href="/hazelcast/login">Reset</a>
-                    <a href="/hazelcast/alt">More Options</a>
+                    <a href="/hazelcast/login">Nulstil</a>
+                    <a href="/hazelcast/alt">Flere Muligheder</a>
                 </div>
             </div>
         </form>
