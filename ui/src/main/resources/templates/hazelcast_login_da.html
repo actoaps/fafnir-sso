@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--HTML 4 Strict  to avoid deprecated HTML elements -->
+<html lang="da">
+
+<head>
+    <title>Log ind - Fafnir</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div class="login">
+    <h1>Log ind:</h1>
+    <div>
+        <form action="/hazelcast/login" method="post">
+            <div>
+                <label for="email">Brugernavn / email:</label>
+                <input {{#usernameIsEmail}}type="email"{{/usernameIsEmail}}{{^usernameIsEmai}}type="text"{{/usernameIsEmai}} name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
+                <br>
+                {{#email}}
+                <label for="orgId">Organisation:</label>
+                {{#org}}
+                <input type="hidden" name="orgId" value="{{organisationId}}" readonly>
+                <input type="text" id="orgId" value="{{organisationName}}" disabled>
+                {{/org}}
+                {{^org}}
+                <select name="orgId" id="orgId">
+                    {{#orgs}}
+                    <option value="{{organisationId}}">{{organisationName}}</option>
+                    {{/orgs}}
+                </select>
+                {{/org}}
+                <br>
+                {{/email}}
+                {{#org}}
+                <label for="password">Kodeord:</label>
+                <input type="password" name="password" id="password">
+                <br>
+                {{/org}}
+                <button class="submitButton" type="submit">
+                    {{#org}}Log ind{{/org}}{{^org}}Næste &gt;{{/org}}
+                </button>
+                <br>
+                <div>
+                    <a href="/hazelcast/login">Nulstil</a>
+                    <a href="/hazelcast/alt">Flere muligheder</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

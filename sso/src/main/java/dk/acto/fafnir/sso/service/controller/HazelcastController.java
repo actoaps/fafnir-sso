@@ -4,6 +4,7 @@ import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.model.conf.HazelcastConf;
 import dk.acto.fafnir.api.service.AdministrationService;
 import dk.acto.fafnir.api.service.ProviderService;
+import dk.acto.fafnir.sso.service.ServiceHelper;
 import dk.acto.fafnir.sso.dto.HazelcastLoginInfo;
 import dk.acto.fafnir.sso.dto.LoginResponseInfo;
 import dk.acto.fafnir.sso.provider.HazelcastProvider;
@@ -61,8 +62,8 @@ public class HazelcastController {
         return new RedirectView(fafnirConf.buildUrl("/hazelcast/login"));
     }
 
-    @GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView loginView(final Model input) {
+	@GetMapping(value = "login", produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView loginView(final Model input, @RequestHeader("Accept-Language") String locale) {
         var email = Optional.ofNullable(input.getAttribute("email"))
                 .map(String::valueOf);
         var orgId = Optional.ofNullable(input.getAttribute("orgId"))
@@ -82,12 +83,12 @@ public class HazelcastController {
             model.put("orgs", s);
         });
 
-        return new ModelAndView("hazelcast_login", model);
+        return new ModelAndView("hazelcast_login" + ServiceHelper.getLocaleStr(locale, "da", "en"), model);
     }
 
     @GetMapping(value = "alt", produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView alternativePicker() {
-        return new ModelAndView("organisation_picker", Map.of(
+    public ModelAndView alternativePicker(@RequestHeader("Accept-Language") String locale) {
+        return new ModelAndView("organisation_picker" + ServiceHelper.getLocaleStr(locale, "da", "en"), Map.of(
                 "loginUrl", fafnirConf.buildUrl("/hazelcast/alt"),
                 "orgs", provider.getOrganisationsForProvider()
         ));
