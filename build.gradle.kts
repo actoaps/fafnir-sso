@@ -8,6 +8,7 @@ jacoco {
     toolVersion = "0.8.8"
 }
 
+group = "dk.acto"
 val myVersion: String? = System.getProperty("versionOverride")
 if (myVersion?.trim()?.isNotEmpty() == true) {
     project.version = myVersion
