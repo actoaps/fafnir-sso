@@ -1,6 +1,6 @@
 plugins {
     `java-library`
-    id("io.miret.etienne.sass") version "1.4.2"
+    id("io.miret.etienne.sass") version "1.5.0"
     id("com.magnetichq.gradle.css") version "3.0.2"
 }
 
