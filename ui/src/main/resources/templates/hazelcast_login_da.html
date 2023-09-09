@@ -13,11 +13,11 @@
     <div>
         <form action="/hazelcast/login" method="post">
             <div>
-                <label for="email">Brugernavn / email:</label>
+                <label for="email">Brugernavn:</label>
                 <input {{#usernameIsEmail}}type="email"{{/usernameIsEmail}}{{^usernameIsEmai}}type="text"{{/usernameIsEmai}} name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
                 <br>
                 {{#email}}
-                <label for="orgId">Organisation:</label>
+                <label for="orgId">Log på via:</label>
                 {{#org}}
                 <input type="hidden" name="orgId" value="{{organisationId}}" readonly>
                 <input type="text" id="orgId" value="{{organisationName}}" disabled>
@@ -41,7 +41,8 @@
                 </button>
                 <br>
                 <div>
-                    <a href="/hazelcast/login">Nulstil</a>
+                    <a href="/hazelcast/login">Slet</a>
+                    <br>
                     <a href="/hazelcast/alt">Flere muligheder</a>
                 </div>
             </div>
