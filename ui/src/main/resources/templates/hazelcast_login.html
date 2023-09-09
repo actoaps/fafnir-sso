@@ -13,7 +13,7 @@
     <div>
         <form action="/hazelcast/login" method="post">
             <div>
-                <label for="email">Username / email:</label>
+                <label for="email">Username</label>
                 <input {{#usernameIsEmail}}type="email"{{/usernameIsEmail}}{{^usernameIsEmai}}type="text"{{/usernameIsEmai}} name="email" id="email" {{#email}}value="{{.}}" readonly{{/email}}>
                 <br>
                 {{#email}}
@@ -42,6 +42,7 @@
                 <br>
                 <div>
                     <a href="/hazelcast/login">Reset</a>
+                    <br>
                     <a href="/hazelcast/alt">More Options</a>
                 </div>
             </div>
