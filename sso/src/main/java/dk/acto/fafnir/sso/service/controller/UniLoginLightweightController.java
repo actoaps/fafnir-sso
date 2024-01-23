@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("unilogin")
+@RequestMapping("unilogin-Lightweight")
 @ConditionalOnProperty(name = {"UNILOGIN_CLIENT_ID", "UNILOGIN_SECRET"})
 public class UniLoginLightweightController {
     private final UniLoginLightweightProvider provider;
