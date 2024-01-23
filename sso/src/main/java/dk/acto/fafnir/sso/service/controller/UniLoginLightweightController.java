@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("unilogin-Lightweight")
-@ConditionalOnProperty(name = {"UNILOGIN_CLIENT_ID", "UNILOGIN_SECRET"})
+@ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET"})
 public class UniLoginLightweightController {
     private final UniLoginLightweightProvider provider;
     private final FafnirConf uniloginConf;
