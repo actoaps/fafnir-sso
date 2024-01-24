@@ -138,7 +138,7 @@ public class BeanConf {
     @Bean
     @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET"})
     public UniLoginLightweightProvider uniLoginLightweightProvider(
-        @Value("${UL_AID}") final String appId,
+        @Value("${UL_CLIENT_ID}") final String appId,
         @Value("${UL_SECRET}") final String secret,
         final FafnirConf fafnirConf,
         final TokenFactory tokenFactory,
