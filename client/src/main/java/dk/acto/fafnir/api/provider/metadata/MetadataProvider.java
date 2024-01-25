@@ -21,6 +21,15 @@ public class MetadataProvider {
             .providerName("Apple")
             .providerId("apple")
             .build();
+
+    public static final ProviderMetaData UNILOGIN = ProviderMetaData.builder()
+        .inputs(List.of())
+        .organisationSupport(OrganisationSupport.SINGLE)
+        .providerName("Unilogin")
+        .providerId("unilogin")
+        .build();
+
+
     public static final ProviderMetaData ECONOMIC = ProviderMetaData.builder()
             .providerId("economic")
             .providerName("Economic Customer")
