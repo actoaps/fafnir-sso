@@ -147,7 +147,7 @@ public class BeanConf {
         log.info("Initialising UniLoginLightweight Configuration...");
         return Try.of(() -> new ServiceBuilder(appId)
                 .apiSecret(secret)
-                .callback(fafnirConf.getUrl() + "/unilogin/callback")
+                .callback(fafnirConf.getUrl() + "/unilogin-lightweight/callback")
                 .defaultScope("openid")
                 .build(new UniLoginApi()))
             .map(oAuth20Service -> new UniLoginLightweightProvider(oAuth20Service, tokenFactory, providerConf))
