@@ -3,6 +3,8 @@ package dk.acto.fafnir.api.service;
 import dk.acto.fafnir.api.model.*;
 import reactor.core.publisher.ConnectableFlux;
 
+import java.util.Optional;
+
 
 public interface AdministrationService {
     /**
@@ -98,6 +100,10 @@ public interface AdministrationService {
      * @return the organisation's OrganisationData.
      */
     OrganisationData readOrganisation(TenantIdentifier identifier);
+
+
+
+    Optional<OrganisationData> readOrganisationDoesNotThrow(TenantIdentifier identifier);
 
     /**
      * Updates an organisation. Fails if organisation does not exist.
