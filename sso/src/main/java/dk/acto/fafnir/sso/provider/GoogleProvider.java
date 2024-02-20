@@ -32,8 +32,8 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
         var token = Try.of(() -> googleOauth.getAccessToken(data.getCode()))
-                .onFailure(x -> log.error("Authentication failed", x))
-                .getOrNull();
+            .onFailure(x -> log.error("Authentication failed", x))
+            .getOrNull();
         if (token == null) {
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
@@ -42,22 +42,35 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
         var subject = jwtToken.getClaims().get("email").asString();
         var displayName = jwtToken.getClaims().get("name").asString();
         var providerValue = Optional.ofNullable(jwtToken.getClaim("hd"))
-                .map(Claim::asString)
-                .orElse("");
+            .map(Claim::asString)
+            .orElse("");
 
         var subjectActual = UserData.builder()
-                .subject(providerConf.applySubjectRules(subject))
-                .name(displayName)
-                .build();
-        var orgActual = administrationService.readOrganisation(
-                test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
-                        (providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation")))
+            .subject(providerConf.applySubjectRules(subject))
+            .name(displayName)
+            .build();
+
+        var orgOptional = administrationService.readOrganisationDoesNotThrow(
+            test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
+                (providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation")))
         );
-        var claimsActual = ClaimData.empty();
 
-        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
+        if (orgOptional.isPresent()) {
+            var orgActual = orgOptional.get();
+            var claimsActual = ClaimData.empty();
+            var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
+            return AuthenticationResult.success(jwt);
+        } else {
+            var fafnirUser = FafnirUser.builder()
+                .data(subjectActual)
+                .organisationId(providerValue)
+                .organisationName(displayName)
+                .provider("google")
+                .build();
 
-        return AuthenticationResult.success(jwt);
+            var jwt = tokenFactory.generateToken(fafnirUser);
+            return AuthenticationResult.success(jwt);
+        }
     }
 
     @Override
