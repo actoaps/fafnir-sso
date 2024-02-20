@@ -4,10 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import dk.acto.fafnir.api.crypto.RsaKeyManager;
 import dk.acto.fafnir.api.exception.*;
-import dk.acto.fafnir.api.model.ClaimData;
-import dk.acto.fafnir.api.model.OrganisationData;
-import dk.acto.fafnir.api.model.ProviderMetaData;
-import dk.acto.fafnir.api.model.UserData;
+import dk.acto.fafnir.api.model.*;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -68,6 +65,46 @@ public class TokenFactory {
         return Try.of(() -> Algorithm.RSA512(keyManager.getPublicKey(), keyManager.getPrivateKey()))
                 .map(jwt::sign)
                 .get();
+    }
+
+    public String generateToken (final FafnirUser fafnirUser) {
+        var jwt = JWT.create();
+
+        var temp = Optional.ofNullable(fafnirUser)
+            .orElseThrow(NoUser::new);
+
+        jwt.withIssuer(Optional.ofNullable(temp.getProvider())
+            .map(idp -> "fafnir-" + idp)
+            .orElseThrow(NoIssuer::new));
+
+        jwt.withSubject(Optional.ofNullable(temp.getSubject())
+            .orElseThrow(NoSubject::new));
+
+        jwt.withIssuedAt(Date.from(Instant.now()));
+
+        Optional.ofNullable(temp.getName())
+            .ifPresent(name -> jwt.withClaim("name", name));
+
+        Optional.ofNullable(temp.getMetaId())
+            .ifPresent(name -> jwt.withClaim("mId", name));
+
+        Optional.ofNullable(temp.getLocale())
+            .ifPresent(locale -> jwt.withClaim("locale", locale.toLanguageTag()));
+
+        Optional.ofNullable(temp.getOrganisationId())
+            .ifPresent(orgId -> jwt.withClaim("org_id", orgId));
+
+        Optional.ofNullable(temp.getOrganisationName())
+            .ifPresent(orgName -> jwt.withClaim("org_name", orgName));
+
+        Optional.ofNullable(temp.getRoles())
+            .filter(x -> x.length > 0)
+            .ifPresent(roles -> jwt.withArrayClaim("role", roles));
+
+
+        return Try.of(() -> Algorithm.RSA512(keyManager.getPublicKey(), keyManager.getPrivateKey()))
+            .map(jwt::sign)
+            .get();
     }
 
     public String generateToken(final UserData ud, OrganisationData od, ClaimData cd, ProviderMetaData pmd) {
