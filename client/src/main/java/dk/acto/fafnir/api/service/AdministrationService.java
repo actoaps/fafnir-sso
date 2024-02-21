@@ -101,10 +101,6 @@ public interface AdministrationService {
      */
     OrganisationData readOrganisation(TenantIdentifier identifier);
 
-
-
-    Optional<OrganisationData> readOrganisationDoesNotThrow(TenantIdentifier identifier);
-
     /**
      * Updates an organisation. Fails if organisation does not exist.
      *
