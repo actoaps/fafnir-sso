@@ -31,6 +31,8 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
 
     @Override
     public AuthenticationResult callback(TokenCredentials data) {
+        boolean version2Enabled = Boolean.parseBoolean(System.getenv("GOOGLE_VERSION2_ENABLED"));
+
         var token = Try.of(() -> googleOauth.getAccessToken(data.getCode()))
             .onFailure(x -> log.error("Authentication failed", x))
             .getOrNull();
@@ -50,25 +52,24 @@ public class GoogleProvider implements RedirectingAuthenticationProvider<TokenCr
             .name(displayName)
             .build();
 
-        var orgOptional = administrationService.readOrganisationDoesNotThrow(
-            test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
-                (providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation")))
-        );
-
-        if (orgOptional.isPresent()) {
-            var orgActual = orgOptional.get();
-            var claimsActual = ClaimData.empty();
-            var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
-            return AuthenticationResult.success(jwt);
-        } else {
+        if (version2Enabled) {
             var fafnirUser = FafnirUser.builder()
                 .data(subjectActual)
                 .organisationId(providerValue)
-                .organisationName(displayName)
                 .provider("google")
                 .build();
 
             var jwt = tokenFactory.generateToken(fafnirUser);
+            return AuthenticationResult.success(jwt);
+
+        } else {
+            var orgActual = administrationService.readOrganisation(
+                test -> getMetaData().getProviderId().equals(test.getProviderId()) &&
+                    (providerValue.equals(test.getValues().get("Organisation Domain")) || "true".equals(test.getValues().get("Catchall Organisation")))
+            );
+            var claimsActual = ClaimData.empty();
+            var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData(), providerValue);
+
             return AuthenticationResult.success(jwt);
         }
     }
