@@ -17,6 +17,7 @@ services:
       - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
       - KEYSTORE_PASS=fafnir
       - KEY_PASS=fafnir
+      - GOOGLE_VERSION2_ENABLED=true
     volumes:
       - ./fafnir-storage:/var/lib/fafnir
 
