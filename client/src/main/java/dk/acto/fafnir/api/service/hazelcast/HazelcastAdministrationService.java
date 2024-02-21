@@ -133,14 +133,6 @@ public class HazelcastAdministrationService implements AdministrationService {
                 .findAny()
                 .orElseThrow(NoSuchOrganisation::new);
     }
-    @Override
-    public Optional<OrganisationData> readOrganisationDoesNotThrow(TenantIdentifier identifier) {
-        IMap<String, OrganisationData> orgMap = hazelcastInstance.getMap(hazelcastConf.getPrefix() + ORG_POSTFIX);
-        return orgMap.values()
-            .stream()
-            .filter(entry -> identifier.matches(entry.getProviderConfiguration()))
-            .findAny();
-    }
 
 
     @Override
