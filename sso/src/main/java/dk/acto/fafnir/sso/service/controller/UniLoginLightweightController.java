@@ -29,7 +29,7 @@ public class UniLoginLightweightController {
     }
 
     @PostMapping("callback")
-    public RedirectView callback(@RequestParam("id_token") String code) {
+    public RedirectView callback(@RequestParam String code) {
         return new RedirectView(provider.callback(TokenCredentials.builder()
             .code(code)
             .build()).getUrl(uniloginConf));
