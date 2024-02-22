@@ -134,6 +134,7 @@ public class HazelcastAdministrationService implements AdministrationService {
                 .orElseThrow(NoSuchOrganisation::new);
     }
 
+
     @Override
     public OrganisationData updateOrganisation(OrganisationData source) {
         var orgId = Optional.ofNullable(source.getOrganisationId())
