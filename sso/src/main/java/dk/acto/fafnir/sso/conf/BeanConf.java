@@ -21,6 +21,7 @@ import dk.acto.fafnir.sso.service.AppleApi;
 import dk.acto.fafnir.sso.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.sso.service.MitIdApi;
 import dk.acto.fafnir.sso.service.UniLoginApi;
+import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import dk.acto.fafnir.sso.util.generator.DemoDataGenerator;
 import io.vavr.control.Try;
