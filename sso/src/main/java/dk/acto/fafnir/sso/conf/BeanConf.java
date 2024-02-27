@@ -21,7 +21,6 @@ import dk.acto.fafnir.sso.service.AppleApi;
 import dk.acto.fafnir.sso.service.MicrosoftIdentityApi;
 import dk.acto.fafnir.sso.service.MitIdApi;
 import dk.acto.fafnir.sso.service.UniLoginApi;
-import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import dk.acto.fafnir.sso.util.generator.DemoDataGenerator;
 import io.vavr.control.Try;
@@ -137,7 +136,7 @@ public class BeanConf {
 
 
     @Bean
-    @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET"})
+    @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL"})
     public UniLoginLightweightProvider uniLoginLightweightProvider(
         @Value("${UL_CLIENT_ID}") final String appId,
         @Value("${UL_SECRET}") final String secret,
@@ -151,7 +150,7 @@ public class BeanConf {
                 .callback(fafnirConf.getUrl() + "/unilogin-lightweight/callback")
                 .defaultScope("openid")
                 .build(new UniLoginApi()))
-            .map(oAuth20Service -> new UniLoginLightweightProvider(oAuth20Service, tokenFactory, providerConf))
+            .map(oAuth20Service -> new UniLoginLightweightProvider(tokenFactory, providerConf))
             .toJavaOptional()
             .orElseThrow(UniloginLightweightConfigurationBroken::new);
     }
