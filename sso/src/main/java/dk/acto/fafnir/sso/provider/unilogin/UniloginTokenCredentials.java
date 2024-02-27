@@ -9,5 +9,4 @@ import lombok.Value;
 @AllArgsConstructor
 public class UniloginTokenCredentials {
     String code;
-    String state;
 }

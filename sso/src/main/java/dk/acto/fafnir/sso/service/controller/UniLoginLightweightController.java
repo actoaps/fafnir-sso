@@ -4,6 +4,7 @@ import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.provider.UniLoginLightweightProvider;
 import dk.acto.fafnir.sso.provider.unilogin.UniloginTokenCredentials;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,27 +22,25 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("unilogin-lightweight")
-@ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET"})
+@ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL"})
 public class UniLoginLightweightController {
     private final UniLoginLightweightProvider provider;
     private final FafnirConf uniloginConf;
 
     @GetMapping
-    public RedirectView authenticate() throws NoSuchAlgorithmException {
-        return new RedirectView(provider.authenticate());
+    public RedirectView authenticate(HttpSession session) throws NoSuchAlgorithmException {
+        return new RedirectView(provider.authenticate(session));
     }
 
     @PostMapping("callback")
-    public RedirectView callback(@RequestParam("code") String code, @RequestParam("state") String state) throws IOException {
+    public RedirectView callback(@RequestParam("code") String code, HttpSession session) throws IOException {
         return new RedirectView(provider.callback(UniloginTokenCredentials.builder()
             .code(code)
-            .state(state)
-            .build()
-        ).getUrl(uniloginConf));
+            .build(), session).getUrl(uniloginConf));
     }
 
     @PostConstruct
     private void postConstruct() {
-        log.info("Exposing Unilogin OIDC Lightweight Endpoint...");
+        log.info("Exposing Unilogin lightweight OIDC Endpoint...");
     }
 }

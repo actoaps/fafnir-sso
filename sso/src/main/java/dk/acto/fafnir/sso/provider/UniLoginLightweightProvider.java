@@ -1,18 +1,17 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.oauth.OAuth20Service;
 import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.model.*;
-import dk.acto.fafnir.api.provider.RedirectingAuthenticationProvider;
+import dk.acto.fafnir.api.provider.RedirectingUnilogAuthenticationProvider;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.sso.model.conf.ProviderConf;
-import dk.acto.fafnir.sso.provider.credentials.TokenCredentials;
 import dk.acto.fafnir.sso.provider.unilogin.AccessToken;
 import dk.acto.fafnir.sso.provider.unilogin.IntrospectionToken;
 import dk.acto.fafnir.sso.provider.unilogin.UniloginTokenCredentials;
 import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -35,35 +34,39 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
-public class UniLoginLightweightProvider implements RedirectingAuthenticationProvider<UniloginTokenCredentials> {
-    private final OAuth20Service uniloginOauth;
+public class UniLoginLightweightProvider implements RedirectingUnilogAuthenticationProvider<UniloginTokenCredentials> {
     private final TokenFactory tokenFactory;
     private final ProviderConf providerConf;
 
     @Override
-    public String authenticate() throws NoSuchAlgorithmException {
-        String responseType = "response_type=" + URLEncoder.encode("code");
-        String client = "&client_id=" + URLEncoder.encode("http://localhost:8080/");
-        String redirect = "&redirect_uri=" + URLEncoder.encode("http://localhost:8080/unilogin-lightweight/callback");
-        String codeChallengeMethod = "&code_challenge_method=" + URLEncoder.encode("S256");
-        String codeVerifier = PkceUtil.generateCodeVerifier();
-        String codeChallenge = "&code_challenge=" + URLEncoder.encode(PkceUtil.generateCodeChallenge(codeVerifier));
-        String nonce = "&nonce=" + URLEncoder.encode(new SecureRandom().ints(16, 0, 256)
+    public String authenticate(HttpSession session) throws NoSuchAlgorithmException {
+        var codeVerifier = PkceUtil.generateCodeVerifier();
+        session.setAttribute("codeVerifier", codeVerifier);
+
+        var responseType = "response_type=" + URLEncoder.encode("code");
+        var client = "&client_id=" + URLEncoder.encode(System.getenv("UL_CLIENT_ID"));
+        var redirect = "&redirect_uri=" + URLEncoder.encode(System.getenv("FAFNIR_URL") + "/unilogin-lightweight/callback");
+        var codeChallengeMethod = "&code_challenge_method=" + URLEncoder.encode("S256");
+        var codeChallenge = "&code_challenge=" + URLEncoder.encode(PkceUtil.generateCodeChallenge(codeVerifier));
+        var nonce = "&nonce=" + URLEncoder.encode(new SecureRandom().ints(16, 0, 256)
             .mapToObj(i -> String.format("%02x", i))
             .collect(Collectors.joining()));
-        String state = "&state=" + URLEncoder.encode(codeVerifier);
-        String scope = "&scope=" + URLEncoder.encode("openid");
-        String responseMode = "&response_mode=" + URLEncoder.encode("form_post");
+        var state = "&state=" + URLEncoder.encode(new SecureRandom().ints(16, 0, 256)
+            .mapToObj(i -> String.format("%02x", i))
+            .collect(Collectors.joining()));
+        var scope = "&scope=" + URLEncoder.encode("openid");
+        var responseMode = "&response_mode=" + URLEncoder.encode("form_post");
         return "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect" + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
     }
 
     @Override
-    public AuthenticationResult callback(UniloginTokenCredentials data) throws IOException {
+    public AuthenticationResult callback(UniloginTokenCredentials data, HttpSession session) throws IOException {
         var UL_CLIENT_ID = System.getenv("UL_CLIENT_ID");
         var UL_SECRET = System.getenv("UL_SECRET");
-        var UL_REDIRECT_URL = System.getenv("UL_REDIRECT_URL");
-        var CODE_VERIFIER = data.getState();
+        var UL_REDIRECT_URL = System.getenv("FAFNIR_URL") + "/unilogin-lightweight/callback";
         var OID_BASE_URL = "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+
+        var CODE_VERIFIER = (String) session.getAttribute("codeVerifier");
 
 
         var accessCode = data.getCode();
@@ -73,12 +76,12 @@ public class UniLoginLightweightProvider implements RedirectingAuthenticationPro
 
         IntrospectionToken intro;
 
-        intro = getIntrospectToken(accessToken.getAccess_token(),UL_CLIENT_ID,UL_SECRET,OID_BASE_URL);
+        intro = getIntrospectToken(accessToken.getAccess_token(), UL_CLIENT_ID, UL_SECRET, OID_BASE_URL);
 
 
         if (intro == null) {
-        return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
-    }
+            return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
+        }
 
         var subject = Optional.ofNullable(intro.getSub())
             .map(providerConf::applySubjectRules)
@@ -112,7 +115,7 @@ public class UniLoginLightweightProvider implements RedirectingAuthenticationPro
         return getObjectMapper().readValue(response.getEntity().getContent(), AccessToken.class);
     }
 
-    private IntrospectionToken getIntrospectToken(String accesstoken,String clientId,String clientSecret, String oidcBaseUrl) throws IOException {
+    private IntrospectionToken getIntrospectToken(String accesstoken, String clientId, String clientSecret, String oidcBaseUrl) throws IOException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("token", accesstoken));
         nvps.add(new BasicNameValuePair("client_id", clientId));
