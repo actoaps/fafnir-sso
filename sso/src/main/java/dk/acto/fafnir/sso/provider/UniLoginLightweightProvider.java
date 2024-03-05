@@ -1,16 +1,20 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.scribejava.core.model.ParameterList;
 import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.model.*;
-import dk.acto.fafnir.api.provider.RedirectingUnilogAuthenticationProvider;
+import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.sso.model.conf.ProviderConf;
-import dk.acto.fafnir.sso.provider.unilogin.AccessToken;
-import dk.acto.fafnir.sso.provider.unilogin.IntrospectionToken;
-import dk.acto.fafnir.sso.provider.unilogin.UniloginTokenCredentials;
+import dk.acto.fafnir.sso.provider.unilogin.*;
+import dk.acto.fafnir.sso.service.ServiceHelper;
 import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
+import https.unilogin.Institutionstilknytning;
+import https.wsibruger_unilogin_dk.ws.WsiBruger;
+import https.wsiinst_unilogin_dk.ws.WsiInst;
+import io.vavr.control.Try;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,23 +26,25 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
-public class UniLoginLightweightProvider implements RedirectingUnilogAuthenticationProvider<UniloginTokenCredentials> {
+public class UniLoginLightweightProvider
+{
+    private final FafnirConf fafnirConf;
     private final TokenFactory tokenFactory;
     private final ProviderConf providerConf;
+    private final UniLoginHelper uniloginHelper;
 
-    @Override
     public String authenticate(HttpSession session) throws NoSuchAlgorithmException {
         var codeVerifier = PkceUtil.generateCodeVerifier();
         session.setAttribute("codeVerifier", codeVerifier);
@@ -59,7 +65,6 @@ public class UniLoginLightweightProvider implements RedirectingUnilogAuthenticat
         return "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect" + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
     }
 
-    @Override
     public AuthenticationResult callback(UniloginTokenCredentials data, HttpSession session) throws IOException {
         var UL_CLIENT_ID = System.getenv("UL_CLIENT_ID");
         var UL_SECRET = System.getenv("UL_SECRET");
@@ -83,23 +88,195 @@ public class UniLoginLightweightProvider implements RedirectingUnilogAuthenticat
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
+
         var subject = Optional.ofNullable(intro.getSub())
             .map(providerConf::applySubjectRules)
             .orElseThrow(ProviderAttributeMissing::new);
 
-        var displayName = Optional.of("")
-            .orElseThrow(ProviderAttributeMissing::new);
+
+
+        var userId = intro.getUniid();
+
+        // Check for associated institutions
+        var institutions = getInstitutionList(userId);
+        if (institutions.isEmpty()) {
+            return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
+        } else if (institutions.size() > 1 ) {
+//            return uniloginHelper.getChooseInstitutionUrl(userId);
+            String chooseInstitutionUrl = uniloginHelper.getChooseInstitutionUrl(userId);
+            return redirect(chooseInstitutionUrl);
+        } else if (institutions.size() == 1) {
+            return callbackWithInstitution(userId, institutions.get(0).getId());
+        }
+        else
+        {
+//            // Store necessary data in session for multi-institution handling
+//            session.setAttribute("userId", userId);
+//            session.setAttribute("institutions", institutions);
+//            // Redirect user to institution selection page
+//            return "ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr( "da") + ".thymeleaf";
+//        }
+
+
+            var displayName = Optional.of("")
+                .orElseThrow(ProviderAttributeMissing::new);
+
+            var subjectActual = UserData.builder()
+                .subject(subject)
+                .name(displayName)
+                .build();
+            var orgActual = OrganisationData.DEFAULT;
+            var claimsActual = ClaimData.empty();
+
+            var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
+
+            return AuthenticationResult.success(jwt);
+        }
+    }
+
+
+    public static AuthenticationResult redirect(String redirectUrl) {
+        return new AuthenticationResult(redirectUrl, null);
+    }
+
+
+    public List<Institution> getInstitutionList(String userId) {
+        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
+        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
+        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
+        var wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
+        List<Institutionstilknytning> institutionstilknytninger;
+
+
+        var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
+        var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
+        var wsiInst = new WsiInst(wsiURL,SERVICE);
+        var wsiInstPortType = wsiInst.getWsiInstPort();
+        try {
+            institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
+            return institutionstilknytninger.stream().map((institutionstilknytning -> {
+                var instName = "";
+                try {
+                    var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionstilknytning.getInstnr());
+                    instName = inst.getInstnavn();
+                } catch (https.wsiinst_unilogin_dk.ws.AuthentificationFault authentificationFault) {
+                    log.error(authentificationFault.getMessage(), authentificationFault);
+                }
+                var roleNames = toUserRoles(institutionstilknytninger).stream()
+                    .map(UserRole::toString)
+                    .collect(Collectors.toList());
+                return Institution.builder()
+                    .name(instName)
+                    .id(institutionstilknytning.getInstnr())
+                    .roles(roleNames)
+                    .build();
+            })).distinct().collect(Collectors.toList());
+        } catch (https.wsibruger_unilogin_dk.ws.AuthentificationFault authentificationFault) {
+            log.error(authentificationFault.getMessage(), authentificationFault);
+        }
+        return Collections.emptyList();
+    }
+
+
+    private Set<UserRole> toUserRoles(java.util.List<https.unilogin.Institutionstilknytning> institutionstilknytninger) {
+        Set<UserRole> roles = new HashSet<>();
+        for (var institutionstilknytning : institutionstilknytninger) {
+            var ansat = institutionstilknytning.getAnsat();
+            var ekstern = institutionstilknytning.getEkstern();
+            var elev = institutionstilknytning.getElev();
+            if (ansat != null) {
+                ansat.getRolle()
+                    .forEach(ansatrolle -> UserRole.builder().name(ansatrolle.name()).type("EMPLOYEE").build());
+            }
+            if (ekstern != null) {
+                roles.add(UserRole.builder()
+                    .name(ekstern.getRolle().name())
+                    .type("EMP_EXTERNAL")
+                    .build());
+            }
+            if (elev != null) {
+                roles.add(UserRole.builder()
+                    .name(elev.getRolle().name())
+                    .type("PUPIL")
+                    .build());
+            }
+        }
+        return roles;
+    }
+
+    public String getFailureUrl(FailureReason reason) {
+        return fafnirConf.getFailureRedirect() + "#" + reason.getErrorCode();
+    }
+
+
+    public AuthenticationResult callbackWithInstitution(String userId, String institutionId) {
+        var name = getUserFullNameFromId(userId);
+        final var orgName = getInstitutionFromId(institutionId)
+            .map(Institution::getName)
+            .orElseThrow(() -> new RuntimeException("No institution"));
+
+        var roles = this.getUserRoles(institutionId, userId);
 
         var subjectActual = UserData.builder()
-            .subject(subject)
-            .name(displayName)
+            .subject(userId)
+            .name(name)
             .build();
-        var orgActual = OrganisationData.DEFAULT;
-        var claimsActual = ClaimData.empty();
+        var orgActual = OrganisationData.builder()
+            .organisationId(institutionId)
+            .organisationName(orgName)
+            .build();
+        var claimsActual = ClaimData.builder()
+            .claims(roles.stream()
+                .map(UserRole::toString)
+                .toArray(String[]::new))
+            .build();
 
-        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
-
+        var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, ProviderMetaData.builder()
+            .providerName("UniLogin")
+            .providerId("unilogin")
+            .organisationSupport(OrganisationSupport.NATIVE)
+            .inputs(List.of())
+            .build());
         return AuthenticationResult.success(jwt);
+
+    }
+
+    private Optional<Institution> getInstitutionFromId(String institutionId) {
+        var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
+        var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
+        var wsiInst = new WsiInst(wsiURL,SERVICE);
+        var wsiInstPortType = wsiInst.getWsiInstPort();
+        try {
+            var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionId);
+            return Optional.of(Institution.builder()
+                .id(inst.getInstnr())
+                .name(inst.getInstnavn())
+                .build());
+        } catch (https.wsiinst_unilogin_dk.ws.AuthentificationFault authentificationFault) {
+            log.error(authentificationFault.getMessage(), authentificationFault);
+            return Optional.empty();
+        }
+    }
+
+    private Set<UserRole> getUserRoles(String institutionId, String userId) {
+        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
+        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
+        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
+        var wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
+        try {
+            var institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
+            institutionstilknytninger = institutionstilknytninger.stream()
+                .filter(til -> institutionId.equals(til.getInstnr()))
+                .collect(Collectors.toList());
+            return toUserRoles(institutionstilknytninger);
+        } catch (https.wsibruger_unilogin_dk.ws.AuthentificationFault authentificationFault) {
+            log.error(authentificationFault.getMessage(), authentificationFault);
+            return Collections.emptySet();
+        }
+    }
+
+    private String getUserFullNameFromId(String userId) {
+        return userId;
     }
 
     private AccessToken getAccessToken(String code, String clientId, String clientSecret, String redirectUri, String codeVerifier, String oidcBaseUrl) throws IOException {
@@ -138,7 +315,7 @@ public class UniLoginLightweightProvider implements RedirectingUnilogAuthenticat
         return new ObjectMapper();
     }
 
-    @Override
+    //    @Override
     public ProviderMetaData getMetaData() {
         return MetadataProvider.UNILOGIN;
     }
