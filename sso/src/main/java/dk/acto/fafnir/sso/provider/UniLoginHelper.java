@@ -24,6 +24,7 @@ public class UniLoginHelper {
 	private final String apiSecret;
 	private final String callback;
 	private final String callbackChooseInstitution;
+	private final String callbackChooseInstitutionLightweight;
 	private final String wsUsername;
 	private final String wsPassword;
 	private final boolean useSingleSignOn;
@@ -35,6 +36,7 @@ public class UniLoginHelper {
 		this.wsPassword = uniLoginConf.getWsPassword();
 		this.useSingleSignOn = uniLoginConf.isSingleSignOn();
 		this.callbackChooseInstitution = fafnirConf.getUrl() + "/unilogin/org";
+		this.callbackChooseInstitutionLightweight = fafnirConf.getUrl() + "/unilogin-lightweight/org";
 		this.callback = fafnirConf.getUrl() + "/unilogin/callback";
 	}
 
@@ -51,6 +53,11 @@ public class UniLoginHelper {
 		builder.add(STATE_AUTH_ENCODED, auth);
 		return builder.appendTo(getCallbackChooseInstitution());
 	}
+    public String getChooseInstitutionUrl(String userId) {
+		var builder = new ParameterList();
+		builder.add(USER_ID, userId);
+		return builder.appendTo(getCallbackChooseInstitutionLightweight());
+	}
 
 	public String getAuthorizationUrl() {
 		var builder = new ParameterList();
@@ -64,4 +71,5 @@ public class UniLoginHelper {
 	public boolean isValidAccess(String user, String timestamp, String auth) {
 		return DigestUtils.md5Hex(timestamp + getApiSecret() + user).equals(auth);
 	}
+
 }
