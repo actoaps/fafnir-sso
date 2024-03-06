@@ -97,10 +97,9 @@ public class UniLoginLightweightProvider {
 
 
     public List<Institution> getInstitutionList(String userId) {
-//        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
-//        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
-//        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
-        var wsiBruger = new WsiBruger();
+        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
+        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
+        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
         var wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
         List<Institutionstilknytning> institutionstilknytninger;
 
@@ -199,10 +198,9 @@ public class UniLoginLightweightProvider {
     }
 
     private Optional<Institution> getInstitutionFromId(String institutionId) {
-//        var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
-//        var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
-//        var wsiInst = new WsiInst(wsiURL, SERVICE);
-        var wsiInst = new WsiInst();
+        var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
+        var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
+        var wsiInst = new WsiInst(wsiURL, SERVICE);
         var wsiInstPortType = wsiInst.getWsiInstPort();
         try {
             var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionId);
@@ -217,10 +215,9 @@ public class UniLoginLightweightProvider {
     }
 
     private Set<UserRole> getUserRoles(String institutionId, String userId) {
-//        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
-//        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
-//        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
-        var wsiBruger = new WsiBruger();
+        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
+        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
+        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
         var wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
         try {
             var institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
