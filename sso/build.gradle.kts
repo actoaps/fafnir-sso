@@ -72,6 +72,8 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-policy:4.0.0")
     implementation("org.apache.cxf:cxf-rt-ws-security:4.0.0")
 
+    implementation ("org.springframework.boot:spring-boot-starter-mustache")
+
 
     // WSDL / Apache-cxf stuff
     implementation("jakarta.xml.ws:jakarta.xml.ws-api:4.0.0")

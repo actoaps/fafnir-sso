@@ -1,20 +1,16 @@
 package dk.acto.fafnir.sso.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.model.ParameterList;
-import dk.acto.fafnir.api.exception.ProviderAttributeMissing;
 import dk.acto.fafnir.api.model.*;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.api.provider.metadata.MetadataProvider;
 import dk.acto.fafnir.sso.model.conf.ProviderConf;
 import dk.acto.fafnir.sso.provider.unilogin.*;
-import dk.acto.fafnir.sso.service.ServiceHelper;
 import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import https.unilogin.Institutionstilknytning;
 import https.wsibruger_unilogin_dk.ws.WsiBruger;
 import https.wsiinst_unilogin_dk.ws.WsiInst;
-import io.vavr.control.Try;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +25,6 @@ import org.apache.http.message.BasicNameValuePair;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -38,8 +33,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
-public class UniLoginLightweightProvider
-{
+public class UniLoginLightweightProvider {
     private final FafnirConf fafnirConf;
     private final TokenFactory tokenFactory;
     private final ProviderConf providerConf;
@@ -88,55 +82,17 @@ public class UniLoginLightweightProvider
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
-
-        var subject = Optional.ofNullable(intro.getSub())
-            .map(providerConf::applySubjectRules)
-            .orElseThrow(ProviderAttributeMissing::new);
-
-
-
         var userId = intro.getUniid();
 
-        // Check for associated institutions
         var institutions = getInstitutionList(userId);
         if (institutions.isEmpty()) {
             return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
-        } else if (institutions.size() > 1 ) {
-//            return uniloginHelper.getChooseInstitutionUrl(userId);
-            String chooseInstitutionUrl = uniloginHelper.getChooseInstitutionUrl(userId);
-            return redirect(chooseInstitutionUrl);
         } else if (institutions.size() == 1) {
             return callbackWithInstitution(userId, institutions.get(0).getId());
+        } else {
+            String chooseInstitutionUrl = uniloginHelper.getChooseInstitutionUrl(userId);
+            return AuthenticationResult.redirect(chooseInstitutionUrl);
         }
-        else
-        {
-//            // Store necessary data in session for multi-institution handling
-//            session.setAttribute("userId", userId);
-//            session.setAttribute("institutions", institutions);
-//            // Redirect user to institution selection page
-//            return "ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr( "da") + ".thymeleaf";
-//        }
-
-
-            var displayName = Optional.of("")
-                .orElseThrow(ProviderAttributeMissing::new);
-
-            var subjectActual = UserData.builder()
-                .subject(subject)
-                .name(displayName)
-                .build();
-            var orgActual = OrganisationData.DEFAULT;
-            var claimsActual = ClaimData.empty();
-
-            var jwt = tokenFactory.generateToken(subjectActual, orgActual, claimsActual, getMetaData());
-
-            return AuthenticationResult.success(jwt);
-        }
-    }
-
-
-    public static AuthenticationResult redirect(String redirectUrl) {
-        return new AuthenticationResult(redirectUrl, null);
     }
 
 
@@ -150,7 +106,7 @@ public class UniLoginLightweightProvider
 
         var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
         var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
-        var wsiInst = new WsiInst(wsiURL,SERVICE);
+        var wsiInst = new WsiInst(wsiURL, SERVICE);
         var wsiInstPortType = wsiInst.getWsiInstPort();
         try {
             institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
@@ -244,7 +200,7 @@ public class UniLoginLightweightProvider
     private Optional<Institution> getInstitutionFromId(String institutionId) {
         var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
         var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
-        var wsiInst = new WsiInst(wsiURL,SERVICE);
+        var wsiInst = new WsiInst(wsiURL, SERVICE);
         var wsiInstPortType = wsiInst.getWsiInstPort();
         try {
             var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionId);
@@ -315,7 +271,6 @@ public class UniLoginLightweightProvider
         return new ObjectMapper();
     }
 
-    //    @Override
     public ProviderMetaData getMetaData() {
         return MetadataProvider.UNILOGIN;
     }
