@@ -9,59 +9,68 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 @Data
 public class UniLoginHelper {
-	public static final String USER_ID = "user";
-	public static final String TIMESTAMP = "timestamp";
+    public static final String USER_ID = "user";
+    public static final String TIMESTAMP = "timestamp";
 
-	public static final String CLIENT_ID = "id";
-	public static final String CLIENT_SECRET = "secret";
-	public static final String PATH = "path";
-	public static final String STATE_AUTH_ENCODED = "auth";
+    public static final String CLIENT_ID = "id";
+    public static final String CLIENT_SECRET = "secret";
+    public static final String PATH = "path";
+    public static final String STATE_AUTH_ENCODED = "auth";
 
-	private static final String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
-	private static final String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
+    private static final String AUTHORIZATION_BASEURL_SINGLE_SIGN_ON = "https://sso.emu.dk/unilogin/login.cgi";
+    private static final String AUTHORIZATION_BASEURL_SINGLE_LOGIN = "http://sli.emu.dk/unilogin/login.cgi";
 
-	private final String apiKey;
-	private final String apiSecret;
-	private final String callback;
-	private final String callbackChooseInstitution;
-	private final String wsUsername;
-	private final String wsPassword;
-	private final boolean useSingleSignOn;
+    private final String apiKey;
+    private final String apiSecret;
+    private final String callback;
+    private final String callbackChooseInstitution;
+    private final String callbackChooseInstitutionLightweight;
+    private final String wsUsername;
+    private final String wsPassword;
+    private final boolean useSingleSignOn;
 
-	public UniLoginHelper(UniLoginConf uniLoginConf, FafnirConf fafnirConf) {
-		this.apiKey = uniLoginConf.getAppId();
-		this.apiSecret = uniLoginConf.getSecret();
-		this.wsUsername = uniLoginConf.getWsUsername();
-		this.wsPassword = uniLoginConf.getWsPassword();
-		this.useSingleSignOn = uniLoginConf.isSingleSignOn();
-		this.callbackChooseInstitution = fafnirConf.getUrl() + "/unilogin/org";
-		this.callback = fafnirConf.getUrl() + "/unilogin/callback";
-	}
+    public UniLoginHelper(UniLoginConf uniLoginConf, FafnirConf fafnirConf) {
+        this.apiKey = uniLoginConf.getAppId();
+        this.apiSecret = uniLoginConf.getSecret();
+        this.wsUsername = uniLoginConf.getWsUsername();
+        this.wsPassword = uniLoginConf.getWsPassword();
+        this.useSingleSignOn = uniLoginConf.isSingleSignOn();
+        this.callbackChooseInstitution = fafnirConf.getUrl() + "/unilogin/org";
+        this.callbackChooseInstitutionLightweight = fafnirConf.getUrl() + "/unilogin-lightweight/org";
+        this.callback = fafnirConf.getUrl() + "/unilogin/callback";
+    }
 
-	public String getAuthorizationBaseUrl() {
-		return useSingleSignOn ?
-				AUTHORIZATION_BASEURL_SINGLE_SIGN_ON :
-				AUTHORIZATION_BASEURL_SINGLE_LOGIN;
-	}
+    public String getAuthorizationBaseUrl() {
+        return useSingleSignOn ?
+            AUTHORIZATION_BASEURL_SINGLE_SIGN_ON :
+            AUTHORIZATION_BASEURL_SINGLE_LOGIN;
+    }
 
-	public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
-		var builder = new ParameterList();
-		builder.add(USER_ID, userId);
-		builder.add(TIMESTAMP, timestamp);
-		builder.add(STATE_AUTH_ENCODED, auth);
-		return builder.appendTo(getCallbackChooseInstitution());
-	}
+    public String getChooseInstitutionUrl(String userId, String timestamp, String auth) {
+        var builder = new ParameterList();
+        builder.add(USER_ID, userId);
+        builder.add(TIMESTAMP, timestamp);
+        builder.add(STATE_AUTH_ENCODED, auth);
+        return builder.appendTo(getCallbackChooseInstitution());
+    }
 
-	public String getAuthorizationUrl() {
-		var builder = new ParameterList();
-		builder.add(CLIENT_ID, getApiKey());
-		builder.add(CLIENT_SECRET, getApiSecret());
-		builder.add(PATH, Base64.encodeBase64String(getCallback().getBytes()));
-		builder.add(STATE_AUTH_ENCODED, DigestUtils.md5Hex(getCallback() + getApiSecret()));
-		return builder.appendTo(getAuthorizationBaseUrl());
-	}
+    public String getChooseInstitutionUrl(String userId) {
+        var builder = new ParameterList();
+        builder.add("user", userId);
+        return builder.appendTo(this.callbackChooseInstitutionLightweight);
+    }
 
-	public boolean isValidAccess(String user, String timestamp, String auth) {
-		return DigestUtils.md5Hex(timestamp + getApiSecret() + user).equals(auth);
-	}
+    public String getAuthorizationUrl() {
+        var builder = new ParameterList();
+        builder.add(CLIENT_ID, getApiKey());
+        builder.add(CLIENT_SECRET, getApiSecret());
+        builder.add(PATH, Base64.encodeBase64String(getCallback().getBytes()));
+        builder.add(STATE_AUTH_ENCODED, DigestUtils.md5Hex(getCallback() + getApiSecret()));
+        return builder.appendTo(getAuthorizationBaseUrl());
+    }
+
+    public boolean isValidAccess(String user, String timestamp, String auth) {
+        return DigestUtils.md5Hex(timestamp + getApiSecret() + user).equals(auth);
+    }
+
 }
