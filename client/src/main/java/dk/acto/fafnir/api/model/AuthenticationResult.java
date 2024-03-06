@@ -9,18 +9,29 @@ import java.util.Optional;
 public class AuthenticationResult {
     private final String jwt;
     private final FailureReason failureReason;
+    private final String redirectUrl;
 
     public static AuthenticationResult success(String jwt) {
-        return new AuthenticationResult(jwt, null);
+        return new AuthenticationResult(jwt, null, null);
     }
 
     public static AuthenticationResult failure(FailureReason failureReason) {
-        return new AuthenticationResult(null, failureReason);
+        return new AuthenticationResult(null, failureReason, null);
+    }
+
+    public static AuthenticationResult redirect(String redirectUrl) {
+        return new AuthenticationResult(null, null, redirectUrl);
     }
 
     public String getUrl(FafnirConf fafnirConf) {
-        return Optional.ofNullable(jwt)
+        if (redirectUrl != null) {
+            return redirectUrl;
+        } else {
+            return Optional.ofNullable(jwt)
                 .map(token -> fafnirConf.getSuccessRedirect() + "#" + token)
-                .orElseGet(() -> fafnirConf.getFailureRedirect() + "#" + failureReason.getErrorCode());
+                .orElseGet(() -> fafnirConf.getFailureRedirect() + "#" + (failureReason != null ? failureReason.getErrorCode() : ""));
+        }
     }
 }
+
+

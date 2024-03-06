@@ -2,7 +2,6 @@ package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
-import dk.acto.fafnir.sso.provider.UniLoginHelper;
 import dk.acto.fafnir.sso.provider.UniLoginLightweightProvider;
 import dk.acto.fafnir.sso.provider.unilogin.UniloginTokenCredentials;
 import dk.acto.fafnir.sso.service.ServiceHelper;
@@ -21,7 +20,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.Map;
 
 @Controller
 @Slf4j
@@ -45,28 +43,24 @@ public class UniLoginLightweightController {
     }
 
     @GetMapping("org")
-    public String getOrg(@RequestParam String userId, @RequestHeader("Accept-Language") String locale, Model model, HttpServletResponse response) throws IOException {
-        var institutionList = Try.of(() -> provider.getInstitutionList(userId)).getOrElse(Collections.emptyList());
+    public String getOrg(@RequestParam String user, Model model, HttpServletResponse response) throws IOException {
+        var institutionList = Try.of(() -> provider.getInstitutionList(user)).getOrElse(Collections.emptyList());
+
         if (institutionList.isEmpty()) {
             response.sendRedirect(provider.getFailureUrl(FailureReason.CONNECTION_FAILED));
-            return null; // Stop further execution since redirect is sent
+            return null;
         } else {
-            model.addAllAttributes(
-                Map.of(
-                    UniLoginHelper.USER_ID, userId,
-                    "institutionList", institutionList
-                )
-            );
-            return "ChooseInstitutionUni-Login" + ServiceHelper.getLocaleStr(locale, "da", "en") + ".thymeleaf";
+            model.addAttribute("user", user);
+            model.addAttribute("institutionList", institutionList);
+            return "uni_login_oidc_institution_chooser_da";
         }
     }
 
+
     @PostMapping("org")
     @ResponseBody
-    public void postOrg(HttpServletResponse response,
-                        @RequestParam String user,
-                        @RequestParam String institution) {
-        Try.of(() -> ServiceHelper.functionalRedirectTo(response, () -> provider.callbackWithInstitution(user, institution).toString()));
+    public RedirectView postOrg(@RequestParam String user, @RequestParam String institution) {
+        return new RedirectView(provider.callbackWithInstitution(user, institution).getUrl(uniloginConf));
     }
 
 
