@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="da">
+
+<head>
+    <title>Vælg institution - UNI•Login</title>
+    {{> metadata}}
+</head>
+
+<body>
+<div>
+    <h1>Vælg din institution:</h1>
+
+        <form action="/unilogin-lightweight/org" method="post">
+            <select id="institution" name="institution">
+                <option value="">Vælg institution</option>
+                {{#institutionList}}
+                <option value="{{id}}">{{id}} : {{name}} (Roller: {{#roles}}{{.}}, {{/roles}})</option>
+                {{/institutionList}}
+            </select>
+            <input type="hidden" name="user" value="{{user}}">
+            <br/>
+            <button type="submit">
+                Login med institution
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
