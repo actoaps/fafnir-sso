@@ -136,7 +136,7 @@ public class BeanConf {
 
 
     @Bean
-    @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL","UL_WS_USER", "UL_WS_PASS"})
+    @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL", "UL_WS_USER", "UL_WS_PASS"})
     public UniLoginLightweightProvider uniLoginLightweightProvider(
         @Value("${UL_CLIENT_ID}") final String appId,
         @Value("${UL_SECRET}") final String secret,
@@ -146,8 +146,7 @@ public class BeanConf {
         final FafnirConf fafnirConf,
         final TokenFactory tokenFactory,
         final ProviderConf providerConf
-    )
-    {
+    ) {
         var ulconf = new UniLoginConf(appId, secret, wsUser, wsPass, sso);
         var helper = new UniLoginHelper(ulconf, fafnirConf);
         log.info("Initialising UniLoginLightweight Configuration...");
@@ -156,7 +155,7 @@ public class BeanConf {
                 .callback(fafnirConf.getUrl() + "/unilogin-lightweight/callback")
                 .defaultScope("openid")
                 .build(new UniLoginApi()))
-            .map(oAuth20Service -> new UniLoginLightweightProvider(fafnirConf,tokenFactory, providerConf,helper))
+            .map(oAuth20Service -> new UniLoginLightweightProvider(fafnirConf, tokenFactory, providerConf, helper))
             .toJavaOptional()
             .orElseThrow(UniloginLightweightConfigurationBroken::new);
     }
