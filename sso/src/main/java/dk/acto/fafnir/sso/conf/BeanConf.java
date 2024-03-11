@@ -117,23 +117,6 @@ public class BeanConf {
             .orElseThrow(LinkedInConfigurationBroken::new);
     }
 
-    @Bean
-    @ConditionalOnProperty(name = {"UL_AID", "UL_SECRET", "UL_WS_USER", "UL_WS_PASS"})
-    public UniLoginProvider uniLoginProvider(
-        @Value("${UL_AID}") final String appId,
-        @Value("${UL_SECRET}") final String secret,
-        @Value("${UL_WS_USER}") final String wsUser,
-        @Value("${UL_WS_PASS}") final String wsPass,
-        @Value("${UL_SSO:false}") final boolean sso,
-        final FafnirConf fafnirConf,
-        final TokenFactory tokenFactory) {
-        log.info("Initialising UniLogin Configuration...");
-        var ulconf = new UniLoginConf(appId, secret, wsUser, wsPass, sso);
-        var helper = new UniLoginHelper(ulconf, fafnirConf);
-        return new UniLoginProvider(fafnirConf, helper, tokenFactory);
-
-    }
-
 
     @Bean
     @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL", "UL_WS_USER", "UL_WS_PASS"})
