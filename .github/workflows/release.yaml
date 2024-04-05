@@ -43,13 +43,22 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
 
-      - name: Close & Release Staging Repository
+      - name: Close Staging Repository
         run: |
-          ./gradlew closeAndReleaseSonatypeStagingRepository --rerun-tasks
+          ./gradlew closeSonatypeStagingRepository --info
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
+
+      - name: Release Staging Repository
+        run: |
+          ./gradlew releaseSonatypeStagingRepository --info
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
+
 
       - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@v2
