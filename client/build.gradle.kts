@@ -83,6 +83,11 @@ publishing {
                         name.set("Mikkel Løkke")
                         email.set("ml@acto.dk")
                     }
+                    developer {
+                        id.set("JonasHein")
+                        name.set("Jonas Hein")
+                        email.set("jh@acto.dk")
+                    }
                 }
 
                 scm {
