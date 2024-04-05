@@ -24,7 +24,6 @@ public final class CryptoUtil {
                 .mapTry(x -> x.doFinal(Base64.getDecoder().decode(encrypted)))
                 .map(x -> new String(x, StandardCharsets.UTF_8))
                 .getOrElseThrow(PasswordDecryptionFailed::new);
-        
     }
 
     public static String encryptPassword(String password, PublicKey publicKey) {

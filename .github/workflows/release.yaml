@@ -45,7 +45,7 @@ jobs:
 
       - name: Close & Release Staging Repository
         run: |
-          ./gradlew closeAndReleaseSonatypeStagingRepository
+          ./gradlew closeAndReleaseSonatypeStagingRepository --rerun-tasks
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
