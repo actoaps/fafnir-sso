@@ -12,11 +12,9 @@ java {
     withSourcesJar()
 }
 
-
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     implementation("org.projectlombok:lombok:1.18.32")
@@ -54,6 +52,7 @@ publishing {
             from(components["java"])
             groupId = "dk.acto"
             artifactId = "fafnir-client"
+            version = project.parent?.version as String
 
             pom {
                 name.set("Fafnir SSO Client")
@@ -98,9 +97,6 @@ publishing {
 }
 
 signing {
-    requireNotNull(project.version)
-    val x = project.version as String
-    require(!x.endsWith("-SNAPSHOT"))
     useInMemoryPgpKeys(findProperty("signingKey") as String?, "")
     sign(publishing.publications["mavenJava"])
 }
