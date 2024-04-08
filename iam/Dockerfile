@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 RUN apt-get install wget -y
 RUN wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar
