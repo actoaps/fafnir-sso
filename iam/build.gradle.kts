@@ -6,8 +6,8 @@ plugins {
 }
 
 java {
-    targetCompatibility = JavaVersion.VERSION_17
-    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 application {
@@ -20,9 +20,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
 
     implementation(project(":ui"))
     implementation(project(":fafnir-client"))
