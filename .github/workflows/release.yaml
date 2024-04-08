@@ -59,6 +59,13 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
 
+      - name: Publish to GitHub Packages
+        run: |
+          ./gradlew publish -DversionOverride=$BUILD_ID
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.PACKAGES_GITHUB_TOKEN }}
+          BUILD_ID: ${{ steps.spell.outputs.version }}
 
       - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@v2
