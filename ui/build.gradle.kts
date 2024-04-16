@@ -4,16 +4,20 @@ plugins {
     id("com.magnetichq.gradle.css") version "3.0.2"
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks.compileSass {
-    outputDir = project.file("${buildDir}/tmp/css")
-    setSourceDir(project.file("${projectDir}/src/scss"))
+    outputDir = project.layout.buildDirectory.file("tmp/css").get().asFile
+    sourceDir = project.file("${projectDir}/src/scss")
 
     finalizedBy(tasks.minifyCss)
 }
 
 tasks.minifyCss {
-    source = project.fileTree("${buildDir}/tmp/css/styles.css")
-    setDest("${buildDir}/resources/main/static/css/styles.css")
+    source = project.layout.buildDirectory.dir("tmp/css/styles.css").get().asFileTree
+    setDest(project.layout.buildDirectory.file("tmp/css/styles.css").get().asFile)
 }
 
 tasks.processResources {
