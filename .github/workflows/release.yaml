@@ -28,7 +28,7 @@ jobs:
 
       - name: Gradle Build
         run: |
-          ./gradlew clean build sonar -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
+          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
         env:
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
@@ -36,20 +36,12 @@ jobs:
 
       - name: Release client to Maven Central
         run: |
-          ./gradlew publishToSonatype -DversionOverride=$BUILD_ID
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -DversionOverride=$BUILD_ID
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
-
-      - name: Close & Release Staging Repository
-        run: |
-          ./gradlew closeAndReleaseSonatypeStagingRepository
-        env:
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Set up QEMU for multiarch builds
         uses: docker/setup-qemu-action@v2
