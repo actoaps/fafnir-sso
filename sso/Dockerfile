@@ -1,6 +1,6 @@
-FROM eclipse-temurin:17-jre
+FROM amazoncorretto:17
 
-RUN apt-get install wget -y
+RUN apt-get update && apt-get install wget -y
 RUN wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar
 
 ADD build/distributions/sso.tar ./
