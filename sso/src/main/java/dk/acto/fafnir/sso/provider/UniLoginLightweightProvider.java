@@ -56,14 +56,14 @@ public class UniLoginLightweightProvider {
             .collect(Collectors.joining()));
         var scope = "&scope=" + URLEncoder.encode("openid");
         var responseMode = "&response_mode=" + URLEncoder.encode("form_post");
-        return "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect" + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
+        return "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect" + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
     }
 
     public AuthenticationResult callback(UniloginTokenCredentials data, HttpSession session) throws IOException {
         var UL_CLIENT_ID = System.getenv("UL_CLIENT_ID");
         var UL_SECRET = System.getenv("UL_SECRET");
         var UL_REDIRECT_URL = System.getenv("FAFNIR_URL") + "/unilogin-lightweight/callback";
-        var OID_BASE_URL = "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+        var OID_BASE_URL = "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
 
         var CODE_VERIFIER = (String) session.getAttribute("codeVerifier");
 
