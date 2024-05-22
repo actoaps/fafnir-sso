@@ -24,7 +24,7 @@ public class UniLoginHelper {
     private final String apiSecret;
     private final String callback;
     private final String callbackChooseInstitution;
-    private final String callbackChooseInstitutionLightweight;
+    private final String callbackChooseInstitutionNew;
     private final String wsUsername;
     private final String wsPassword;
     private final boolean useSingleSignOn;
@@ -36,7 +36,7 @@ public class UniLoginHelper {
         this.wsPassword = uniLoginConf.getWsPassword();
         this.useSingleSignOn = uniLoginConf.isSingleSignOn();
         this.callbackChooseInstitution = fafnirConf.getUrl() + "/unilogin/org";
-        this.callbackChooseInstitutionLightweight = fafnirConf.getUrl() + "/unilogin-lightweight/org";
+        this.callbackChooseInstitutionNew = fafnirConf.getUrl() + "/unilogin/org";
         this.callback = fafnirConf.getUrl() + "/unilogin/callback";
     }
 
@@ -57,7 +57,7 @@ public class UniLoginHelper {
     public String getChooseInstitutionUrl(String userId) {
         var builder = new ParameterList();
         builder.add("user", userId);
-        return builder.appendTo(this.callbackChooseInstitutionLightweight);
+        return builder.appendTo(this.callbackChooseInstitutionNew);
     }
 
     public String getAuthorizationUrl() {

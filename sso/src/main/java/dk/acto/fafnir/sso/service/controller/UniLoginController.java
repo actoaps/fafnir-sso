@@ -2,9 +2,8 @@ package dk.acto.fafnir.sso.service.controller;
 
 import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
-import dk.acto.fafnir.sso.provider.UniLoginLightweightProvider;
+import dk.acto.fafnir.sso.provider.UniLoginProvider;
 import dk.acto.fafnir.sso.provider.unilogin.UniloginTokenCredentials;
-import dk.acto.fafnir.sso.service.ServiceHelper;
 import io.vavr.control.Try;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,10 +23,10 @@ import java.util.Collections;
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("unilogin-lightweight")
+@RequestMapping("unilogin")
 @ConditionalOnProperty(name = {"UL_CLIENT_ID", "UL_SECRET", "FAFNIR_URL", "UL_WS_USER", "UL_WS_PASS"})
-public class UniLoginLightweightController {
-    private final UniLoginLightweightProvider provider;
+public class UniLoginController {
+    private final UniLoginProvider provider;
     private final FafnirConf uniloginConf;
 
     @GetMapping
@@ -66,6 +65,6 @@ public class UniLoginLightweightController {
 
     @PostConstruct
     private void postConstruct() {
-        log.info("Exposing Unilogin lightweight OIDC Endpoint...");
+        log.info("Exposing Unilogin OIDC Endpoint...");
     }
 }
