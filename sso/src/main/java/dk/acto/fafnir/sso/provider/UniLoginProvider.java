@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
-public class UniLoginLightweightProvider {
+public class UniLoginProvider {
     private final FafnirConf fafnirConf;
     private final TokenFactory tokenFactory;
     private final ProviderConf providerConf;
@@ -45,7 +45,7 @@ public class UniLoginLightweightProvider {
 
         var responseType = "response_type=" + URLEncoder.encode("code");
         var client = "&client_id=" + URLEncoder.encode(System.getenv("UL_CLIENT_ID"));
-        var redirect = "&redirect_uri=" + URLEncoder.encode(System.getenv("FAFNIR_URL") + "/unilogin-lightweight/callback");
+        var redirect = "&redirect_uri=" + URLEncoder.encode(System.getenv("FAFNIR_URL") + "/unilogin/callback");
         var codeChallengeMethod = "&code_challenge_method=" + URLEncoder.encode("S256");
         var codeChallenge = "&code_challenge=" + URLEncoder.encode(PkceUtil.generateCodeChallenge(codeVerifier));
         var nonce = "&nonce=" + URLEncoder.encode(new SecureRandom().ints(16, 0, 256)
@@ -62,7 +62,7 @@ public class UniLoginLightweightProvider {
     public AuthenticationResult callback(UniloginTokenCredentials data, HttpSession session) throws IOException {
         var UL_CLIENT_ID = System.getenv("UL_CLIENT_ID");
         var UL_SECRET = System.getenv("UL_SECRET");
-        var UL_REDIRECT_URL = System.getenv("FAFNIR_URL") + "/unilogin-lightweight/callback";
+        var UL_REDIRECT_URL = System.getenv("FAFNIR_URL") + "/unilogin/callback";
         var OID_BASE_URL = "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
 
         var CODE_VERIFIER = (String) session.getAttribute("codeVerifier");
