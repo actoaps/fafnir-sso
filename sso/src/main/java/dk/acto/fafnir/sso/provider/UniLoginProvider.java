@@ -67,7 +67,6 @@ public class UniLoginProvider {
 
         var CODE_VERIFIER = (String) session.getAttribute("codeVerifier");
 
-
         var accessCode = data.getCode();
         AccessToken accessToken;
 
@@ -77,14 +76,13 @@ public class UniLoginProvider {
 
         intro = getIntrospectToken(accessToken.getAccess_token(), UL_CLIENT_ID, UL_SECRET, OID_BASE_URL);
 
-
         if (intro == null) {
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         var userId = intro.getUniid();
-
         var institutions = getInstitutionList(userId);
+
         if (institutions.isEmpty()) {
             return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
         } else if (institutions.size() == 1) {
