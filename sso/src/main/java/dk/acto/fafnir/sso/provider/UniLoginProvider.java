@@ -10,7 +10,9 @@ import dk.acto.fafnir.sso.util.PkceUtil;
 import dk.acto.fafnir.sso.util.TokenFactory;
 import https.unilogin.Institutionstilknytning;
 import https.wsibruger_unilogin_dk.ws.WsiBruger;
+import https.wsibruger_unilogin_dk.ws.WsiBrugerPortType;
 import https.wsiinst_unilogin_dk.ws.WsiInst;
+import https.wsiinst_unilogin_dk.ws.WsiInstPortType;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -95,52 +98,49 @@ public class UniLoginProvider {
 
 
     public List<Institution> getInstitutionList(String userId) {
-        var wsdlURL = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
-        var SERVICE_NAME = new QName("https://wsibruger.unilogin.dk/ws", "WsiBruger");
-        var wsiBruger = new WsiBruger(wsdlURL, SERVICE_NAME);
-        var wsiBrugerPortType = wsiBruger.getWsiBrugerPort();
-        List<Institutionstilknytning> institutionstilknytninger;
+        URL wsdlURLBruger = getClass().getClassLoader().getResource("wsdl/wsibruger_v6.wsdl");
+        URL wsdlURLInst = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
 
+        var wsiBrugerService = new WsiBruger(wsdlURLBruger);
+        var wsiInstService = new WsiInst(wsdlURLInst);
 
-        var wsiURL = getClass().getClassLoader().getResource("wsdl/wsiinst_v5.wsdl");
-        var SERVICE = new QName("https://wsiinst.unilogin.dk/ws", "WsiInst");
-        var wsiInst = new WsiInst(wsiURL, SERVICE);
-        var wsiInstPortType = wsiInst.getWsiInstPort();
+        var wsiBruger = wsiBrugerService.getWsiBrugerPort();
+        var wsiInst = wsiInstService.getWsiInstPort();
+
         try {
-            institutionstilknytninger = wsiBrugerPortType.hentBrugersInstitutionstilknytninger(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
-            return institutionstilknytninger.stream().map((institutionstilknytning -> {
-                var instName = "";
+            List<Institutionstilknytning> institutionstilknytninger = wsiBruger.hentBrugersInstitutionstilknytninger(
+                uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), userId);
+
+            return institutionstilknytninger.stream().map(institutionstilknytning -> {
+                String instName = "";
+                https.unilogin.Institution inst = null;
                 try {
-                    var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionstilknytning.getInstnr());
+                    inst = wsiInst.hentInstitution(
+                        uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionstilknytning.getInstnr());
                     instName = inst.getInstnavn();
-                } catch (https.wsiinst_unilogin_dk.ws.AuthentificationFault authentificationFault) {
-                    log.error(authentificationFault.getMessage(), authentificationFault);
+                } catch (Exception e) {
+                    log.error("Error fetching institution name", e);
                 }
                 var roleNames = toUserRoles(institutionstilknytninger).stream()
                     .map(UserRole::toString)
                     .collect(Collectors.toList());
-                return Institution.builder()
-                    .name(instName)
-                    .id(institutionstilknytning.getInstnr())
-                    .roles(roleNames)
-                    .build();
-            })).distinct().collect(Collectors.toList());
-        } catch (https.wsibruger_unilogin_dk.ws.AuthentificationFault authentificationFault) {
-            log.error(authentificationFault.getMessage(), authentificationFault);
+                return convertInstitution(inst, roleNames);
+            }).distinct().collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error fetching user's institution affiliations", e);
         }
         return Collections.emptyList();
     }
 
-
-    private Set<UserRole> toUserRoles(java.util.List<https.unilogin.Institutionstilknytning> institutionstilknytninger) {
+    private Set<UserRole> toUserRoles(List<Institutionstilknytning> institutionstilknytninger) {
         Set<UserRole> roles = new HashSet<>();
         for (var institutionstilknytning : institutionstilknytninger) {
             var ansat = institutionstilknytning.getAnsat();
             var ekstern = institutionstilknytning.getEkstern();
             var elev = institutionstilknytning.getElev();
             if (ansat != null) {
-                ansat.getRolle()
-                    .forEach(ansatrolle -> UserRole.builder().name(ansatrolle.name()).type("EMPLOYEE").build());
+                ansat.getRolle().forEach(ansatrolle ->
+                    roles.add(UserRole.builder().name(ansatrolle.name()).type("EMPLOYEE").build()));
             }
             if (ekstern != null) {
                 roles.add(UserRole.builder()
@@ -156,6 +156,14 @@ public class UniLoginProvider {
             }
         }
         return roles;
+    }
+
+    private Institution convertInstitution(https.unilogin.Institution inst, List<String> roles) {
+        return Institution.builder()
+            .name(inst.getInstnavn())
+            .id(inst.getInstnr())
+            .roles(roles)
+            .build();
     }
 
     public String getFailureUrl(FailureReason reason) {
