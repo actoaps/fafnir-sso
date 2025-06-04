@@ -59,7 +59,6 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .map(x -> tokenFactory.generateToken(UserData.builder()
                                 .subject(providerConf.applySubjectRules(x.getCustomerNumber()))
                                 .name(x.getName())
-                                .email(x.getEmail())
                                 .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
                                 .build(),
                         orgActual,
