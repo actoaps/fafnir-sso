@@ -55,9 +55,11 @@ public class EconomicCustomerProvider implements RedirectingAuthenticationProvid
                 .map(HttpEntity::getBody)
                 .filter(x -> x.getEmail() != null)
                 .filter(x -> x.getEmail().equals(email))
+                .filter(x -> !x.getBarred())
                 .map(x -> tokenFactory.generateToken(UserData.builder()
                                 .subject(providerConf.applySubjectRules(x.getCustomerNumber()))
                                 .name(x.getName())
+                                .email(x.getEmail())
                                 .locale(localeMap.getOrDefault(x.getCurrency(), Locale.forLanguageTag("da-DK")))
                                 .build(),
                         orgActual,
