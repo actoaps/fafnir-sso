@@ -8,4 +8,5 @@ public class EconomicCustomer {
     private String currency;
     private String email;
     private String name;
+    private Boolean barred;
 }
