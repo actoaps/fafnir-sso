@@ -22,3 +22,10 @@ fafnir.jks
 fafnir-storage/
 
 dist/
+
+# Eclipse LSP
+.project
+.classpath
+.factorypath
+.settings/
+bin/
