@@ -26,9 +26,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
 
     implementation(project(":ui"))
     implementation(project(":fafnir-client"))
@@ -73,7 +73,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-security:4.0.0")
 
     implementation ("org.springframework.boot:spring-boot-starter-mustache")
-    
+
 
     // WSDL / Apache-cxf stuff
     implementation("jakarta.xml.ws:jakarta.xml.ws-api:4.0.0")
@@ -107,7 +107,6 @@ tasks.register<Wsdl2Java>("genWsiBruger") {
         wsdl.set(file("src/main/resources/wsdl/wsibruger_v6.wsdl"))
         encoding.set("UTF-8")
     }
-
     dependsOn(tasks.getByName("downloadWSDLWsiBruger"))
 }
 
@@ -118,11 +117,15 @@ tasks.register<Wsdl2Java>("genWsiInst") {
         wsdl.set(file("src/main/resources/wsdl/wsiinst_v5.wsdl"))
         encoding.set("UTF-8")
     }
-
     dependsOn(tasks.getByName("downloadWSDLWsiInst"))
 }
 
 tasks.compileJava {
     options.encoding = "UTF-8"
     dependsOn(tasks.wsdl2java)
+}
+
+tasks.processResources {
+    dependsOn(tasks.getByName("downloadWSDLWsiBruger"))
+    dependsOn(tasks.getByName("downloadWSDLWsiInst"))
 }

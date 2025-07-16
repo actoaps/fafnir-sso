@@ -4,9 +4,13 @@ plugins {
     id("com.magnetichq.gradle.css") version "3.0.2"
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks.compileSass {
-    outputDir = project.file("${buildDir}/tmp/css")
-    setSourceDir(project.file("${projectDir}/src/scss"))
+    outputDir = project.layout.buildDirectory.file("tmp/css").get().asFile
+    sourceDir = project.file("${projectDir}/src/scss")
 
     finalizedBy(tasks.minifyCss)
 }
