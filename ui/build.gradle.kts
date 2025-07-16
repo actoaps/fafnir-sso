@@ -9,10 +9,8 @@ java {
 }
 
 tasks.compileSass {
-    outputDir = project.layout.buildDirectory.file("tmp/css").get().asFile
-    sourceDir = project.file("${projectDir}/src/scss")
-
-    finalizedBy(tasks.minifyCss)
+    outputDir = project.file("${buildDir}/tmp/css")
+    setSourceDir(project.file("${projectDir}/src/scss"))
 }
 
 tasks.minifyCss {
@@ -21,6 +19,6 @@ tasks.minifyCss {
 }
 
 tasks.processResources {
-    dependsOn(tasks.compileSass)
+    dependsOn(tasks.minifyCss)
 }
 
