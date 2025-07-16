@@ -13,7 +13,7 @@ tasks.compileSass {
 
 tasks.minifyCss {
     source = project.fileTree("${buildDir}/tmp/css/styles.css")
-    setDest("${buildDir}/resources/main/static/css/styles.css")
+    setDest("${projectDir}/src/main/resources/static/css/styles.css")
 }
 
 tasks.processResources {
