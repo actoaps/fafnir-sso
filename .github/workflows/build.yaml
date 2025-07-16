@@ -22,13 +22,13 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: 'corretto'
           java-version: '17'
           cache: gradle
 
       - name: Gradle Build
         run: |
-          ./gradlew clean build sonar -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
+          ./gradlew clean build -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN -DversionOverride=$BUILD_ID
         env:
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
