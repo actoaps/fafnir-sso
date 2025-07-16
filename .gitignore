@@ -11,6 +11,7 @@ dk/acto/auth/generated/
 build/
 gradle.properties
 generated/
+ui/src/main/resources/static/css
 
 # Webapp
 node_modules/
