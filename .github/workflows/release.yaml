@@ -39,8 +39,8 @@ jobs:
           ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -DversionOverride=$BUILD_ID
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_PASSWORD }}
           BUILD_ID: ${{ steps.spell.outputs.version }}
 
       - name: Set up QEMU for multiarch builds
