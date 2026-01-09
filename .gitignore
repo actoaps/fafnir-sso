@@ -18,6 +18,8 @@ node_modules/
 
 *.hprof
 
+docker-compose.yaml
+
 fafnir.jks
 
 fafnir-storage/
