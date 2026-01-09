@@ -58,8 +58,8 @@ public class UniLoginController {
 
     @PostMapping("org")
     @ResponseBody
-    public RedirectView postOrg(@RequestParam String user, @RequestParam String institution) {
-        return new RedirectView(provider.callbackWithInstitution(user, institution).getUrl(uniloginConf));
+    public RedirectView postOrg(@RequestParam String user, @RequestParam String institution, HttpSession session) {
+        return new RedirectView(provider.callbackWithInstitution(user, institution, null, session).getUrl(uniloginConf));
     }
 
 

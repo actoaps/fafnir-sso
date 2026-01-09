@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  fafnir-sso:
+    build: sso
+    container_name: fafnir-sso
+    ports:
+      - "8080:8080"
+      - "6001:6001"
+    environment:
+      - FAFNIR_SUCCESS=http://localhost:8082/iam/success
+      - FAFNIR_FAILURE=http://localhost:8080/loginerror
+      - FAFNIR_URL=http://localhost:8080
+      - TEST_ENABLED=true
+      - MITID_AID=c831a44a-81c4-4ca7-97aa-21f4c5e15b4a
+      - MITID_SECRET=a6MJQNl2d5nPdplyLz0JPOI3kvnp2sP6Mr5dBOLfmxSnuZ/Z/ZdHfwu0QLHzkI/6UPWOo/RuQjsTHlKoXmSuaQ==
+      - MITID_AUTHORITY_URL=https://brokertest.signaturgruppen.dk/op
+      - KEYSTORE_PASS=fafnir
+      - KEY_PASS=fafnir
+      - GOOGLE_VERSION2_ENABLED=true
+    volumes:
+      - ./fafnir-storage:/var/lib/fafnir
+
+  fafnir-iam:
+    build: iam
+    container_name: fafnir-iam
+    depends_on:
+      - fafnir-sso
+    ports:
+      - "8082:8080"
+    environment:
+      - FAFNIR_URL=http://fafnir-sso
+      - FAFNIR_PORT=8080
+      - IAM_ADMIN_PASSWORD=pass
