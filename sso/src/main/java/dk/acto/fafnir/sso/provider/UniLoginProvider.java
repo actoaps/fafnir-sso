@@ -129,7 +129,7 @@ public class UniLoginProvider {
         try {
             userInfo = getUserInfo(accessToken.getAccess_token(), OID_BASE_URL);
             if (userInfo != null && userInfo.getInstBrugere() != null && !userInfo.getInstBrugere().isEmpty()) {
-                institutions = convertUserInfoToInstitutions(userInfo);
+                institutions = convertUserInfoToInstitutions(userInfo, session);
                 log.debug("Successfully retrieved institutions from UserInfo endpoint for user: {}", userId);
                 // Store UserInfo in session for role extraction later
                 session.setAttribute("userInfo", userInfo);
@@ -177,7 +177,7 @@ public class UniLoginProvider {
             if (userInfo != null && userInfo.getInstBrugere() != null && !userInfo.getInstBrugere().isEmpty()) {
                 log.info("Retrieving institutions from UserInfo in session for user: {}, count: {}", 
                     userId, userInfo.getInstBrugere().size());
-                List<Institution> institutions = convertUserInfoToInstitutions(userInfo);
+                List<Institution> institutions = convertUserInfoToInstitutions(userInfo, session);
                 log.info("Converted {} institution(s) from UserInfo", institutions.size());
                 return institutions;
             }
@@ -467,11 +467,13 @@ public class UniLoginProvider {
 
     /**
      * Converts UserInfo response to Institution list.
+     * Extracts roles from UserInfo if available, otherwise uses aktørgruppe from session as fallback.
      * 
      * @param userInfo The UserInfo response from OIDC endpoint
+     * @param session The HTTP session (may contain aktørgruppe for fallback)
      * @return List of Institution objects
      */
-    private List<Institution> convertUserInfoToInstitutions(UserInfoResponse userInfo) {
+    private List<Institution> convertUserInfoToInstitutions(UserInfoResponse userInfo, HttpSession session) {
         if (userInfo == null || userInfo.getInstBrugere() == null) {
             log.warn("convertUserInfoToInstitutions: userInfo or instBrugere is null");
             return Collections.emptyList();
@@ -479,25 +481,62 @@ public class UniLoginProvider {
         
         log.info("Converting {} institution affiliation(s) to Institution objects", userInfo.getInstBrugere().size());
         
+        // Get aktørgruppe from session as fallback for roles
+        String aktorgruppe = session != null ? (String) session.getAttribute("aktoer_gruppe") : null;
+        log.debug("Aktørgruppe from session: {}", aktorgruppe);
+        
         // Log raw UserInfo data first
         for (int i = 0; i < userInfo.getInstBrugere().size(); i++) {
             var inst = userInfo.getInstBrugere().get(i);
-            log.info("UserInfo institution[{}]: inTnr='{}', inTnavn='{}' (inTnr is null: {}, inTnavn is null: {})", 
-                i, inst.getInTnr(), inst.getInTnavn(), inst.getInTnr() == null, inst.getInTnavn() == null);
+            log.info("UserInfo institution[{}]: inTnr='{}', inTnavn='{}', roller={}, ansatRoller={}, elevRoller={}, eksternRoller={}", 
+                i, inst.getInTnr(), inst.getInTnavn(), inst.getRoller(), 
+                inst.getAnsatRoller(), inst.getElevRoller(), inst.getEksternRoller());
         }
         
         List<Institution> institutions = userInfo.getInstBrugere().stream()
             .map(inst -> {
                 String id = inst.getInTnr();
                 String name = inst.getInTnavn();
-                log.info("Creating Institution - id: '{}', name: '{}' (id is null: {}, name is null: {})", 
-                    id, name, id == null, name == null);
+                
+                // Extract roles from UserInfo
+                List<String> roles = new ArrayList<>();
+                
+                // Format 1: Direct "roller" array with strings like "PÆDAGOG@EMPLOYEE"
+                if (inst.getRoller() != null && !inst.getRoller().isEmpty()) {
+                    roles.addAll(inst.getRoller());
+                    log.debug("Found {} role(s) in 'roller' field for institution: {}", inst.getRoller().size(), id);
+                }
+                
+                // Format 2: Separate arrays for ansat_roller, elev_roller, ekstern_roller
+                if (inst.getAnsatRoller() != null && !inst.getAnsatRoller().isEmpty()) {
+                    roles.addAll(inst.getAnsatRoller());
+                    log.debug("Found {} role(s) in 'ansatRoller' field for institution: {}", inst.getAnsatRoller().size(), id);
+                }
+                
+                if (inst.getElevRoller() != null && !inst.getElevRoller().isEmpty()) {
+                    roles.addAll(inst.getElevRoller());
+                    log.debug("Found {} role(s) in 'elevRoller' field for institution: {}", inst.getElevRoller().size(), id);
+                }
+                
+                if (inst.getEksternRoller() != null && !inst.getEksternRoller().isEmpty()) {
+                    roles.addAll(inst.getEksternRoller());
+                    log.debug("Found {} role(s) in 'eksternRoller' field for institution: {}", inst.getEksternRoller().size(), id);
+                }
+                
+                // Fallback: Use aktørgruppe if no roles found in UserInfo
+                if (roles.isEmpty() && aktorgruppe != null && !aktorgruppe.isEmpty()) {
+                    roles.add(aktorgruppe);
+                    log.debug("No roles found in UserInfo for institution: {}, using aktørgruppe as fallback: {}", id, aktorgruppe);
+                }
+                
+                log.info("Creating Institution - id: '{}', name: '{}', roles: {} (id is null: {}, name is null: {})", 
+                    id, name, roles, id == null, name == null);
                 
                 // Use constructor directly instead of builder to ensure values are set
-                Institution institution = new Institution(id, name, Collections.emptyList());
+                Institution institution = new Institution(id, name, roles);
                 
-                log.info("Created Institution object - id: '{}', name: '{}', class: {}, fields accessible: id={}, name={}", 
-                    institution.id, institution.name, institution.getClass().getName(),
+                log.info("Created Institution object - id: '{}', name: '{}', roles: {}, class: {}, fields accessible: id={}, name={}", 
+                    institution.id, institution.name, institution.roles, institution.getClass().getName(),
                     institution.id != null, institution.name != null);
                 
                 // Verify the values were actually set
