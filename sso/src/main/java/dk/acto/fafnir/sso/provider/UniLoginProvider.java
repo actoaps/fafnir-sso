@@ -274,30 +274,43 @@ public class UniLoginProvider {
         var name = getUserFullNameFromId(userId);
         
         // Try to get institution name from parameter, then from UserInfo in session, otherwise fallback to web service
-        String orgName = institutionName;
-        if (orgName == null || orgName.isEmpty()) {
-            // Try to get from UserInfo stored in session
-            if (session != null) {
-                UserInfoResponse userInfo = (UserInfoResponse) session.getAttribute("userInfo");
-                if (userInfo != null && userInfo.getInstBrugere() != null) {
-                    Optional<String> nameFromUserInfo = userInfo.getInstBrugere().stream()
-                        .filter(inst -> institutionId.equals(inst.getInTnr()))
-                        .map(InstitutionTilknytning::getInTnavn)
-                        .filter(n -> n != null && !n.isEmpty())
-                        .findFirst();
-                    if (nameFromUserInfo.isPresent()) {
-                        orgName = nameFromUserInfo.get();
-                        log.debug("Retrieved institution name from UserInfo for institution: {}", institutionId);
-                    }
+        String orgName = (institutionName != null && !institutionName.isEmpty()) ? institutionName : null;
+        
+        // If not provided, try to get from UserInfo stored in session
+        if (orgName == null && session != null) {
+            UserInfoResponse userInfo = (UserInfoResponse) session.getAttribute("userInfo");
+            if (userInfo != null && userInfo.getInstBrugere() != null) {
+                Optional<String> nameFromUserInfo = userInfo.getInstBrugere().stream()
+                    .filter(inst -> institutionId.equals(inst.getInTnr()))
+                    .map(InstitutionTilknytning::getInTnavn)
+                    .filter(n -> n != null && !n.isEmpty())
+                    .findFirst();
+                if (nameFromUserInfo.isPresent()) {
+                    orgName = nameFromUserInfo.get();
+                    log.debug("Retrieved institution name from UserInfo for institution: {}", institutionId);
+                } else {
+                    log.warn("Institution {} not found in UserInfo for user: {}", institutionId, userId);
                 }
+            } else {
+                log.debug("UserInfo not available in session for user: {}", userId);
             }
         }
         
-        // Final fallback to web service only if we still don't have a name
-        final String finalOrgName = (orgName != null && !orgName.isEmpty()) ? orgName :
-            getInstitutionFromId(institutionId)
+        // Final fallback to web service only if we still don't have a name AND UserInfo is not available
+        final String finalOrgName;
+        if (orgName != null && !orgName.isEmpty()) {
+            finalOrgName = orgName;
+        } else if (session != null && session.getAttribute("userInfo") != null) {
+            // UserInfo is available but institution not found - this is an error
+            log.error("Institution {} not found in UserInfo and no name provided. UserInfo is available but institution is missing.", institutionId);
+            throw new RuntimeException("Institution " + institutionId + " not found in UserInfo");
+        } else {
+            // UserInfo not available, use deprecated web service as last resort
+            log.warn("UserInfo not available, falling back to deprecated web service for institution: {}", institutionId);
+            finalOrgName = getInstitutionFromId(institutionId)
                 .map(inst -> inst.name)
-                .orElseThrow(() -> new RuntimeException("No institution"));
+                .orElseThrow(() -> new RuntimeException("No institution found for ID: " + institutionId));
+        }
 
         // Try to get roles from UserInfo, fallback to aktørgruppe, then web service
         Set<UserRole> roles = getUserRolesFromUserInfo(userId, institutionId, session);
@@ -526,7 +539,12 @@ public class UniLoginProvider {
                 // Fallback: Use aktørgruppe if no roles found in UserInfo
                 if (roles.isEmpty() && aktorgruppe != null && !aktorgruppe.isEmpty()) {
                     roles.add(aktorgruppe);
-                    log.debug("No roles found in UserInfo for institution: {}, using aktørgruppe as fallback: {}", id, aktorgruppe);
+                    log.warn("⚠️ No specific roles found in UserInfo for institution: {}. Using aktørgruppe '{}' as fallback. " +
+                        "To get specific roles (Lærer, Pædagog, etc.), activate 'Roller' in Udbyderportalen under 'Ekstra attributter'.", 
+                        id, aktorgruppe);
+                } else if (roles.isEmpty()) {
+                    log.warn("⚠️ No roles found in UserInfo for institution: {} and no aktørgruppe available. " +
+                        "Activate 'Roller' in Udbyderportalen to get specific roles.", id);
                 }
                 
                 log.info("Creating Institution - id: '{}', name: '{}', roles: {} (id is null: {}, name is null: {})", 
