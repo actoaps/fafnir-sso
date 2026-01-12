@@ -43,15 +43,39 @@ public class UniLoginController {
 
     @GetMapping("org")
     public String getOrg(@RequestParam String user, Model model, HttpServletResponse response, HttpSession session) throws IOException {
+        log.info("getOrg called for user: {}", user);
+        
         // Try to get institutions from UserInfo in session first, fallback to deprecated web service
         var institutionList = Try.of(() -> provider.getInstitutionListFromSession(user, session)).getOrElse(Collections.emptyList());
 
+        log.info("Retrieved {} institution(s) for user: {}", institutionList.size(), user);
+        
+        // Log each institution's details
+        for (int i = 0; i < institutionList.size(); i++) {
+            var inst = institutionList.get(i);
+            log.info("Institution[{}]: id={}, name={}, roles={}, class={}", 
+                i, inst.id, inst.name, inst.roles, inst.getClass().getName());
+            
+            // Verify fields are accessible
+            try {
+                var idValue = inst.id;
+                var nameValue = inst.name;
+                var rolesValue = inst.roles;
+                log.debug("Field access test - id: {}, name: {}, roles: {}", idValue, nameValue, rolesValue);
+            } catch (Exception e) {
+                log.error("Error accessing Institution fields", e);
+            }
+        }
+
         if (institutionList.isEmpty()) {
+            log.warn("No institutions found for user: {}, redirecting to failure URL", user);
             response.sendRedirect(provider.getFailureUrl(FailureReason.CONNECTION_FAILED));
             return null;
         } else {
+            log.info("Adding {} institution(s) to model for template rendering", institutionList.size());
             model.addAttribute("user", user);
             model.addAttribute("institutionList", institutionList);
+            log.info("Model attributes set - user: {}, institutionList size: {}", user, institutionList.size());
             return "uni_login_oidc_institution_chooser_da";
         }
     }
