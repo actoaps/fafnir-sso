@@ -44,6 +44,36 @@ public class UniLoginProvider {
     private final ProviderConf providerConf;
     private final UniLoginHelper uniloginHelper;
 
+    /**
+     * Gets the OIDC base URL based on TEST_ENABLED_UNILOGIN environment variable.
+     * Defaults to production endpoint if TEST_ENABLED_UNILOGIN is not set, empty, or "false".
+     * @return Test endpoint if TEST_ENABLED_UNILOGIN is set to a truthy value, otherwise production endpoint
+     */
+    private String getOidcBaseUrl() {
+        String testEnabled = System.getenv("TEST_ENABLED_UNILOGIN");
+        // Default to production if not set, empty, or explicitly "false"
+        if (testEnabled != null && !testEnabled.trim().isEmpty() && !testEnabled.trim().equalsIgnoreCase("false")) {
+            return "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+        }
+        // Production endpoint (default)
+        return "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+    }
+
+    /**
+     * Gets the OIDC authorization base URL (without trailing slash) based on TEST_ENABLED_UNILOGIN.
+     * Defaults to production endpoint if TEST_ENABLED_UNILOGIN is not set, empty, or "false".
+     * @return Test endpoint if TEST_ENABLED_UNILOGIN is set to a truthy value, otherwise production endpoint
+     */
+    private String getOidcAuthBaseUrl() {
+        String testEnabled = System.getenv("TEST_ENABLED_UNILOGIN");
+        // Default to production if not set, empty, or explicitly "false"
+        if (testEnabled != null && !testEnabled.trim().isEmpty() && !testEnabled.trim().equalsIgnoreCase("false")) {
+            return "https://et-broker.unilogin.dk/auth/realms/broker/protocol/openid-connect";
+        }
+        // Production endpoint (default)
+        return "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect";
+    }
+
     public String authenticate(HttpSession session) throws NoSuchAlgorithmException {
         var codeVerifier = PkceUtil.generateCodeVerifier();
         session.setAttribute("codeVerifier", codeVerifier);
@@ -61,14 +91,14 @@ public class UniLoginProvider {
             .collect(Collectors.joining()));
         var scope = "&scope=" + URLEncoder.encode("openid");
         var responseMode = "&response_mode=" + URLEncoder.encode("form_post");
-        return "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect" + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
+        return getOidcAuthBaseUrl() + "/auth?" + responseType + client + redirect + codeChallengeMethod + codeChallenge + nonce + state + scope + responseMode;
     }
 
     public AuthenticationResult callback(UniloginTokenCredentials data, HttpSession session) throws IOException {
         var UL_CLIENT_ID = System.getenv("UL_CLIENT_ID");
         var UL_SECRET = System.getenv("UL_SECRET");
         var UL_REDIRECT_URL = System.getenv("FAFNIR_URL") + "/unilogin/callback";
-        var OID_BASE_URL = "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+        var OID_BASE_URL = getOidcBaseUrl();
 
         var CODE_VERIFIER = (String) session.getAttribute("codeVerifier");
 
@@ -429,7 +459,7 @@ public class UniLoginProvider {
             if (userInfo == null) {
                 String accessToken = (String) session.getAttribute("accessToken");
                 if (accessToken != null) {
-                    String OID_BASE_URL = "https://broker.unilogin.dk/auth/realms/broker/protocol/openid-connect/";
+                    String OID_BASE_URL = getOidcBaseUrl();
                     userInfo = getUserInfo(accessToken, OID_BASE_URL);
                 }
             }
