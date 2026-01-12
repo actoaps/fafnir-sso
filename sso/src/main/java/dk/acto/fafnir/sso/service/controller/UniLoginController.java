@@ -42,8 +42,9 @@ public class UniLoginController {
     }
 
     @GetMapping("org")
-    public String getOrg(@RequestParam String user, Model model, HttpServletResponse response) throws IOException {
-        var institutionList = Try.of(() -> provider.getInstitutionList(user)).getOrElse(Collections.emptyList());
+    public String getOrg(@RequestParam String user, Model model, HttpServletResponse response, HttpSession session) throws IOException {
+        // Try to get institutions from UserInfo in session first, fallback to deprecated web service
+        var institutionList = Try.of(() -> provider.getInstitutionListFromSession(user, session)).getOrElse(Collections.emptyList());
 
         if (institutionList.isEmpty()) {
             response.sendRedirect(provider.getFailureUrl(FailureReason.CONNECTION_FAILED));

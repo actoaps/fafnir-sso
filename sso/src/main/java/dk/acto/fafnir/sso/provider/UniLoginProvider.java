@@ -157,6 +157,26 @@ public class UniLoginProvider {
 
 
     /**
+     * Gets institution list from UserInfo stored in session, or falls back to deprecated web service.
+     * 
+     * @param userId The user ID
+     * @param session The HTTP session containing UserInfo
+     * @return List of Institution objects
+     */
+    public List<Institution> getInstitutionListFromSession(String userId, HttpSession session) {
+        if (session != null) {
+            UserInfoResponse userInfo = (UserInfoResponse) session.getAttribute("userInfo");
+            if (userInfo != null && userInfo.getInstBrugere() != null && !userInfo.getInstBrugere().isEmpty()) {
+                log.debug("Retrieving institutions from UserInfo in session for user: {}", userId);
+                return convertUserInfoToInstitutions(userInfo);
+            }
+        }
+        // Fallback to deprecated web service
+        log.debug("UserInfo not available in session, falling back to deprecated web service for user: {}", userId);
+        return getInstitutionList(userId);
+    }
+
+    /**
      * @deprecated Use UserInfo endpoint instead. This method will be removed in a future version.
      * Call getUserInfo() and convertUserInfoToInstitutions() instead.
      */
