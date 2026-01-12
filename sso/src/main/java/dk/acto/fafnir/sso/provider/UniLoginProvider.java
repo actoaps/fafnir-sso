@@ -254,11 +254,7 @@ public class UniLoginProvider {
     }
 
     private Institution convertInstitution(https.unilogin.Institution inst, List<String> roles) {
-        return Institution.builder()
-            .name(inst.getInstnavn())
-            .id(inst.getInstnr())
-            .roles(roles)
-            .build();
+        return new Institution(inst.getInstnr(), inst.getInstnavn(), roles);
     }
 
     public String getFailureUrl(FailureReason reason) {
@@ -353,10 +349,7 @@ public class UniLoginProvider {
         var wsiInstPortType = wsiInst.getWsiInstPort();
         try {
             var inst = wsiInstPortType.hentInstitution(uniloginHelper.getWsUsername(), uniloginHelper.getWsPassword(), institutionId);
-            return Optional.of(Institution.builder()
-                .id(inst.getInstnr())
-                .name(inst.getInstnavn())
-                .build());
+            return Optional.of(new Institution(inst.getInstnr(), inst.getInstnavn(), Collections.emptyList()));
         } catch (https.wsiinst_unilogin_dk.ws.AuthentificationFault authentificationFault) {
             log.error(authentificationFault.getMessage(), authentificationFault);
             return Optional.empty();
@@ -480,21 +473,32 @@ public class UniLoginProvider {
         
         log.info("Converting {} institution affiliation(s) to Institution objects", userInfo.getInstBrugere().size());
         
+        // Log raw UserInfo data first
+        for (int i = 0; i < userInfo.getInstBrugere().size(); i++) {
+            var inst = userInfo.getInstBrugere().get(i);
+            log.info("UserInfo institution[{}]: inTnr='{}', inTnavn='{}' (inTnr is null: {}, inTnavn is null: {})", 
+                i, inst.getInTnr(), inst.getInTnavn(), inst.getInTnr() == null, inst.getInTnavn() == null);
+        }
+        
         List<Institution> institutions = userInfo.getInstBrugere().stream()
             .map(inst -> {
                 String id = inst.getInTnr();
                 String name = inst.getInTnavn();
-                log.debug("Creating Institution - id: {}, name: {}", id, name);
+                log.info("Creating Institution - id: '{}', name: '{}' (id is null: {}, name is null: {})", 
+                    id, name, id == null, name == null);
                 
-                Institution institution = Institution.builder()
-                    .id(id)
-                    .name(name)
-                    .roles(Collections.emptyList()) // Roles not available in basic institution affiliation
-                    .build();
+                // Use constructor directly instead of builder to ensure values are set
+                Institution institution = new Institution(id, name, Collections.emptyList());
                 
-                log.debug("Created Institution object - id: {}, name: {}, class: {}, fields accessible: id={}, name={}", 
+                log.info("Created Institution object - id: '{}', name: '{}', class: {}, fields accessible: id={}, name={}", 
                     institution.id, institution.name, institution.getClass().getName(),
                     institution.id != null, institution.name != null);
+                
+                // Verify the values were actually set
+                if (institution.id == null || institution.name == null) {
+                    log.error("ERROR: Institution fields are null after creation! id: {}, name: {}", 
+                        institution.id, institution.name);
+                }
                 
                 return institution;
             })
