@@ -148,7 +148,9 @@ public class UniLoginProvider {
         if (institutions.isEmpty()) {
             return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
         } else if (institutions.size() == 1) {
-            return callbackWithInstitution(userId, institutions.get(0).getId(), institutions.get(0).getName(), session);
+            Institution inst = institutions.get(0);
+            log.debug("Single institution found - id: {}, name: {}", inst.id, inst.name);
+            return callbackWithInstitution(userId, inst.id, inst.name, session);
         } else {
             String chooseInstitutionUrl = uniloginHelper.getChooseInstitutionUrl(userId);
             return AuthenticationResult.redirect(chooseInstitutionUrl);
@@ -164,15 +166,24 @@ public class UniLoginProvider {
      * @return List of Institution objects
      */
     public List<Institution> getInstitutionListFromSession(String userId, HttpSession session) {
+        log.info("getInstitutionListFromSession called for user: {}, session is null: {}", userId, session == null);
+        
         if (session != null) {
             UserInfoResponse userInfo = (UserInfoResponse) session.getAttribute("userInfo");
+            log.info("UserInfo from session - is null: {}, has instBrugere: {}", 
+                userInfo == null, 
+                userInfo != null && userInfo.getInstBrugere() != null);
+            
             if (userInfo != null && userInfo.getInstBrugere() != null && !userInfo.getInstBrugere().isEmpty()) {
-                log.debug("Retrieving institutions from UserInfo in session for user: {}", userId);
-                return convertUserInfoToInstitutions(userInfo);
+                log.info("Retrieving institutions from UserInfo in session for user: {}, count: {}", 
+                    userId, userInfo.getInstBrugere().size());
+                List<Institution> institutions = convertUserInfoToInstitutions(userInfo);
+                log.info("Converted {} institution(s) from UserInfo", institutions.size());
+                return institutions;
             }
         }
         // Fallback to deprecated web service
-        log.debug("UserInfo not available in session, falling back to deprecated web service for user: {}", userId);
+        log.warn("UserInfo not available in session, falling back to deprecated web service for user: {}", userId);
         return getInstitutionList(userId);
     }
 
@@ -287,9 +298,9 @@ public class UniLoginProvider {
         }
         
         // Final fallback to web service only if we still don't have a name
-        final var finalOrgName = (orgName != null && !orgName.isEmpty()) ? orgName :
+        final String finalOrgName = (orgName != null && !orgName.isEmpty()) ? orgName :
             getInstitutionFromId(institutionId)
-                .map(Institution::getName)
+                .map(inst -> inst.name)
                 .orElseThrow(() -> new RuntimeException("No institution"));
 
         // Try to get roles from UserInfo, fallback to aktørgruppe, then web service
@@ -463,16 +474,34 @@ public class UniLoginProvider {
      */
     private List<Institution> convertUserInfoToInstitutions(UserInfoResponse userInfo) {
         if (userInfo == null || userInfo.getInstBrugere() == null) {
+            log.warn("convertUserInfoToInstitutions: userInfo or instBrugere is null");
             return Collections.emptyList();
         }
         
-        return userInfo.getInstBrugere().stream()
-            .map(inst -> Institution.builder()
-                .id(inst.getInTnr())
-                .name(inst.getInTnavn())
-                .roles(Collections.emptyList()) // Roles not available in basic institution affiliation
-                .build())
+        log.info("Converting {} institution affiliation(s) to Institution objects", userInfo.getInstBrugere().size());
+        
+        List<Institution> institutions = userInfo.getInstBrugere().stream()
+            .map(inst -> {
+                String id = inst.getInTnr();
+                String name = inst.getInTnavn();
+                log.debug("Creating Institution - id: {}, name: {}", id, name);
+                
+                Institution institution = Institution.builder()
+                    .id(id)
+                    .name(name)
+                    .roles(Collections.emptyList()) // Roles not available in basic institution affiliation
+                    .build();
+                
+                log.debug("Created Institution object - id: {}, name: {}, class: {}, fields accessible: id={}, name={}", 
+                    institution.id, institution.name, institution.getClass().getName(),
+                    institution.id != null, institution.name != null);
+                
+                return institution;
+            })
             .collect(Collectors.toList());
+        
+        log.info("Successfully converted {} Institution object(s)", institutions.size());
+        return institutions;
     }
 
     /**
