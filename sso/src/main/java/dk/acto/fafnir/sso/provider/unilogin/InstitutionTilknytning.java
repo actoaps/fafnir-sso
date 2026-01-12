@@ -13,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstitutionTilknytning {
-    @JsonProperty("in_tnr")
+    @JsonProperty("instnr")
     public String inTnr;  // Institution number
 
-    @JsonProperty("in_tnavn")
+    @JsonProperty("instnavn")
     public String inTnavn; // Institution name
 
     // Fields for roles, as they might appear in UserInfo response
