@@ -246,8 +246,28 @@ public class UniLoginProvider {
     public AuthenticationResult callbackWithInstitution(String userId, String institutionId, String institutionName, HttpSession session) {
         var name = getUserFullNameFromId(userId);
         
-        // Try to get institution name from parameter, otherwise fallback to web service
-        final var orgName = institutionName != null ? institutionName :
+        // Try to get institution name from parameter, then from UserInfo in session, otherwise fallback to web service
+        String orgName = institutionName;
+        if (orgName == null || orgName.isEmpty()) {
+            // Try to get from UserInfo stored in session
+            if (session != null) {
+                UserInfoResponse userInfo = (UserInfoResponse) session.getAttribute("userInfo");
+                if (userInfo != null && userInfo.getInstBrugere() != null) {
+                    Optional<String> nameFromUserInfo = userInfo.getInstBrugere().stream()
+                        .filter(inst -> institutionId.equals(inst.getInTnr()))
+                        .map(InstitutionTilknytning::getInTnavn)
+                        .filter(n -> n != null && !n.isEmpty())
+                        .findFirst();
+                    if (nameFromUserInfo.isPresent()) {
+                        orgName = nameFromUserInfo.get();
+                        log.debug("Retrieved institution name from UserInfo for institution: {}", institutionId);
+                    }
+                }
+            }
+        }
+        
+        // Final fallback to web service only if we still don't have a name
+        final var finalOrgName = (orgName != null && !orgName.isEmpty()) ? orgName :
             getInstitutionFromId(institutionId)
                 .map(Institution::getName)
                 .orElseThrow(() -> new RuntimeException("No institution"));
@@ -272,7 +292,7 @@ public class UniLoginProvider {
             .build();
         var orgActual = OrganisationData.builder()
             .organisationId(institutionId)
-            .organisationName(orgName)
+            .organisationName(finalOrgName)
             .build();
         var claimsActual = ClaimData.builder()
             .claims(roles.stream()
