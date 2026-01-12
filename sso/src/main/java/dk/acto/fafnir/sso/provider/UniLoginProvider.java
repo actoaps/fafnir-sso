@@ -433,15 +433,21 @@ public class UniLoginProvider {
             int statusCode = response.getStatusLine().getStatusCode();
             
             if (statusCode == 200) {
-                UserInfoResponse userInfo = getObjectMapper().readValue(response.getEntity().getContent(), UserInfoResponse.class);
+                // Read raw JSON first to see what we're getting
+                String rawJson = new String(response.getEntity().getContent().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                log.info("Raw UserInfo JSON response: {}", rawJson);
+                
+                // Parse JSON
+                UserInfoResponse userInfo = getObjectMapper().readValue(rawJson, UserInfoResponse.class);
+                
                 // Debug logging for testing
                 if (userInfo != null && userInfo.getInstBrugere() != null) {
                     log.info("UserInfo endpoint returned {} institution(s) for user", userInfo.getInstBrugere().size());
-                    if (log.isDebugEnabled()) {
-                        log.debug("UserInfo response: inst_brugere={}", 
-                            userInfo.getInstBrugere().stream()
-                                .map(inst -> String.format("{in_tnr=%s, in_tnavn=%s}", inst.getInTnr(), inst.getInTnavn()))
-                                .collect(Collectors.joining(", ")));
+                    for (int i = 0; i < userInfo.getInstBrugere().size(); i++) {
+                        var inst = userInfo.getInstBrugere().get(i);
+                        log.info("UserInfo instBrugere[{}]: inTnr='{}', inTnavn='{}', roller={}, ansatRoller={}, elevRoller={}, eksternRoller={}", 
+                            i, inst.getInTnr(), inst.getInTnavn(), inst.getRoller(), 
+                            inst.getAnsatRoller(), inst.getElevRoller(), inst.getEksternRoller());
                     }
                 } else {
                     log.info("UserInfo endpoint returned no institution data (inst_brugere is null or empty)");
