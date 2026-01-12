@@ -1,14 +1,16 @@
 package dk.acto.fafnir.sso.provider.unilogin;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
 import java.util.List;
 
-@Value
+@Getter
 @Builder
+@AllArgsConstructor
 public class Institution {
-	String id;
-	String name;
-	List<String> roles;
+	private final String id;
+	private final String name;
+	private final List<String> roles;
 }
