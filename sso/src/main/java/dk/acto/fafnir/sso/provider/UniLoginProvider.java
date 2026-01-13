@@ -34,6 +34,11 @@ import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.Base64;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,6 +48,38 @@ public class UniLoginProvider {
     private final TokenFactory tokenFactory;
     private final ProviderConf providerConf;
     private final UniLoginHelper uniloginHelper;
+    
+    // In-memory cache for temporary JWT storage during logout flow
+    // Key: one-time token, Value: JWT, TTL: 5 minutes
+    private static final Map<String, CacheEntry> jwtCache = new ConcurrentHashMap<>();
+    private static final ScheduledExecutorService cleanupExecutor = Executors.newScheduledThreadPool(1);
+    private static final long CACHE_TTL_SECONDS = 300; // 5 minutes
+    
+    static {
+        // Clean up expired entries every minute
+        cleanupExecutor.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            jwtCache.entrySet().removeIf(entry -> entry.getValue().isExpired(now));
+        }, 60, 60, TimeUnit.SECONDS);
+    }
+    
+    private static class CacheEntry {
+        private final String jwt;
+        private final long expiresAt;
+        
+        CacheEntry(String jwt, long ttlSeconds) {
+            this.jwt = jwt;
+            this.expiresAt = System.currentTimeMillis() + (ttlSeconds * 1000);
+        }
+        
+        boolean isExpired(long now) {
+            return now > expiresAt;
+        }
+        
+        String getJwt() {
+            return jwt;
+        }
+    }
 
     /**
      * Gets the OIDC base URL based on TEST_ENABLED_UNILOGIN environment variable.
@@ -346,8 +383,62 @@ public class UniLoginProvider {
             .organisationSupport(OrganisationSupport.NATIVE)
             .inputs(List.of())
             .build());
-        return AuthenticationResult.success(jwt);
-
+        
+        // Generate a one-time token for secure JWT retrieval after logout
+        String oneTimeToken = generateOneTimeToken();
+        
+        // Store JWT in cache with short TTL (5 minutes)
+        jwtCache.put(oneTimeToken, new CacheEntry(jwt, CACHE_TTL_SECONDS));
+        log.debug("Stored JWT in cache with one-time token (expires in {} seconds)", CACHE_TTL_SECONDS);
+        
+        // Instead of returning success directly, redirect to logout first
+        // This ensures the user is logged out from UniLogin after we get the data
+        String logoutUrl = getLogoutUrl(
+            fafnirConf.getUrl() + "/unilogin/logout-complete?token=" + oneTimeToken,
+            null // We don't have id_token_hint here, but it's optional
+        );
+        
+        log.info("Authentication successful, redirecting to UniLogin logout to end UniLogin session");
+        return AuthenticationResult.redirect(logoutUrl);
+    }
+    
+    /**
+     * Generates a secure random one-time token for JWT retrieval.
+     * 
+     * @return A random token string
+     */
+    private String generateOneTimeToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+    
+    /**
+     * Retrieves and removes a JWT from the cache using a one-time token.
+     * This is a one-time operation - the token is consumed after use.
+     * 
+     * @param token The one-time token
+     * @return The JWT if found and not expired, null otherwise
+     */
+    public String retrieveJwtFromCache(String token) {
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+        
+        CacheEntry entry = jwtCache.remove(token);
+        if (entry == null) {
+            log.warn("One-time token not found or already used: {}", token.substring(0, Math.min(8, token.length())) + "...");
+            return null;
+        }
+        
+        if (entry.isExpired(System.currentTimeMillis())) {
+            log.warn("One-time token expired: {}", token.substring(0, Math.min(8, token.length())) + "...");
+            return null;
+        }
+        
+        log.debug("Successfully retrieved JWT from cache using one-time token");
+        return entry.getJwt();
     }
 
     /**
@@ -761,5 +852,99 @@ public class UniLoginProvider {
 
     public ProviderMetaData getMetaData() {
         return MetadataProvider.UNILOGIN;
+    }
+
+    /**
+     * Builds the RP-initiated logout URL that redirects to UniLogin's end_session endpoint.
+     * This should be called when the user initiates logout from your application.
+     * 
+     * @param postLogoutRedirectUri The URL to redirect to after logout (optional)
+     * @param idTokenHint The ID token hint (optional, but recommended for better UX)
+     * @return The logout URL to redirect the user to
+     */
+    public String getLogoutUrl(String postLogoutRedirectUri, String idTokenHint) {
+        var OID_BASE_URL = getOidcBaseUrl();
+        var endSessionUrl = OID_BASE_URL + "logout";
+        
+        StringBuilder url = new StringBuilder(endSessionUrl);
+        
+        // Add client_id (required by some OIDC providers)
+        var clientId = System.getenv("UL_CLIENT_ID");
+        if (clientId != null && !clientId.isEmpty()) {
+            url.append("?client_id=").append(URLEncoder.encode(clientId, java.nio.charset.StandardCharsets.UTF_8));
+        }
+        
+        // Add post_logout_redirect_uri (optional but recommended)
+        if (postLogoutRedirectUri != null && !postLogoutRedirectUri.isEmpty()) {
+            url.append(clientId != null ? "&" : "?")
+               .append("post_logout_redirect_uri=")
+               .append(URLEncoder.encode(postLogoutRedirectUri, java.nio.charset.StandardCharsets.UTF_8));
+        } else {
+            // Default to FAFNIR_URL if not provided
+            var fafnirUrl = System.getenv("FAFNIR_URL");
+            if (fafnirUrl != null && !fafnirUrl.isEmpty()) {
+                url.append(clientId != null ? "&" : "?")
+                   .append("post_logout_redirect_uri=")
+                   .append(URLEncoder.encode(fafnirUrl, java.nio.charset.StandardCharsets.UTF_8));
+            }
+        }
+        
+        // Add id_token_hint (optional but recommended for better UX)
+        if (idTokenHint != null && !idTokenHint.isEmpty()) {
+            url.append("&id_token_hint=").append(URLEncoder.encode(idTokenHint, java.nio.charset.StandardCharsets.UTF_8));
+        }
+        
+        return url.toString();
+    }
+
+    /**
+     * Handles back-channel logout event from UniLogin.
+     * This endpoint receives POST requests from UniLogin when a user logs out.
+     * 
+     * @param logoutToken The logout token from UniLogin (JWT)
+     * @return true if logout was successful, false otherwise
+     */
+    public boolean handleBackChannelLogout(String logoutToken) {
+        try {
+            log.info("Received back-channel logout event from UniLogin");
+            
+            // Validate the logout token
+            // In a production system, you should:
+            // 1. Verify the JWT signature
+            // 2. Check the issuer (iss claim)
+            // 3. Check the audience (aud claim)
+            // 4. Extract the session ID (sid claim) or subject (sub claim)
+            // 5. Invalidate the corresponding session in your system
+            
+            // For now, we'll log the token and return success
+            // TODO: Implement proper JWT validation and session invalidation
+            log.debug("Logout token received: {}", logoutToken != null ? logoutToken.substring(0, Math.min(50, logoutToken.length())) + "..." : "null");
+            
+            // In a real implementation, you would:
+            // - Parse the JWT to get the session ID or user ID
+            // - Invalidate the session in your session store (e.g., Hazelcast)
+            // - Clear any cached tokens or user data
+            
+            return true;
+        } catch (Exception e) {
+            log.error("Error handling back-channel logout", e);
+            return false;
+        }
+    }
+
+    /**
+     * Invalidates the local session by clearing session attributes.
+     * 
+     * @param session The HTTP session to invalidate
+     */
+    public void invalidateSession(HttpSession session) {
+        if (session != null) {
+            try {
+                log.debug("Invalidating session: {}", session.getId());
+                session.invalidate();
+            } catch (Exception e) {
+                log.warn("Error invalidating session", e);
+            }
+        }
     }
 }

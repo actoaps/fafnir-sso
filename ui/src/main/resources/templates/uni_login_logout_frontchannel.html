@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <script type="application/javascript">
+        // Clear JWT cookie if present
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        
+        // If this is loaded in an iframe, notify parent window
+        if (window.parent !== window) {
+            try {
+                // Send logout notification to parent window
+                window.parent.postMessage({ type: 'unilogin_logout', timestamp: Date.now() }, '*');
+            } catch (e) {
+                // Cross-origin restrictions may prevent this
+                console.log('Could not notify parent window of logout');
+            }
+        }
+        
+        // Close the window/iframe if possible
+        setTimeout(function() {
+            try {
+                window.close();
+            } catch (e) {
+                // Window may not be closable
+            }
+        }, 100);
+    </script>
+</head>
+<body>
+    <!-- Minimal content for front-channel logout -->
+    <!-- This page is typically loaded in an iframe by UniLogin -->
+</body>
+</html>
