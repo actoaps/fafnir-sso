@@ -28,6 +28,7 @@ import java.util.Collections;
 public class UniLoginController {
     private final UniLoginProvider provider;
     private final FafnirConf uniloginConf;
+    
 
     @GetMapping
     public RedirectView authenticate(HttpSession session) throws NoSuchAlgorithmException {
@@ -44,18 +45,18 @@ public class UniLoginController {
     @GetMapping("org")
     public String getOrg(@RequestParam String user, Model model, HttpServletResponse response, HttpSession session) throws IOException {
         log.info("getOrg called for user: {}", user);
-        
+
         // Try to get institutions from UserInfo in session first, fallback to deprecated web service
         var institutionList = Try.of(() -> provider.getInstitutionListFromSession(user, session)).getOrElse(Collections.emptyList());
 
         log.info("Retrieved {} institution(s) for user: {}", institutionList.size(), user);
-        
+
         // Log each institution's details
         for (int i = 0; i < institutionList.size(); i++) {
             var inst = institutionList.get(i);
-            log.info("Institution[{}]: id={}, name={}, roles={}, class={}", 
+            log.info("Institution[{}]: id={}, name={}, roles={}, class={}",
                 i, inst.id, inst.name, inst.roles, inst.getClass().getName());
-            
+
             // Verify fields are accessible
             try {
                 var idValue = inst.id;
@@ -91,16 +92,16 @@ public class UniLoginController {
      * Completion endpoint after UniLogin logout.
      * This is called after the user has been logged out from UniLogin.
      * Retrieves the JWT from cache using one-time token and redirects to the success page.
-     * 
+     *
      * Access at: GET /unilogin/logout-complete?token={one-time-token}
      */
     @GetMapping("logout-complete")
     public RedirectView logoutComplete(@RequestParam(required = false) String token) {
         log.info("Logout complete callback - retrieving JWT from cache");
-        
+
         // Retrieve the JWT from cache using one-time token
         String jwt = provider.retrieveJwtFromCache(token);
-        
+
         if (jwt != null && !jwt.isEmpty()) {
             log.debug("JWT retrieved from cache, redirecting to success page");
             // Redirect to success page with JWT in hash
@@ -115,7 +116,7 @@ public class UniLoginController {
      * RP-initiated logout endpoint.
      * Redirects the user to UniLogin's end_session endpoint to log them out.
      * After logout at UniLogin, the user will be redirected back to the post_logout_redirect_uri.
-     * 
+     *
      * Access at: GET /unilogin/logout
      * Optional parameters:
      *   - post_logout_redirect_uri: URL to redirect to after logout (defaults to FAFNIR_URL)
@@ -127,14 +128,14 @@ public class UniLoginController {
             @RequestParam(required = false) String id_token_hint,
             HttpSession session) {
         log.info("RP-initiated logout requested");
-        
+
         // Invalidate local session first
         provider.invalidateSession(session);
-        
+
         // Build logout URL and redirect to UniLogin
         String logoutUrl = provider.getLogoutUrl(post_logout_redirect_uri, id_token_hint);
         log.debug("Redirecting to UniLogin logout endpoint: {}", logoutUrl);
-        
+
         return new RedirectView(logoutUrl);
     }
 
@@ -142,9 +143,9 @@ public class UniLoginController {
      * Back-channel logout endpoint.
      * Receives logout events from UniLogin via HTTP POST when a user logs out.
      * This endpoint should be registered in Udbyderportalen as the "Back-Channel Logout URI".
-     * 
+     *
      * Access at: POST /unilogin/logout/backchannel
-     * 
+     *
      * According to OIDC Back-Channel Logout specification:
      * - The request contains a "logout_token" parameter (JWT)
      * - The token should be validated (signature, issuer, audience)
@@ -155,9 +156,9 @@ public class UniLoginController {
     public org.springframework.http.ResponseEntity<String> backChannelLogout(
             @RequestParam("logout_token") String logoutToken) {
         log.info("Received back-channel logout event from UniLogin");
-        
+
         boolean success = provider.handleBackChannelLogout(logoutToken);
-        
+
         if (success) {
             // Return 200 OK as per OIDC Back-Channel Logout spec
             return org.springframework.http.ResponseEntity.ok().build();
@@ -171,9 +172,9 @@ public class UniLoginController {
      * Front-channel logout endpoint.
      * Handles browser-based logout notifications from UniLogin.
      * This is used when UniLogin sends logout notifications via iframe or redirect.
-     * 
+     *
      * Access at: GET /unilogin/logout/frontchannel
-     * 
+     *
      * According to OIDC Front-Channel Logout specification:
      * - The request may contain "iss" (issuer) and "sid" (session ID) parameters
      * - The session should be invalidated
@@ -185,10 +186,10 @@ public class UniLoginController {
             @RequestParam(required = false) String sid,
             HttpSession session) {
         log.info("Received front-channel logout event from UniLogin - iss: {}, sid: {}", iss, sid);
-        
+
         // Invalidate local session
         provider.invalidateSession(session);
-        
+
         // Return a simple HTML page that clears any cookies and closes iframe if needed
         // The template will be created to handle this
         return "uni_login_logout_frontchannel";
