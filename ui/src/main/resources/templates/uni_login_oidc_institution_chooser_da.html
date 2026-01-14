@@ -176,8 +176,8 @@
             </select>
         </div>
         <input type="hidden" name="user" value="{{user}}">
-        <!-- Button hidden since form auto-submits on selection -->
-        <button type="submit" class="submit-button" id="submitBtn" style="display: none;">
+        <!-- Button hidden but still functional for programmatic submission -->
+        <button type="submit" class="submit-button" id="submitBtn" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0;">
             Fortsæt med login
         </button>
         <div class="loading-message" id="loadingMsg">
@@ -190,17 +190,39 @@
     // Auto-submit form when institution is selected
     const select = document.getElementById('institution');
     const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submitBtn');
     const loadingMsg = document.getElementById('loadingMsg');
+    let isSubmitting = false;
     
     select.addEventListener('change', function() {
-        if (select.value) {
-            // Show loading message
-            loadingMsg.classList.add('show');
-            // Disable select to prevent multiple submissions
-            select.disabled = true;
-            // Automatically submit the form when an institution is selected
-            form.submit();
+        // Skip if it's the default empty option or already submitting
+        if (!select.value || select.value.trim() === '' || isSubmitting) {
+            return;
         }
+        
+        isSubmitting = true;
+        
+        // Show loading message
+        loadingMsg.classList.add('show');
+        
+        // Disable select to prevent multiple submissions
+        select.disabled = true;
+        
+        // Small delay to ensure browser has processed the change event
+        setTimeout(function() {
+            // Double-check the value is still there
+            if (!select.value || select.value.trim() === '') {
+                // Value is missing, re-enable
+                select.disabled = false;
+                loadingMsg.classList.remove('show');
+                isSubmitting = false;
+                return;
+            }
+            
+            // Click the submit button instead of calling form.submit()
+            // This ensures the browser properly serializes all form fields
+            submitBtn.click();
+        }, 50);
     });
 </script>
 </body>
