@@ -133,6 +133,10 @@
             cursor: not-allowed;
         }
 
+        .institution-chooser .submit-button.hidden {
+            display: none;
+        }
+
         .institution-chooser .loading-message {
             text-align: center;
             color: #23C19D;
@@ -176,8 +180,7 @@
             </select>
         </div>
         <input type="hidden" name="user" value="{{user}}">
-        <!-- Button will be auto-clicked when institution is selected -->
-        <button type="submit" class="submit-button" id="submitBtn" style="display: none;">
+        <button type="submit" class="submit-button" id="submitBtn">
             Fortsæt med login
         </button>
         <div class="loading-message" id="loadingMsg">
@@ -187,80 +190,51 @@
 </div>
 
 <script>
-    // Auto-submit form when institution is selected, but only after verifying all required data
+    // Enable/disable submit button based on institution selection
     const select = document.getElementById('institution');
-    const form = document.querySelector('form');
     const submitBtn = document.getElementById('submitBtn');
-    const loadingMsg = document.getElementById('loadingMsg');
-    let isSubmitting = false;
     
-    function validateAndSubmit() {
-        // Don't submit if already submitting
-        if (isSubmitting) {
-            return;
+    function updateSubmitButton() {
+        // Enable button only if an institution is selected
+        if (select.value && select.value.trim() !== '') {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
+    
+    // Update button state when institution selection changes
+    select.addEventListener('change', updateSubmitButton);
+    
+    // Initial check on page load
+    updateSubmitButton();
+    
+    // Show loading message when form is submitted
+    const form = document.querySelector('form');
+    const loadingMsg = document.getElementById('loadingMsg');
+    
+    form.addEventListener('submit', function(e) {
+        // Verify data before submitting
+        const institutionValue = select.value;
+        const userInput = form.querySelector('input[name="user"]');
+        const userValue = userInput ? userInput.value : null;
+        
+        if (!institutionValue || institutionValue.trim() === '') {
+            e.preventDefault();
+            alert('Vælg venligst en institution');
+            return false;
         }
         
-        // Get form data to verify all required fields are present
-        const formData = new FormData(form);
-        const institution = formData.get('institution');
-        const user = formData.get('user');
-        
-        // Check if all required data is present
-        if (!institution || institution.trim() === '') {
-            // Institution not selected yet, don't submit
-            return;
+        if (!userValue || userValue.trim() === '') {
+            e.preventDefault();
+            console.error('User value missing');
+            return false;
         }
-        
-        if (!user || user.trim() === '') {
-            // User data missing, don't submit
-            console.warn('User data missing, cannot submit');
-            return;
-        }
-        
-        // All data is present, proceed with submission
-        isSubmitting = true;
         
         // Show loading message
         loadingMsg.classList.add('show');
-        
-        // Disable select to prevent multiple submissions
+        submitBtn.disabled = true;
         select.disabled = true;
-        
-        // Small delay to ensure browser has processed everything
-        setTimeout(function() {
-            // Final verification before submitting
-            const finalFormData = new FormData(form);
-            const finalInstitution = finalFormData.get('institution');
-            const finalUser = finalFormData.get('user');
-            
-            if (!finalInstitution || !finalUser) {
-                // Data missing, re-enable and stop
-                select.disabled = false;
-                loadingMsg.classList.remove('show');
-                isSubmitting = false;
-                console.error('Required data missing at submission time:', {
-                    institution: finalInstitution,
-                    user: finalUser
-                });
-                return;
-            }
-            
-            // All checks passed, submit the form
-            form.submit();
-        }, 50);
-    }
-    
-    // Listen for changes to the institution select
-    select.addEventListener('change', function() {
-        // Wait a moment for the browser to update the form state
-        setTimeout(validateAndSubmit, 10);
-    });
-    
-    // Also check on form focus/blur to catch any edge cases
-    form.addEventListener('input', function() {
-        if (select.value && !isSubmitting) {
-            setTimeout(validateAndSubmit, 10);
-        }
     });
 </script>
 </body>
