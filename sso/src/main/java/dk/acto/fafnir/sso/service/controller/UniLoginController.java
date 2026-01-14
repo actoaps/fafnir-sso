@@ -92,11 +92,12 @@ public class UniLoginController {
      * This is called after the user has been logged out from UniLogin.
      * Retrieves the JWT from cache using one-time token and redirects to the success page.
      * 
-     * Access at: GET /unilogin/logout-complete?token={one-time-token}
+     * Access at: GET /unilogin/logout-complete/{token}
+     * Uses path parameter instead of query parameter to avoid UniLogin redirect URI validation issues.
      */
-    @GetMapping("logout-complete")
-    public RedirectView logoutComplete(@RequestParam(required = false) String token) {
-        log.info("Logout complete callback - retrieving JWT from cache");
+    @GetMapping("logout-complete/{token}")
+    public RedirectView logoutComplete(@PathVariable String token) {
+        log.info("Logout complete callback - retrieving JWT from cache with token: {}", token);
         
         // Retrieve the JWT from cache using one-time token
         String jwt = provider.retrieveJwtFromCache(token);
