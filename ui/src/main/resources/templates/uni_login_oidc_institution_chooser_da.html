@@ -133,6 +133,18 @@
             cursor: not-allowed;
         }
 
+        .institution-chooser .loading-message {
+            text-align: center;
+            color: #23C19D;
+            margin-top: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .institution-chooser .loading-message.show {
+            display: block;
+        }
+
         @media (max-width: 576px) {
             .institution-chooser {
                 margin: 20px;
@@ -164,23 +176,32 @@
             </select>
         </div>
         <input type="hidden" name="user" value="{{user}}">
-        <button type="submit" class="submit-button" id="submitBtn">
+        <!-- Button hidden since form auto-submits on selection -->
+        <button type="submit" class="submit-button" id="submitBtn" style="display: none;">
             Fortsæt med login
         </button>
+        <div class="loading-message" id="loadingMsg">
+            Logger ind...
+        </div>
     </form>
 </div>
 
 <script>
-    // Enable/disable submit button based on selection
+    // Auto-submit form when institution is selected
     const select = document.getElementById('institution');
-    const submitBtn = document.getElementById('submitBtn');
+    const form = document.querySelector('form');
+    const loadingMsg = document.getElementById('loadingMsg');
     
-    function updateSubmitButton() {
-        submitBtn.disabled = !select.value;
-    }
-    
-    select.addEventListener('change', updateSubmitButton);
-    updateSubmitButton(); // Initial check
+    select.addEventListener('change', function() {
+        if (select.value) {
+            // Show loading message
+            loadingMsg.classList.add('show');
+            // Disable select to prevent multiple submissions
+            select.disabled = true;
+            // Automatically submit the form when an institution is selected
+            form.submit();
+        }
+    });
 </script>
 </body>
 </html>
