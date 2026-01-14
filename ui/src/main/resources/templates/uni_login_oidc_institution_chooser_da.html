@@ -180,6 +180,8 @@
             </select>
         </div>
         <input type="hidden" name="user" value="{{user}}">
+        <!-- Hidden input to ensure institution value is always sent -->
+        <input type="hidden" name="institution" id="institutionHidden" value="">
         <button type="submit" class="submit-button" id="submitBtn">
             Fortsæt med login
         </button>
@@ -194,12 +196,18 @@
     const select = document.getElementById('institution');
     const submitBtn = document.getElementById('submitBtn');
     
+    // Hidden input to ensure institution value is sent
+    const institutionHidden = document.getElementById('institutionHidden');
+    
     function updateSubmitButton() {
         // Enable button only if an institution is selected
         if (select.value && select.value.trim() !== '') {
             submitBtn.disabled = false;
+            // Also update the hidden input to ensure value is sent
+            institutionHidden.value = select.value;
         } else {
             submitBtn.disabled = true;
+            institutionHidden.value = '';
         }
     }
     
@@ -231,10 +239,19 @@
             return false;
         }
         
+        // Ensure hidden input has the value before submitting
+        institutionHidden.value = institutionValue;
+        
         // Show loading message
         loadingMsg.classList.add('show');
         submitBtn.disabled = true;
-        select.disabled = true;
+        
+        // IMPORTANT: Don't disable the select - disabled fields are not included in form submission!
+        // Instead, make it readonly so the value is still sent but user can't change it
+        select.style.pointerEvents = 'none';
+        select.style.opacity = '0.6';
+        
+        // The form will now submit with the institution value included (both from select and hidden input)
     });
 </script>
 </body>
