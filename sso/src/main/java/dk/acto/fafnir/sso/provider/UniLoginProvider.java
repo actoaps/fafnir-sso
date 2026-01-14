@@ -393,9 +393,15 @@ public class UniLoginProvider {
         
         // Instead of returning success directly, redirect to logout first
         // This ensures the user is logged out from UniLogin after we get the data
-        // Use path parameter instead of query parameter to avoid UniLogin redirect URI validation issues
+        // Store token in session to retrieve after logout (cookie approach would require HttpServletResponse)
+        if (session != null) {
+            session.setAttribute("logout_token", oneTimeToken);
+            log.debug("Stored one-time token in session for post-logout retrieval");
+        }
+        
+        // Use base URL only (no token in URL) to avoid UniLogin redirect URI validation issues
         String logoutUrl = getLogoutUrl(
-            fafnirConf.getUrl() + "/unilogin/logout-complete/" + oneTimeToken,
+            fafnirConf.getUrl() + "/unilogin/logout-complete",
             null // We don't have id_token_hint here, but it's optional
         );
         

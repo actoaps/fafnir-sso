@@ -1,5 +1,6 @@
 package dk.acto.fafnir.sso.service.controller;
 
+import dk.acto.fafnir.api.model.AuthenticationResult;
 import dk.acto.fafnir.api.model.FailureReason;
 import dk.acto.fafnir.api.model.conf.FafnirConf;
 import dk.acto.fafnir.sso.provider.UniLoginProvider;
@@ -83,21 +84,63 @@ public class UniLoginController {
 
     @PostMapping("org")
     @ResponseBody
-    public RedirectView postOrg(@RequestParam String user, @RequestParam String institution, HttpSession session) {
-        return new RedirectView(provider.callbackWithInstitution(user, institution, null, session).getUrl(uniloginConf));
+    public RedirectView postOrg(@RequestParam String user, @RequestParam String institution, 
+                                 HttpSession session, HttpServletResponse response) {
+        AuthenticationResult result = provider.callbackWithInstitution(user, institution, null, session);
+        String redirectUrl = result.getUrl(uniloginConf);
+        
+        // If redirecting to logout, also set a cookie with the token as backup (in case session is invalidated)
+        if (redirectUrl != null && redirectUrl.contains("/unilogin/logout-complete")) {
+            String token = session != null ? (String) session.getAttribute("logout_token") : null;
+            if (token != null) {
+                jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("fafnir_logout_token", token);
+                cookie.setPath("/");
+                cookie.setMaxAge(300); // 5 minutes
+                cookie.setHttpOnly(true);
+                cookie.setSecure(true); // Use secure cookies in production
+                response.addCookie(cookie);
+                log.debug("Set logout token cookie as backup");
+            }
+        }
+        
+        return new RedirectView(redirectUrl);
     }
 
     /**
      * Completion endpoint after UniLogin logout.
      * This is called after the user has been logged out from UniLogin.
-     * Retrieves the JWT from cache using one-time token and redirects to the success page.
+     * Retrieves the JWT from cache using one-time token stored in session or cookie and redirects to the success page.
      * 
-     * Access at: GET /unilogin/logout-complete/{token}
-     * Uses path parameter instead of query parameter to avoid UniLogin redirect URI validation issues.
+     * Access at: GET /unilogin/logout-complete
+     * Uses session/cookie to store token (no token in URL) to avoid UniLogin redirect URI validation issues.
      */
-    @GetMapping("logout-complete/{token}")
-    public RedirectView logoutComplete(@PathVariable String token) {
-        log.info("Logout complete callback - retrieving JWT from cache with token: {}", token);
+    @GetMapping("logout-complete")
+    public RedirectView logoutComplete(HttpSession session, jakarta.servlet.http.HttpServletRequest request) {
+        log.info("Logout complete callback - retrieving JWT from cache");
+        
+        // Try to get token from session first
+        String token = session != null ? (String) session.getAttribute("logout_token") : null;
+        
+        // Fallback to cookie if session doesn't have it
+        if ((token == null || token.isEmpty()) && request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("fafnir_logout_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    log.debug("Retrieved logout token from cookie");
+                    break;
+                }
+            }
+        }
+        
+        if (token == null || token.isEmpty()) {
+            log.warn("No logout token found in session or cookie after logout, redirecting to failure");
+            return new RedirectView(uniloginConf.getFailureRedirect() + "#" + dk.acto.fafnir.api.model.FailureReason.AUTHENTICATION_FAILED.getErrorCode());
+        }
+        
+        // Clear the token from session and cookie
+        if (session != null) {
+            session.removeAttribute("logout_token");
+        }
         
         // Retrieve the JWT from cache using one-time token
         String jwt = provider.retrieveJwtFromCache(token);
