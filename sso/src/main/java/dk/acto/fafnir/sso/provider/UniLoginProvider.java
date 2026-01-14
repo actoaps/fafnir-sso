@@ -144,6 +144,12 @@ public class UniLoginProvider {
 
         accessToken = getAccessToken(accessCode, UL_CLIENT_ID, UL_SECRET, UL_REDIRECT_URL, CODE_VERIFIER, OID_BASE_URL);
 
+        // Store ID token in session for use in logout (id_token_hint can help skip confirmation page)
+        if (accessToken.getId_token() != null && session != null) {
+            session.setAttribute("id_token", accessToken.getId_token());
+            log.debug("Stored ID token in session for logout");
+        }
+
         IntrospectionToken intro;
 
         intro = getIntrospectToken(accessToken.getAccess_token(), UL_CLIENT_ID, UL_SECRET, OID_BASE_URL);
@@ -399,10 +405,19 @@ public class UniLoginProvider {
             log.debug("Stored one-time token in session for post-logout retrieval");
         }
         
+        // Retrieve ID token from session to use as id_token_hint (may help skip confirmation page)
+        String idTokenHint = null;
+        if (session != null) {
+            idTokenHint = (String) session.getAttribute("id_token");
+            if (idTokenHint != null) {
+                log.debug("Using ID token from session as id_token_hint for logout");
+            }
+        }
+        
         // Use base URL only (no token in URL) to avoid UniLogin redirect URI validation issues
         String logoutUrl = getLogoutUrl(
             fafnirConf.getUrl() + "/unilogin/logout-complete",
-            null // We don't have id_token_hint here, but it's optional
+            idTokenHint // Pass ID token hint to potentially skip confirmation page
         );
         
         log.info("Authentication successful, redirecting to UniLogin logout to end UniLogin session");
