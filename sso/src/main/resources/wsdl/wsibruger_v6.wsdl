@@ -2,9 +2,9 @@
   <types>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:uni="https://unilogin.dk" xmlns:tns="https://wsibruger.unilogin.dk/ws" xmlns="http://schemas.xmlsoap.org/wsdl/">
             
-  <xs:import namespace="https://unilogin.dk" schemaLocation="https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=common/ws-common.xsd"/>
+  <xs:import namespace="https://unilogin.dk" schemaLocation="common/ws-common.xsd"/>
             
-  <xs:import namespace="https://wsibruger.unilogin.dk/ws" schemaLocation="https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=wsibruger-ws.xsd"/>
+  <xs:import namespace="https://wsibruger.unilogin.dk/ws" schemaLocation="wsibruger-ws.xsd"/>
         
 </xs:schema>
   </types>

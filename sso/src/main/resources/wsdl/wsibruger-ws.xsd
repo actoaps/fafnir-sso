@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://wsibruger.unilogin.dk/ws" elementFormDefault="qualified" targetNamespace="https://wsibruger.unilogin.dk/ws" version="1.0">
+
+    <xs:include schemaLocation="wsibruger-schema.xsd"/>
+
+    <xs:element name="hentBrugersKontaktpersoner" type="tns:HentBrugersKontaktpersoner"/>
+    <xs:element name="hentBrugersKontaktpersonerResponse" type="tns:HentBrugersKontaktpersonerResponse"/>
+
+    <xs:element name="hentKontaktpersonsBrugere" type="tns:HentKontaktpersonsBrugere"/>
+    <xs:element name="hentKontaktpersonsBrugereResponse" type="tns:HentKontaktpersonsBrugereResponse"/>
+
+    <xs:element name="hentBrugersInstitutionstilknytninger" type="tns:HentBrugersInstitutionstilknytninger"/>
+    <xs:element name="hentBrugersInstitutionstilknytningerResponse" type="tns:HentBrugersInstitutionstilknytningerResponse"/>
+
+</xs:schema>

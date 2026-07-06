@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:uni="https://unilogin.dk" xmlns:tns="https://wsiinst.unilogin.dk/ws" elementFormDefault="qualified" targetNamespace="https://wsiinst.unilogin.dk/ws" version="1.0">
+
+    <xs:import namespace="https://unilogin.dk" schemaLocation="common/schema-common.xsd"/>
+
+    <!-- Argument types -->
+
+    <xs:complexType name="HentGrupper">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element name="instnr" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HentBrugereIGruppe">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element name="instnr" type="xs:string"/>
+                    <xs:element name="gruppeid" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HentGruppersLicenser">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element name="instnr" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstitution">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element name="instnr" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstitutioner">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="1" name="instnr" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstBruger">
+        <xs:complexContent>
+            <xs:extension base="uni:Credentials">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="instnr" type="xs:string"/>
+                    <xs:element name="brugerid" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <!-- Return types -->
+
+    <xs:complexType name="HentGrupperResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="gruppe" type="uni:Gruppe"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentBrugereIGruppeResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="brugertilknytning" type="uni:Brugertilknytning"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentGruppersLicenserResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="gruppeLicens" type="uni:GruppeLicens"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstitutionResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="institution" type="uni:Institution"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstitutionerResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="institution" type="uni:Institution"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentInstBrugerResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="instBruger" type="uni:Instbruger"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

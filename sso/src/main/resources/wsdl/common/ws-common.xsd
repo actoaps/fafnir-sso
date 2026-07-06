@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://unilogin.dk" elementFormDefault="qualified" targetNamespace="https://unilogin.dk" version="1.0">
+
+    <xs:include schemaLocation="schema-common.xsd"/>
+
+    <xs:element name="helloWorld" type="tns:NoArgs"/>
+    <xs:element name="helloWorldResponse" type="tns:HelloWorldResponse"/>
+
+    <xs:element name="helloWorldWithDBAndCredentials" type="tns:Credentials"/>
+    <xs:element name="helloWorldWithDBAndCredentialsResponse" type="tns:HelloWorldResponse"/>
+
+    <xs:element name="helloWorldWithDB" type="tns:NoArgs"/>
+    <xs:element name="helloWorldWithDBResponse" type="tns:HelloWorldResponse"/>
+
+    <xs:element name="svarResponse" type="tns:SvarResponse"/>
+
+    <xs:element name="authentificationError" type="tns:AuthentificationError"/>
+
+    <xs:element name="hentDataAftaler" type="tns:Credentials"/>
+    <xs:element name="hentDataAftalerResponse" type="tns:HentDataAftalerResponse"/>
+
+</xs:schema>
