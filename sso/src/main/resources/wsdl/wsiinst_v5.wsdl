@@ -1,0 +1,299 @@
+<?xml version='1.0' encoding='UTF-8'?><definitions xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:uni="https://unilogin.dk" xmlns:tns="https://wsiinst.unilogin.dk/ws" xmlns="http://schemas.xmlsoap.org/wsdl/" name="WsiInst" targetNamespace="https://wsiinst.unilogin.dk/ws">
+  <types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:uni="https://unilogin.dk" xmlns:tns="https://wsiinst.unilogin.dk/ws" xmlns="http://schemas.xmlsoap.org/wsdl/">
+            
+  <xs:import namespace="https://unilogin.dk" schemaLocation="https://wsiinst.unilogin.dk/wsiinst-v5/ws?xsd=common/ws-common.xsd"/>
+            
+  <xs:import namespace="https://wsiinst.unilogin.dk/ws" schemaLocation="https://wsiinst.unilogin.dk/wsiinst-v5/ws?xsd=wsiinst-ws.xsd"/>
+        
+</xs:schema>
+  </types>
+  <message name="HelloWorldOut">
+    <part element="uni:helloWorldResponse" name="return">
+    </part>
+  </message>
+  <message name="HentInstBrugerIn">
+    <part element="tns:hentInstBruger" name="parameters">
+    </part>
+  </message>
+  <message name="HentGrupperOut">
+    <part element="tns:hentGrupperResponse" name="return">
+    </part>
+  </message>
+  <message name="HentGruppersLicenserIn">
+    <part element="tns:hentGruppersLicenser" name="parameters">
+    </part>
+  </message>
+  <message name="HelloWorldWithDBAndCredentialsOut">
+    <part element="uni:helloWorldWithDBAndCredentialsResponse" name="return">
+    </part>
+  </message>
+  <message name="HentInstitutionerOut">
+    <part element="tns:hentInstitutionerResponse" name="return">
+    </part>
+  </message>
+  <message name="HentGrupperIn">
+    <part element="tns:hentGrupper" name="parameters">
+    </part>
+  </message>
+  <message name="HentGruppersLicenserOut">
+    <part element="tns:hentGruppersLicenserResponse" name="return">
+    </part>
+  </message>
+  <message name="HelloWorldIn">
+    <part element="uni:helloWorld" name="parameters">
+    </part>
+  </message>
+  <message name="HentInstitutionIn">
+    <part element="tns:hentInstitution" name="parameters">
+    </part>
+  </message>
+  <message name="HentInstBrugerOut">
+    <part element="tns:hentInstBrugerResponse" name="return">
+    </part>
+  </message>
+  <message name="HelloWorldWithDBAndCredentialsIn">
+    <part element="uni:helloWorldWithDBAndCredentials" name="parameters">
+    </part>
+  </message>
+  <message name="HentBrugereIGruppeOut">
+    <part element="tns:hentBrugereIGruppeResponse" name="return">
+    </part>
+  </message>
+  <message name="HentInstitutionOut">
+    <part element="tns:hentInstitutionResponse" name="return">
+    </part>
+  </message>
+  <message name="HentBrugereIGruppeIn">
+    <part element="tns:hentBrugereIGruppe" name="parameters">
+    </part>
+  </message>
+  <message name="hentDataAftalerOut">
+    <part element="uni:hentDataAftalerResponse" name="return">
+    </part>
+  </message>
+  <message name="HelloWorldWithDBIn">
+    <part element="uni:helloWorldWithDB" name="parameters">
+    </part>
+  </message>
+  <message name="HentInstitutionerIn">
+    <part element="tns:hentInstitutioner" name="parameters">
+    </part>
+  </message>
+  <message name="hentDataAftalerIn">
+    <part element="uni:hentDataAftaler" name="parameters">
+    </part>
+  </message>
+  <message name="HelloWorldWithDBOut">
+    <part element="uni:helloWorldWithDBResponse" name="return">
+    </part>
+  </message>
+  <message name="AuthentificationFault">
+    <part element="uni:authentificationError" name="fault">
+    </part>
+  </message>
+  <portType name="WsiInstPortType">
+    <operation name="helloWorld">
+<documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorld" hvis webservicen svarer.</documentation>
+      <input message="tns:HelloWorldIn">
+    </input>
+      <output message="tns:HelloWorldOut">
+    </output>
+    </operation>
+    <operation name="helloWorldWithDBAndCredentials">
+<documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorldWithDBAndCredentials" hvis webservicen svarer og brugernavn/password er korrekt angivet.</documentation>
+      <input message="tns:HelloWorldWithDBAndCredentialsIn">
+    </input>
+      <output message="tns:HelloWorldWithDBAndCredentialsOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="helloWorldWithDB">
+<documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorld" samt tidspunkt fra databasen hvis webservicen og databasen svarer.</documentation>
+      <input message="tns:HelloWorldWithDBIn">
+    </input>
+      <output message="tns:HelloWorldWithDBOut">
+    </output>
+    </operation>
+    <operation name="hentGrupper">
+      <input message="tns:HentGrupperIn">
+    </input>
+      <output message="tns:HentGrupperOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentBrugereIGruppe">
+      <input message="tns:HentBrugereIGruppeIn">
+    </input>
+      <output message="tns:HentBrugereIGruppeOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentGruppersLicenser">
+      <input message="tns:HentGruppersLicenserIn">
+    </input>
+      <output message="tns:HentGruppersLicenserOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentInstitution">
+      <input message="tns:HentInstitutionIn">
+    </input>
+      <output message="tns:HentInstitutionOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentInstitutioner">
+      <input message="tns:HentInstitutionerIn">
+    </input>
+      <output message="tns:HentInstitutionerOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentInstBruger">
+      <input message="tns:HentInstBrugerIn">
+    </input>
+      <output message="tns:HentInstBrugerOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+    <operation name="hentDataAftaler">
+<documentation>Returnerer en liste af institutionsnumre, hvor der er lavet en dataaftale</documentation>
+      <input message="tns:hentDataAftalerIn">
+    </input>
+      <output message="tns:hentDataAftalerOut">
+    </output>
+      <fault message="tns:AuthentificationFault" name="authentificationFault">
+    </fault>
+    </operation>
+  </portType>
+  <binding name="WsiInstSoap" type="tns:WsiInstPortType">
+    <wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="helloWorld">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/helloWorld"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="helloWorldWithDBAndCredentials">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/helloWorldWithDBAndCredentials"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="helloWorldWithDB">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/helloWorldWithDB"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="hentGrupper">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentGrupper"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentBrugereIGruppe">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentBrugereIGruppe"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentGruppersLicenser">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentGruppersLicenser"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentInstitution">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentInstitution"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentInstitutioner">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentInstitutioner"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentInstBruger">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentInstBruger"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="hentDataAftaler">
+      <wsoap12:operation soapAction="https://wsiinst.unilogin.dk/hentDataAftaler"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault name="authentificationFault" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+  <service name="WsiInst">
+    <port binding="tns:WsiInstSoap" name="WsiInstPort">
+      <wsoap12:address location="https://wsiinst.unilogin.dk/wsiinst-v5/ws"/>
+    </port>
+  </service>
+</definitions>

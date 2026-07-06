@@ -93,11 +93,13 @@ dependencies {
 tasks.register<Download>("downloadWSDLWsiBruger") {
     src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL")
     dest("src/main/resources/wsdl/wsibruger_v6.wsdl")
+    onlyIf { !dest.exists() }
 }
 
 tasks.register<Download>("downloadWSDLWsiInst") {
     src("https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL")
     dest("src/main/resources/wsdl/wsiinst_v5.wsdl")
+    onlyIf { !dest.exists() }
 }
 
 tasks.register<Wsdl2Java>("genWsiBruger") {

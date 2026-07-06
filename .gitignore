@@ -2,8 +2,6 @@
 *.iml
 out/
 
-WSDL
-resources/wsdl/
 dk/acto/auth/generated/
 
 # Gradle
