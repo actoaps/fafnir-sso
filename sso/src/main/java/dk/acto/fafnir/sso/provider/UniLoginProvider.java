@@ -1037,9 +1037,6 @@ public class UniLoginProvider {
         if (institutions == null || institutions.isEmpty()) {
             return Collections.emptyList();
         }
-        if (institutions.size() == 1) {
-            return institutions;
-        }
 
         Map<String, Institution> byId = new LinkedHashMap<>();
         for (Institution inst : institutions) {

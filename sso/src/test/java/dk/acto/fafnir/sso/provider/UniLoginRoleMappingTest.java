@@ -69,6 +69,14 @@ class UniLoginRoleMappingTest {
     }
 
     @Test
+    void deduplicateInstitutions_filtersSingleInvalidId() {
+        assertThat(UniLoginProvider.deduplicateInstitutions(List.of(new Institution(null, "Skole A", List.of()))))
+            .isEmpty();
+        assertThat(UniLoginProvider.deduplicateInstitutions(List.of(new Institution("   ", "Skole A", List.of()))))
+            .isEmpty();
+    }
+
+    @Test
     void deduplicateInstitutions_keepsDistinctInstnr() {
         List<Institution> institutions = List.of(
             new Institution("11111", "Skole A", List.of()),
