@@ -93,11 +93,49 @@ dependencies {
 tasks.register<Download>("downloadWSDLWsiBruger") {
     src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?WSDL")
     dest("src/main/resources/wsdl/wsibruger_v6.wsdl")
+    onlyIf { !dest.exists() }
 }
 
 tasks.register<Download>("downloadWSDLWsiInst") {
     src("https://wsiinst.unilogin.dk/wsiinst-v5/ws?WSDL")
     dest("src/main/resources/wsdl/wsiinst_v5.wsdl")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdWsCommon") {
+    src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=common/ws-common.xsd")
+    dest("src/main/resources/wsdl/common/ws-common.xsd")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdWsiBruger") {
+    src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=wsibruger-ws.xsd")
+    dest("src/main/resources/wsdl/wsibruger-ws.xsd")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdWsiInst") {
+    src("https://wsiinst.unilogin.dk/wsiinst-v5/ws?xsd=wsiinst-ws.xsd")
+    dest("src/main/resources/wsdl/wsiinst-ws.xsd")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdSchemaCommon") {
+    src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=common/schema-common.xsd")
+    dest("src/main/resources/wsdl/common/schema-common.xsd")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdWsibrugerSchema") {
+    src("https://wsibruger.unilogin.dk/wsibruger-v6/ws?xsd=wsibruger-schema.xsd")
+    dest("src/main/resources/wsdl/wsibruger-schema.xsd")
+    onlyIf { !dest.exists() }
+}
+
+tasks.register<Download>("downloadXsdWsiinstSchema") {
+    src("https://wsiinst.unilogin.dk/wsiinst-v5/ws?xsd=wsiinst-schema.xsd")
+    dest("src/main/resources/wsdl/wsiinst-schema.xsd")
+    onlyIf { !dest.exists() }
 }
 
 tasks.register<Wsdl2Java>("genWsiBruger") {
@@ -108,6 +146,10 @@ tasks.register<Wsdl2Java>("genWsiBruger") {
         encoding.set("UTF-8")
     }
     dependsOn(tasks.getByName("downloadWSDLWsiBruger"))
+    dependsOn(tasks.getByName("downloadXsdWsCommon"))
+    dependsOn(tasks.getByName("downloadXsdSchemaCommon"))
+    dependsOn(tasks.getByName("downloadXsdWsiBruger"))
+    dependsOn(tasks.getByName("downloadXsdWsibrugerSchema"))
 }
 
 tasks.register<Wsdl2Java>("genWsiInst") {
@@ -118,6 +160,9 @@ tasks.register<Wsdl2Java>("genWsiInst") {
         encoding.set("UTF-8")
     }
     dependsOn(tasks.getByName("downloadWSDLWsiInst"))
+    dependsOn(tasks.getByName("downloadXsdWsCommon"))
+    dependsOn(tasks.getByName("downloadXsdWsiInst"))
+    dependsOn(tasks.getByName("downloadXsdWsiinstSchema"))
 }
 
 tasks.compileJava {
@@ -128,4 +173,10 @@ tasks.compileJava {
 tasks.processResources {
     dependsOn(tasks.getByName("downloadWSDLWsiBruger"))
     dependsOn(tasks.getByName("downloadWSDLWsiInst"))
+    dependsOn(tasks.getByName("downloadXsdWsCommon"))
+    dependsOn(tasks.getByName("downloadXsdSchemaCommon"))
+    dependsOn(tasks.getByName("downloadXsdWsiBruger"))
+    dependsOn(tasks.getByName("downloadXsdWsibrugerSchema"))
+    dependsOn(tasks.getByName("downloadXsdWsiInst"))
+    dependsOn(tasks.getByName("downloadXsdWsiinstSchema"))
 }

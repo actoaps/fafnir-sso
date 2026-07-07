@@ -1,5 +1,6 @@
 package dk.acto.fafnir.sso.provider.unilogin;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstitutionTilknytning {
     @JsonProperty("instnr")
+    @JsonAlias({"inTnr"})
     public String inTnr;  // Institution number
 
     @JsonProperty("instnavn")
+    @JsonAlias({"inTnavn"})
     public String inTnavn; // Institution name
 
     // Fields for roles, as they might appear in UserInfo response

@@ -1,5 +1,6 @@
 package dk.acto.fafnir.sso.provider.unilogin;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -14,5 +15,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserInfoResponse {
     @JsonProperty("inst_brugere")
+    @JsonAlias({"instbrugere", "dk:unilogin:instbrugere"})
     public List<InstitutionTilknytning> instBrugere;
 }

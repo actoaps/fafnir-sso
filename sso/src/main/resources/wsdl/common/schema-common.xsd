@@ -1,0 +1,566 @@
+<?xml version='1.0' encoding='UTF-8'?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://unilogin.dk" elementFormDefault="qualified" targetNamespace="https://unilogin.dk" version="1.0">
+
+    <!-- Argument types -->
+
+    <xs:complexType name="NoArgs"/>
+
+    <xs:complexType name="Credentials">
+        <xs:sequence>
+            <xs:element name="wsBrugerid" type="xs:string"/>
+            <xs:element name="wsPassword" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Responses -->
+
+    <xs:complexType name="HelloWorldResponse">
+        <xs:sequence>
+            <xs:element name="helloWorldResult" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SvarResponse">
+        <xs:sequence>
+            <xs:element name="svar" type="tns:Svar"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HentDataAftalerResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="regnr" type="tns:Regnr"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Faults -->
+
+    <xs:complexType name="AuthentificationError">
+        <xs:sequence>
+            <!-- Kunne udgå, hvis vi kunne bruge WSDL 2.0 -->
+            <xs:element name="type">
+                <xs:annotation>
+                    <xs:documentation>Fejlkoder ved autentifikationsfejl. Sættes også som en subcode i den returnerede SOAP-fault.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="BrugeridEllerPassword"/>
+                        <xs:enumeration value="Rettigheder"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Complex reusable types -->
+    <xs:complexType name="Tjeneste">
+        <xs:sequence>
+            <xs:element name="udbydernr" type="xs:string"/>
+            <xs:element name="serienavn" type="xs:string"/>
+            <xs:element name="seriekode" type="xs:string"/>
+            <xs:element name="tjenestekode" type="tns:Token75char"/>
+            <xs:element name="tjenestenavn" type="xs:string"/>
+            <xs:element name="url" type="xs:string"/>
+            <xs:element minOccurs="0" name="matplatid" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Tjenester">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="tjeneste" type="tns:Tjeneste"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Licens">
+        <xs:sequence>
+            <xs:element name="tjeneste" type="tns:Tjeneste"/>
+            <xs:element minOccurs="0" name="fraDato" type="xs:date"/>
+            <xs:element minOccurs="0" name="tilDato" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Udbyder">
+        <xs:sequence>
+            <xs:element name="udbydernr" type="xs:string"/>
+            <xs:element name="udbydernavn" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Svar">
+        <xs:sequence>
+            <xs:element name="reskode" type="xs:string"/>
+            <xs:element name="restekst" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Serie">
+        <xs:sequence>
+            <xs:element name="seriekode" type="xs:string"/>
+            <xs:element name="serienavn" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Serier">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="serie" type="tns:Serie"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Gruppe">
+        <xs:sequence>
+            <xs:element name="instnr" type="tns:Regnr"/>
+            <xs:element name="gruppeid" type="xs:string"/>
+            <xs:element name="gruppenavn" type="xs:string"/>
+            <xs:element name="gruppetype" type="tns:Gruppetype"/>
+            <xs:element minOccurs="0" name="gruppetrin" type="tns:Trin">
+                <xs:annotation>
+                    <xs:documentation>Trin angives kun for grupper med typen Hovedgruppe.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="fradato" type="xs:date"/>
+            <xs:element minOccurs="0" name="tildato" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="Gruppetype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Hovedgruppe"/>
+            <xs:enumeration value="Årgang"/>
+            <xs:enumeration value="Retning"/>
+            <xs:enumeration value="Hold"/>
+            <xs:enumeration value="SFO"/>
+            <xs:enumeration value="Team"/>
+            <xs:enumeration value="Institution"/>
+            <xs:enumeration value="Andet"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Trin">
+        <xs:annotation>
+            <xs:documentation>
+                DT er dagtilbud, 1 svarer til 1. klassetrin i grundskolen,
+                U1 er første trin på en ungdomsuddannelse, og VU er voksenuddannelse.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DT"/>
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="2"/>
+            <xs:enumeration value="3"/>
+            <xs:enumeration value="4"/>
+            <xs:enumeration value="5"/>
+            <xs:enumeration value="6"/>
+            <xs:enumeration value="7"/>
+            <xs:enumeration value="8"/>
+            <xs:enumeration value="9"/>
+            <xs:enumeration value="10"/>
+            <xs:enumeration value="U1"/>
+            <xs:enumeration value="U2"/>
+            <xs:enumeration value="U3"/>
+            <xs:enumeration value="U4"/>
+            <xs:enumeration value="VU"/>
+            <xs:enumeration value="Andet"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="GruppeMedAntal">
+        <xs:sequence>
+            <xs:element name="gruppe" type="tns:Gruppe"/>
+            <xs:element name="antal" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GrupperMedAntal">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="gruppeMedAntal" type="tns:GruppeMedAntal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Projektgruppe">
+        <xs:sequence>
+            <xs:element name="ejernr" type="xs:string"/>
+            <xs:element name="projektgruppekode" type="xs:string"/>
+            <xs:element name="projektgruppenavn" type="xs:string"/>
+            <xs:element name="fradato" type="xs:date"/>
+            <xs:element name="tildato" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Projektgrupper">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="projektgruppe" type="tns:Projektgruppe"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProjektgruppeMedAntal">
+        <xs:sequence>
+            <xs:element name="projektGruppe" type="tns:Projektgruppe"/>
+            <xs:element name="antal" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProjektgrupperMedAntal">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="projektgruppeMedAntal" type="tns:ProjektgruppeMedAntal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GruppeLicens">
+        <xs:sequence>
+            <xs:element name="gruppe" type="tns:Gruppe"/>
+            <xs:element name="licens" type="tns:Licens"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GruppeLicenser">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="gruppeLicens" type="tns:GruppeLicens"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProjektgruppeLicens">
+        <xs:sequence>
+            <xs:element name="projektgruppe" type="tns:Projektgruppe"/>
+            <xs:element name="licens" type="tns:Licens"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProjektgruppeLicenser">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="projektgruppeLicens" type="tns:ProjektgruppeLicens"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Bruger">
+        <xs:sequence>
+            <xs:element name="brugerid" type="xs:string"/>
+            <xs:element name="navn" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BrugerCpr">
+        <xs:complexContent>
+            <xs:extension base="tns:Bruger">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cpr" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="Brugere">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="bruger" type="tns:Bruger"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Kontaktperson">
+        <xs:sequence>
+            <xs:element name="instnr" type="xs:string"/>
+            <xs:element name="brugerid" type="xs:string"/>
+            <xs:element name="navn" type="xs:string"/>
+            <xs:element name="relation" type="tns:Kontaktpersonsrelation"/>
+            <xs:element name="myndighed" type="xs:boolean"/>
+            <xs:element name="verifikation" type="tns:Verifikationsniveau"/>
+            <xs:element name="adgangsniveau" type="tns:KontaktpersonAdgangsniveau"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Elevbruger">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Elevrolle"/>
+            <xs:element name="instnr" type="xs:string"/>
+            <xs:element name="brugerid" type="xs:string"/>
+            <xs:element name="navn" type="xs:string"/>
+            <xs:element name="hovedgruppe" type="tns:Gruppe"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Brugertilknytning">
+        <xs:sequence>
+            <xs:element name="instnr" type="xs:string"/>
+            <xs:element name="brugerid" type="xs:string"/>
+            <xs:element name="navn" type="xs:string"/>
+            <xs:choice>
+                <xs:element name="elev" type="tns:BrugertilknytningElev"/>
+                <xs:element name="ansat" type="tns:BrugertilknytningAnsat"/>
+                <xs:element name="ekstern" type="tns:BrugertilknytningEkstern"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="BrugertilknytningElev">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Elevrolle"/>
+            <xs:element name="hovedgruppeid" type="xs:string"/>
+            <xs:element name="hovedgruppenavn" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="BrugertilknytningAnsat">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="rolle" type="tns:Ansatrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BrugertilknytningEkstern">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Eksternrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Institution">
+        <xs:sequence>
+            <xs:element name="instnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="instnavn" type="xs:string"/>
+            <xs:element minOccurs="0" name="type" type="xs:string"/>
+            <xs:element minOccurs="0" name="typenavn" type="xs:string"/>
+            <xs:element minOccurs="0" name="type3" type="xs:string"/>
+            <xs:element minOccurs="0" name="type3navn" type="xs:string"/>
+            <xs:element minOccurs="0" name="adresse" type="xs:string"/>
+            <xs:element minOccurs="0" name="bynavn" type="xs:string"/>
+            <xs:element minOccurs="0" name="postnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="telefonnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="faxnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="mailadresse" type="xs:string"/>
+            <xs:element minOccurs="0" name="www" type="xs:string"/>
+            <xs:element minOccurs="0" name="hovedinstitutionsnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="kommunenr" type="xs:string"/>
+            <xs:element minOccurs="0" name="kommune" type="xs:string"/>
+            <xs:element minOccurs="0" name="admkommunenr" type="xs:string"/>
+            <xs:element minOccurs="0" name="admkommune" type="xs:string"/>
+            <xs:element minOccurs="0" name="regionsnr" type="xs:string"/>
+            <xs:element minOccurs="0" name="region" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Instbruger">
+        <xs:sequence>
+            <xs:element name="instnr" type="xs:string"/>
+            <xs:element name="brugerid" type="xs:string"/>
+            <xs:element name="navn" type="xs:string"/>
+            <xs:choice>
+                <xs:element name="elev" type="tns:Elev"/>
+                <xs:element name="ansat" type="tns:Ansat"/>
+                <xs:element name="ekstern" type="tns:Ekstern"/>
+            </xs:choice>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="gruppe" type="tns:Gruppe"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProduktInstitution">
+        <xs:sequence>
+            <xs:element name="produkt" type="tns:ProduktId"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="instnr" type="tns:Regnr"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Elev">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Elevrolle"/>
+            <xs:element name="hovedgruppeid" type="xs:string"/>
+            <xs:element name="hovedgruppenavn" type="xs:string"/>
+            <xs:element name="elevtrin" type="tns:Trin"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Ansat">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="rolle" type="tns:Ansatrolle"/>
+            <xs:element minOccurs="0" name="initialer" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Ekstern">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Eksternrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Institutionstilknytning">
+        <xs:sequence>
+            <xs:element name="instnr" type="tns:Regnr"/>
+            <xs:choice>
+                <xs:element name="elev" type="tns:InstitutionstilknytningElev"/>
+                <xs:element name="ansat" type="tns:InstitutionstilknytningAnsat"/>
+                <xs:element name="ekstern" type="tns:InstitutionstilknytningEkstern"/>
+                <xs:element name="kontakt" type="tns:InstitutionstilknytningKontakt"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InstitutionstilknytningElev">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Elevrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InstitutionstilknytningAnsat">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="rolle" type="tns:Ansatrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InstitutionstilknytningEkstern">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Eksternrolle"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InstitutionstilknytningKontakt">
+        <xs:sequence>
+            <xs:element name="rolle" type="tns:Kontaktpersonsrelation"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="Elevbrugertype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="elev"/>
+            <xs:enumeration value="stud"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Elevrolle">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Barn"/>
+            <xs:enumeration value="Elev"/>
+            <xs:enumeration value="Studerende"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Brugertype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="elev"/>
+            <xs:enumeration value="stud"/>
+            <xs:enumeration value="lærer"/>
+            <xs:enumeration value="tap"/>
+            <xs:enumeration value="pæd"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Ansatbrugertype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="lærer"/>
+            <xs:enumeration value="tap"/>
+            <xs:enumeration value="pæd"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Ansatrolle">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Lærer"/>
+            <xs:enumeration value="Pædagog"/>
+            <xs:enumeration value="Vikar"/>
+            <xs:enumeration value="Leder"/>
+            <xs:enumeration value="Ledelse"/>
+            <xs:enumeration value="TAP"/>
+            <xs:enumeration value="Konsulent"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Eksternrolle">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Praktikant"/>
+            <xs:enumeration value="Ekstern"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Kontaktpersonsrelation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Mor"/>
+            <xs:enumeration value="Far"/>
+            <xs:enumeration value="Andet"/>
+            <xs:enumeration value="Officielt tilknyttet person"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- SIMPLE types -->
+    <xs:simpleType name="NonEmptyToken">
+        <xs:annotation>
+            <xs:documentation>
+                Basistype for strenge.
+                Indholdet må ikke være tomt, og overflødig whitespace fjernes (XSD token).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Regnr">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="6"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Gruppekode">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="75"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Gruppenavn">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ProduktId">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Givadgang"/>
+            <xs:enumeration value="Karakterdatabasen"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Token100char">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Token75char">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="75"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Token40char">
+        <xs:restriction base="tns:NonEmptyToken">
+            <xs:maxLength value="40"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Verifikationsniveau">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="0">
+                <xs:annotation>
+                    <xs:documentation>Uverificeret.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="1">
+                <xs:annotation>
+                    <xs:documentation>CPR-verificeret.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="KontaktpersonAdgangsniveau">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Kontaktpersonen må få adgang til almindelige personoplysninger om den tilknyttede elev.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Kontaktpersonen må få adgang til fortrolige og følsomme personoplysninger om eleven.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://wsiinst.unilogin.dk/ws" elementFormDefault="qualified" targetNamespace="https://wsiinst.unilogin.dk/ws" version="1.0">
+
+    <xs:include schemaLocation="wsiinst-schema.xsd"/>
+
+    <xs:element name="hentGrupper" type="tns:HentGrupper"/>
+    <xs:element name="hentGrupperResponse" type="tns:HentGrupperResponse"/>
+
+    <xs:element name="hentBrugereIGruppe" type="tns:HentBrugereIGruppe"/>
+    <xs:element name="hentBrugereIGruppeResponse" type="tns:HentBrugereIGruppeResponse"/>
+
+    <xs:element name="hentGruppersLicenser" type="tns:HentGruppersLicenser"/>
+    <xs:element name="hentGruppersLicenserResponse" type="tns:HentGruppersLicenserResponse"/>
+
+    <xs:element name="hentInstitution" type="tns:HentInstitution"/>
+    <xs:element name="hentInstitutionResponse" type="tns:HentInstitutionResponse"/>
+
+    <xs:element name="hentInstitutioner" type="tns:HentInstitutioner"/>
+    <xs:element name="hentInstitutionerResponse" type="tns:HentInstitutionerResponse"/>
+
+    <xs:element name="hentInstBruger" type="tns:HentInstBruger"/>
+    <xs:element name="hentInstBrugerResponse" type="tns:HentInstBrugerResponse"/>
+
+</xs:schema>

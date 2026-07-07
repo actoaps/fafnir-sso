@@ -144,15 +144,23 @@ public class UniLoginProvider {
 
         accessToken = getAccessToken(accessCode, UL_CLIENT_ID, UL_SECRET, UL_REDIRECT_URL, CODE_VERIFIER, OID_BASE_URL);
 
+        // Store ID token in session for use in logout (id_token_hint can help skip confirmation page)
+        if (accessToken.getId_token() != null && session != null) {
+            session.setAttribute("id_token", accessToken.getId_token());
+            log.debug("Stored ID token in session for logout");
+        }
+
         IntrospectionToken intro;
 
         intro = getIntrospectToken(accessToken.getAccess_token(), UL_CLIENT_ID, UL_SECRET, OID_BASE_URL);
 
         if (intro == null) {
+            UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.intro_failed, "-", session, null);
             return AuthenticationResult.failure(FailureReason.AUTHENTICATION_FAILED);
         }
 
         var userId = intro.getUniid();
+        UniLoginFlowTrace.rememberUniid(session, userId);
         
         // Store aktørgruppe from introspection token for role extraction
         if (intro.getAktoer_gruppe() != null) {
@@ -175,21 +183,49 @@ public class UniLoginProvider {
         } catch (Exception e) {
             log.warn("Failed to retrieve extended user information from UserInfo endpoint, falling back to web services: {}", e.getMessage());
         }
-        
+
+        boolean userInfoHadInstitutions = userInfo != null
+            && userInfo.getInstBrugere() != null
+            && !userInfo.getInstBrugere().isEmpty();
+        int userInfoInstCount = userInfoHadInstitutions ? userInfo.getInstBrugere().size() : 0;
+        UniLoginFlowTrace.log("callback",
+            userInfoHadInstitutions ? UniLoginFlowTrace.Branch.userinfo_ok : UniLoginFlowTrace.Branch.userinfo_empty,
+            userId, session, Map.of("userinfo_inst_count", userInfoInstCount));
+
         // Fallback to web services if UserInfo failed or returned no data
         if (institutions == null || institutions.isEmpty()) {
             log.debug("Using deprecated web service call to get institution list for user: {}", userId);
             institutions = getInstitutionList(userId);
+            UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.soap_fallback, userId, session,
+                Map.of("soap_inst_count", institutions.size()));
         }
 
+        int instCountBeforeDedup = institutions.size();
+        institutions = deduplicateInstitutions(institutions);
+        UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.dedup_applied, userId, session, Map.of(
+            "inst_count_before", instCountBeforeDedup,
+            "inst_count_after", institutions.size(),
+            "instnr_list", UniLoginFlowTrace.instnrList(institutions)));
+
         if (institutions.isEmpty()) {
+            if (canIssueJwtWithoutInstitution(session)) {
+                UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.direct_jwt_no_org, userId, session,
+                    Map.of("inst_count", 0));
+                return callbackWithoutInstitution(userId, session);
+            }
+            UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.error_no_institutions, userId, session,
+                Map.of("inst_count", 0));
             return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
         } else if (institutions.size() == 1) {
             Institution inst = institutions.get(0);
             log.debug("Single institution found - id: {}, name: {}", inst.id, inst.name);
+            UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.direct_jwt, userId, session,
+                Map.of("institution_id", inst.id, "inst_count", 1));
             return callbackWithInstitution(userId, inst.id, inst.name, session);
         } else {
             String chooseInstitutionUrl = uniloginHelper.getChooseInstitutionUrl(userId);
+            UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.org_picker, userId, session,
+                Map.of("inst_count", institutions.size(), "instnr_list", UniLoginFlowTrace.instnrList(institutions)));
             return AuthenticationResult.redirect(chooseInstitutionUrl);
         }
     }
@@ -216,12 +252,17 @@ public class UniLoginProvider {
                     userId, userInfo.getInstBrugere().size());
                 List<Institution> institutions = convertUserInfoToInstitutions(userInfo, session);
                 log.info("Converted {} institution(s) from UserInfo", institutions.size());
+                UniLoginFlowTrace.log("getOrg_data", UniLoginFlowTrace.Branch.userinfo_ok, userId, session,
+                    Map.of("inst_count", institutions.size(), "instnr_list", UniLoginFlowTrace.instnrList(institutions)));
                 return institutions;
             }
         }
         // Fallback to deprecated web service
         log.warn("UserInfo not available in session, falling back to deprecated web service for user: {}", userId);
-        return getInstitutionList(userId);
+        List<Institution> soapInstitutions = deduplicateInstitutions(getInstitutionList(userId));
+        UniLoginFlowTrace.log("getOrg_data", UniLoginFlowTrace.Branch.soap_fallback, userId, session,
+            Map.of("soap_inst_count", soapInstitutions.size(), "instnr_list", UniLoginFlowTrace.instnrList(soapInstitutions)));
+        return soapInstitutions;
     }
 
     /**
@@ -299,6 +340,36 @@ public class UniLoginProvider {
     }
 
 
+    public boolean canIssueJwtWithoutInstitution(HttpSession session) {
+        if (session == null) {
+            return false;
+        }
+        return isEmployeeAktorgruppe((String) session.getAttribute("aktoer_gruppe"));
+    }
+
+    /**
+     * Issues a JWT without org_id/org_name when the user is an employee but has no institution affiliations.
+     * Find2Learn can prompt for institution via /license.
+     */
+    public AuthenticationResult callbackWithoutInstitution(String userId, HttpSession session) {
+        Set<UserRole> roles = getUserRolesFromAktorgruppe(session);
+        String roleSource = roles.isEmpty() ? "none" : "aktoer_gruppe";
+
+        String aktoerGruppe = session != null ? (String) session.getAttribute("aktoer_gruppe") : null;
+        boolean hadCompatibleRole = hasFind2LearnCompatibleEmployeeRole(roles);
+        roles = ensureEmployeeLoginRole(roles, aktoerGruppe);
+        if (!hadCompatibleRole && hasFind2LearnCompatibleEmployeeRole(roles)) {
+            roleSource = "fallback_employee";
+        }
+
+        if (roles.isEmpty()) {
+            log.warn("Cannot issue JWT without institution for user {}: no roles available", userId);
+            return AuthenticationResult.failure(FailureReason.CONNECTION_FAILED);
+        }
+
+        return issueJwtAndRedirectToLogout(userId, session, null, null, roles, roleSource);
+    }
+
     public AuthenticationResult callbackWithInstitution(String userId, String institutionId) {
         return callbackWithInstitution(userId, institutionId, null, null);
     }
@@ -308,8 +379,6 @@ public class UniLoginProvider {
     }
 
     public AuthenticationResult callbackWithInstitution(String userId, String institutionId, String institutionName, HttpSession session) {
-        var name = getUserFullNameFromId(userId);
-        
         // Try to get institution name from parameter, then from UserInfo in session, otherwise fallback to web service
         String orgName = (institutionName != null && !institutionName.isEmpty()) ? institutionName : null;
         
@@ -351,17 +420,53 @@ public class UniLoginProvider {
 
         // Try to get roles from UserInfo, fallback to aktørgruppe, then web service
         Set<UserRole> roles = getUserRolesFromUserInfo(userId, institutionId, session);
-        if (roles.isEmpty()) {
-            // Try to get role from aktørgruppe (actor group) from introspection token
+        String roleSource = "none";
+        if (!roles.isEmpty()) {
+            roleSource = "userinfo";
+        } else {
             roles = getUserRolesFromAktorgruppe(session);
             if (!roles.isEmpty()) {
+                roleSource = "aktoer_gruppe";
                 log.debug("Using aktørgruppe from introspection token for user: {} at institution: {}", userId, institutionId);
+            } else {
+                log.debug("Using deprecated web service call to get user roles for user: {} at institution: {}", userId, institutionId);
+                roles = this.getUserRoles(institutionId, userId);
+                if (!roles.isEmpty()) {
+                    roleSource = "soap";
+                }
             }
         }
-        if (roles.isEmpty()) {
-            log.debug("Using deprecated web service call to get user roles for user: {} at institution: {}", userId, institutionId);
-            roles = this.getUserRoles(institutionId, userId);
+
+        String aktoerGruppe = session != null ? (String) session.getAttribute("aktoer_gruppe") : null;
+        boolean hadCompatibleRole = hasFind2LearnCompatibleEmployeeRole(roles);
+        roles = ensureEmployeeLoginRole(roles, aktoerGruppe);
+        if (!hadCompatibleRole && hasFind2LearnCompatibleEmployeeRole(roles)) {
+            roleSource = "none".equals(roleSource) ? "fallback_employee" : roleSource + "+fallback_employee";
         }
+
+        return issueJwtAndRedirectToLogout(userId, session, institutionId, finalOrgName, roles, roleSource);
+    }
+
+    private AuthenticationResult issueJwtAndRedirectToLogout(
+            String userId,
+            HttpSession session,
+            String institutionId,
+            String institutionName,
+            Set<UserRole> roles,
+            String roleSource) {
+        var name = getUserFullNameFromId(userId);
+        List<String> roleStrings = roles.stream().map(UserRole::toString).collect(Collectors.toList());
+        log.info("JWT roles for user {} at institution {}: {}", userId, institutionId != null ? institutionId : "-", roleStrings);
+
+        Map<String, Object> jwtTraceFields = new LinkedHashMap<>();
+        jwtTraceFields.put("roles", roleStrings);
+        jwtTraceFields.put("role_source", roleSource);
+        if (institutionId != null) {
+            jwtTraceFields.put("institution_id", institutionId);
+        } else {
+            jwtTraceFields.put("org_omitted", true);
+        }
+        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.jwt_built, userId, session, jwtTraceFields);
 
         var subjectActual = UserData.builder()
             .subject(userId)
@@ -369,7 +474,7 @@ public class UniLoginProvider {
             .build();
         var orgActual = OrganisationData.builder()
             .organisationId(institutionId)
-            .organisationName(finalOrgName)
+            .organisationName(institutionName)
             .build();
         var claimsActual = ClaimData.builder()
             .claims(roles.stream()
@@ -383,29 +488,33 @@ public class UniLoginProvider {
             .organisationSupport(OrganisationSupport.NATIVE)
             .inputs(List.of())
             .build());
-        
-        // Generate a one-time token for secure JWT retrieval after logout
+
         String oneTimeToken = generateOneTimeToken();
-        
-        // Store JWT in cache with short TTL (5 minutes)
         jwtCache.put(oneTimeToken, new CacheEntry(jwt, CACHE_TTL_SECONDS));
         log.debug("Stored JWT in cache with one-time token (expires in {} seconds)", CACHE_TTL_SECONDS);
-        
-        // Instead of returning success directly, redirect to logout first
-        // This ensures the user is logged out from UniLogin after we get the data
-        // Store token in session to retrieve after logout (cookie approach would require HttpServletResponse)
+        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.jwt_cached, userId, session,
+            Map.of("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(oneTimeToken)));
+
         if (session != null) {
             session.setAttribute("logout_token", oneTimeToken);
             log.debug("Stored one-time token in session for post-logout retrieval");
         }
-        
-        // Use base URL only (no token in URL) to avoid UniLogin redirect URI validation issues
+
+        String idTokenHint = null;
+        if (session != null) {
+            idTokenHint = (String) session.getAttribute("id_token");
+            if (idTokenHint != null) {
+                log.debug("Using ID token from session as id_token_hint for logout");
+            }
+        }
+
         String logoutUrl = getLogoutUrl(
             fafnirConf.getUrl() + "/unilogin/logout-complete",
-            null // We don't have id_token_hint here, but it's optional
+            idTokenHint
         );
-        
+
         log.info("Authentication successful, redirecting to UniLogin logout to end UniLogin session");
+        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.logout_redirect, userId, session, Map.of());
         return AuthenticationResult.redirect(logoutUrl);
     }
     
@@ -429,21 +538,32 @@ public class UniLoginProvider {
      * @return The JWT if found and not expired, null otherwise
      */
     public String retrieveJwtFromCache(String token) {
+        return retrieveJwtFromCache(token, null, null);
+    }
+
+    public String retrieveJwtFromCache(String token, String uniid, HttpSession session) {
         if (token == null || token.isEmpty()) {
             return null;
         }
-        
+
+        String tokenPrefix = UniLoginFlowTrace.tokenPrefix(token);
         CacheEntry entry = jwtCache.remove(token);
         if (entry == null) {
-            log.warn("One-time token not found or already used: {}", token.substring(0, Math.min(8, token.length())) + "...");
+            log.warn("One-time token not found or already used: {}", tokenPrefix + "...");
+            UniLoginFlowTrace.log("cache", UniLoginFlowTrace.Branch.logout_complete_cache_miss,
+                uniid != null ? uniid : UniLoginFlowTrace.uniidFromSession(session), session,
+                Map.of("cache_token_prefix", tokenPrefix, "reason", "not_found_or_used"));
             return null;
         }
-        
+
         if (entry.isExpired(System.currentTimeMillis())) {
-            log.warn("One-time token expired: {}", token.substring(0, Math.min(8, token.length())) + "...");
+            log.warn("One-time token expired: {}", tokenPrefix + "...");
+            UniLoginFlowTrace.log("cache", UniLoginFlowTrace.Branch.logout_complete_cache_miss,
+                uniid != null ? uniid : UniLoginFlowTrace.uniidFromSession(session), session,
+                Map.of("cache_token_prefix", tokenPrefix, "reason", "expired"));
             return null;
         }
-        
+
         log.debug("Successfully retrieved JWT from cache using one-time token");
         return entry.getJwt();
     }
@@ -665,7 +785,8 @@ public class UniLoginProvider {
             })
             .collect(Collectors.toList());
         
-        log.info("Successfully converted {} Institution object(s)", institutions.size());
+        institutions = deduplicateInstitutions(institutions);
+        log.info("Successfully converted {} Institution object(s) after deduplication", institutions.size());
         return institutions;
     }
 
@@ -721,10 +842,13 @@ public class UniLoginProvider {
             
             // Format 1: Direct "roller" array with strings like "PÆDAGOG@EMPLOYEE"
             if (affiliation.getRoller() != null && !affiliation.getRoller().isEmpty()) {
+                String aktoerGruppe = (String) session.getAttribute("aktoer_gruppe");
                 for (String roleString : affiliation.getRoller()) {
                     UserRole role = parseRoleString(roleString);
                     if (role != null) {
                         roles.add(role);
+                    } else if (isEmployeeAktorgruppe(aktoerGruppe)) {
+                        roles.add(UserRole.builder().name(roleString).type("EMPLOYEE").build());
                     }
                 }
             }
@@ -784,7 +908,11 @@ public class UniLoginProvider {
         
         String name = roleString.substring(0, atIndex);
         String type = roleString.substring(atIndex + 1);
-        
+
+        if ("ANSAT".equalsIgnoreCase(type)) {
+            type = "EMPLOYEE";
+        }
+
         return UserRole.builder()
             .name(name)
             .type(type)
@@ -832,6 +960,13 @@ public class UniLoginProvider {
                     .build());
                 log.debug("Extracted role from aktørgruppe: {} -> EMPLOYEE", aktoerGruppe);
                 break;
+            case "MEDARBEJDER":
+                roles.add(UserRole.builder()
+                    .name("Medarbejder")
+                    .type("EMPLOYEE")
+                    .build());
+                log.debug("Extracted role from aktørgruppe: {} -> Medarbejder@EMPLOYEE", aktoerGruppe);
+                break;
             case "EMP_EXTERNAL":
             case "EKSTERN":
                 roles.add(UserRole.builder()
@@ -851,6 +986,85 @@ public class UniLoginProvider {
         }
         
         return roles;
+    }
+
+    /**
+     * Ensures the role set contains at least one employee role that Find2Learn accepts for login.
+     * Adds Medarbejder@EMPLOYEE when aktoer_gruppe indicates employee but only unusable roles were parsed.
+     */
+    static Set<UserRole> ensureEmployeeLoginRole(Set<UserRole> roles, String aktoerGruppe) {
+        Set<UserRole> result = roles != null ? new HashSet<>(roles) : new HashSet<>();
+        if (hasFind2LearnCompatibleEmployeeRole(result)) {
+            return result;
+        }
+        if (isEmployeeAktorgruppe(aktoerGruppe)) {
+            result.add(UserRole.builder().name("Medarbejder").type("EMPLOYEE").build());
+            log.info("Added Medarbejder@EMPLOYEE fallback role based on aktoer_gruppe: {}", aktoerGruppe);
+        }
+        return result;
+    }
+
+    static boolean hasFind2LearnCompatibleEmployeeRole(Set<UserRole> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+        return roles.stream().anyMatch(UniLoginProvider::isFind2LearnCompatibleEmployeeRole);
+    }
+
+    static boolean isFind2LearnCompatibleEmployeeRole(UserRole role) {
+        if (role == null || role.getType() == null) {
+            return false;
+        }
+        String type = role.getType();
+        String name = role.getName();
+        if ("EMPLOYEE".equalsIgnoreCase(type) || "Medarbejder".equalsIgnoreCase(type)) {
+            return true;
+        }
+        return name != null && "Medarbejder".equalsIgnoreCase(name) && "UNKNOWN".equalsIgnoreCase(type);
+    }
+
+    static boolean isEmployeeAktorgruppe(String aktoerGruppe) {
+        if (aktoerGruppe == null || aktoerGruppe.isEmpty()) {
+            return false;
+        }
+        return switch (aktoerGruppe.toUpperCase()) {
+            case "MEDARBEJDER", "EMPLOYEE", "ANSAT" -> true;
+            default -> false;
+        };
+    }
+
+    static List<Institution> deduplicateInstitutions(List<Institution> institutions) {
+        if (institutions == null || institutions.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Institution> byId = new LinkedHashMap<>();
+        for (Institution inst : institutions) {
+            if (inst.id == null || inst.id.isBlank()) {
+                continue;
+            }
+            byId.merge(inst.id, inst, (existing, incoming) -> {
+                List<String> mergedRoles = new ArrayList<>(
+                    existing.roles != null ? existing.roles : Collections.emptyList());
+                if (incoming.roles != null) {
+                    for (String role : incoming.roles) {
+                        if (!mergedRoles.contains(role)) {
+                            mergedRoles.add(role);
+                        }
+                    }
+                }
+                String name = existing.name != null && !existing.name.isEmpty()
+                    ? existing.name
+                    : incoming.name;
+                return new Institution(existing.id, name, mergedRoles);
+            });
+        }
+
+        if (byId.size() < institutions.size()) {
+            log.info("Deduplicated {} institution affiliation(s) to {} unique instnr(s)",
+                institutions.size(), byId.size());
+        }
+        return new ArrayList<>(byId.values());
     }
 
     ObjectMapper getObjectMapper() {
