@@ -21,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -39,9 +40,20 @@ public class UniLoginController {
 
     @PostMapping("callback")
     public RedirectView callback(@RequestParam("code") String code, HttpSession session) throws IOException {
-        return new RedirectView(provider.callback(UniloginTokenCredentials.builder()
+        AuthenticationResult result = provider.callback(UniloginTokenCredentials.builder()
             .code(code)
-            .build(), session).getUrl(uniloginConf));
+            .build(), session);
+        String redirectUrl = result.getUrl(uniloginConf);
+        String uniid = UniLoginFlowTrace.uniidFromSession(session);
+        List<String> missing = UniLoginFlowTrace.callbackRedirectMissing(redirectUrl, uniid, session);
+        UniLoginFlowTrace.warnIfMissing("callback_redirect", uniid, session, missing);
+        Map<String, Object> callbackRedirectFields = new java.util.LinkedHashMap<>();
+        callbackRedirectFields.put("redirect_type", UniLoginFlowTrace.classifyCallbackRedirect(redirectUrl));
+        callbackRedirectFields.put("redirect_target", UniLoginFlowTrace.sanitizeUrlForLog(redirectUrl));
+        callbackRedirectFields.put("instance", UniLoginFlowTrace.instanceId());
+        callbackRedirectFields.put("missing", UniLoginFlowTrace.missingCsv(missing));
+        UniLoginFlowTrace.log("callback", UniLoginFlowTrace.Branch.callback_redirect, uniid, session, callbackRedirectFields);
+        return new RedirectView(redirectUrl);
     }
 
     @GetMapping("org")
@@ -137,53 +149,75 @@ public class UniLoginController {
      */
     @GetMapping("logout-complete")
     public RedirectView logoutComplete(HttpSession session, jakarta.servlet.http.HttpServletRequest request) {
-        log.info("Logout complete callback - retrieving JWT from cache");
         String uniid = UniLoginFlowTrace.uniidFromSession(session);
+        Map<String, Object> entryFields = UniLoginFlowTrace.logoutCompleteEntryFields(session, request);
+        UniLoginFlowTrace.log("logout_complete", UniLoginFlowTrace.Branch.logout_complete_entry,
+            uniid, session, entryFields);
+        UniLoginFlowTrace.warnIfMissing("logout_complete_entry", uniid, session,
+            UniLoginFlowTrace.logoutCompleteMissing(session, request, uniid, null));
+
+        log.info("Logout complete callback - retrieving JWT from cache");
 
         // Try to get token from session first
-        String token = session != null ? (String) session.getAttribute("logout_token") : null;
+        String token = session != null ? (String) session.getAttribute(UniLoginFlowTrace.LOGOUT_TOKEN_SESSION_KEY) : null;
         String tokenSource = token != null && !token.isEmpty() ? "session" : null;
 
         // Fallback to cookie if session doesn't have it
         if ((token == null || token.isEmpty()) && request.getCookies() != null) {
             for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
-                if ("fafnir_logout_token".equals(cookie.getName())) {
+                if (UniLoginFlowTrace.LOGOUT_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
                     token = cookie.getValue();
                     tokenSource = "cookie";
-                    log.debug("Retrieved logout token from cookie");
                     break;
                 }
             }
         }
 
         if (token == null || token.isEmpty()) {
+            List<String> missing = UniLoginFlowTrace.logoutCompleteMissing(session, request, uniid, token);
+            UniLoginFlowTrace.warnIfMissing("logout_complete_no_token", uniid, session, missing);
             log.warn("No logout token found in session or cookie after logout, redirecting to failure");
+            Map<String, Object> noTokenFields = new java.util.LinkedHashMap<>();
+            noTokenFields.put("token_source", "none");
+            noTokenFields.put("failure_redirect", uniloginConf.getFailureRedirect());
+            noTokenFields.put("instance", UniLoginFlowTrace.instanceId());
+            noTokenFields.put("missing", UniLoginFlowTrace.missingCsv(missing));
             UniLoginFlowTrace.log("logout_complete", UniLoginFlowTrace.Branch.logout_complete_no_token,
-                uniid, session, Map.of("token_source", "none"));
+                uniid, session, noTokenFields);
             return new RedirectView(uniloginConf.getFailureRedirect() + "#" + dk.acto.fafnir.api.model.FailureReason.AUTHENTICATION_FAILED.getErrorCode());
         }
 
         // Clear the token from session and cookie
         if (session != null) {
-            session.removeAttribute("logout_token");
+            session.removeAttribute(UniLoginFlowTrace.LOGOUT_TOKEN_SESSION_KEY);
         }
 
-        // Retrieve the JWT from cache using one-time token
-        String jwt = provider.retrieveJwtFromCache(token, uniid, session);
+        var cacheResult = provider.retrieveJwtFromCacheWithReason(token, uniid, session);
 
-        if (jwt != null && !jwt.isEmpty()) {
+        if (cacheResult.isSuccess()) {
             log.info("JWT retrieved from cache, redirecting to success page");
+            Map<String, Object> successFields = new java.util.LinkedHashMap<>();
+            successFields.put("token_source", tokenSource != null ? tokenSource : "unknown");
+            successFields.put("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(token));
+            successFields.put("success_redirect", uniloginConf.getSuccessRedirect());
+            successFields.put("instance", UniLoginFlowTrace.instanceId());
             UniLoginFlowTrace.log("logout_complete", UniLoginFlowTrace.Branch.logout_complete_success,
-                uniid, session, Map.of(
-                    "token_source", tokenSource != null ? tokenSource : "unknown",
-                    "cache_token_prefix", UniLoginFlowTrace.tokenPrefix(token)));
-            return new RedirectView(uniloginConf.getSuccessRedirect() + "#" + jwt);
+                uniid, session, successFields);
+            return new RedirectView(uniloginConf.getSuccessRedirect() + "#" + cacheResult.getJwt());
         } else {
+            List<String> missing = UniLoginFlowTrace.logoutCompleteMissing(session, request, uniid, token);
+            missing.add("jwt_in_cache");
+            UniLoginFlowTrace.warnIfMissing("logout_complete_cache_miss", uniid, session, missing);
             log.warn("No valid JWT found in cache after logout (token may be expired or invalid), redirecting to failure");
+            Map<String, Object> cacheMissFields = new java.util.LinkedHashMap<>();
+            cacheMissFields.put("token_source", tokenSource != null ? tokenSource : "unknown");
+            cacheMissFields.put("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(token));
+            cacheMissFields.put("cache_reason", cacheResult.getCacheReason() != null ? cacheResult.getCacheReason() : "unknown");
+            cacheMissFields.put("failure_redirect", uniloginConf.getFailureRedirect());
+            cacheMissFields.put("instance", UniLoginFlowTrace.instanceId());
+            cacheMissFields.put("missing", UniLoginFlowTrace.missingCsv(missing));
             UniLoginFlowTrace.log("logout_complete", UniLoginFlowTrace.Branch.logout_complete_cache_miss,
-                uniid, session, Map.of(
-                    "token_source", tokenSource != null ? tokenSource : "unknown",
-                    "cache_token_prefix", UniLoginFlowTrace.tokenPrefix(token)));
+                uniid, session, cacheMissFields);
             return new RedirectView(uniloginConf.getFailureRedirect() + "#" + dk.acto.fafnir.api.model.FailureReason.AUTHENTICATION_FAILED.getErrorCode());
         }
     }
