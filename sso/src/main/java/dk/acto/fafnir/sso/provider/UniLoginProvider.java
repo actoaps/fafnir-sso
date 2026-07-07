@@ -492,11 +492,14 @@ public class UniLoginProvider {
         String oneTimeToken = generateOneTimeToken();
         jwtCache.put(oneTimeToken, new CacheEntry(jwt, CACHE_TTL_SECONDS));
         log.debug("Stored JWT in cache with one-time token (expires in {} seconds)", CACHE_TTL_SECONDS);
-        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.jwt_cached, userId, session,
-            Map.of("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(oneTimeToken)));
+        Map<String, Object> jwtCachedFields = new LinkedHashMap<>();
+        jwtCachedFields.put("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(oneTimeToken));
+        jwtCachedFields.put("cache_size", jwtCache.size());
+        jwtCachedFields.put("instance", UniLoginFlowTrace.instanceId());
+        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.jwt_cached, userId, session, jwtCachedFields);
 
         if (session != null) {
-            session.setAttribute("logout_token", oneTimeToken);
+            session.setAttribute(UniLoginFlowTrace.LOGOUT_TOKEN_SESSION_KEY, oneTimeToken);
             log.debug("Stored one-time token in session for post-logout retrieval");
         }
 
@@ -508,13 +511,25 @@ public class UniLoginProvider {
             }
         }
 
-        String logoutUrl = getLogoutUrl(
-            fafnirConf.getUrl() + "/unilogin/logout-complete",
-            idTokenHint
-        );
+        String postLogoutRedirectUri = fafnirConf.getUrl() + "/unilogin/logout-complete";
+        String logoutUrl = getLogoutUrl(postLogoutRedirectUri, idTokenHint);
+
+        List<String> missingBeforeRedirect = UniLoginFlowTrace.logoutRedirectMissing(
+            session, fafnirConf.getUrl(), postLogoutRedirectUri, idTokenHint);
+        UniLoginFlowTrace.warnIfMissing("logout_redirect", userId, session, missingBeforeRedirect);
 
         log.info("Authentication successful, redirecting to UniLogin logout to end UniLogin session");
-        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.logout_redirect, userId, session, Map.of());
+        log.info("Redirecting to UniLogin logout, return URI: {}", postLogoutRedirectUri);
+        Map<String, Object> logoutRedirectFields = new LinkedHashMap<>();
+        logoutRedirectFields.put("cache_token_prefix", UniLoginFlowTrace.tokenPrefix(oneTimeToken));
+        logoutRedirectFields.put("post_logout_redirect_uri", postLogoutRedirectUri);
+        logoutRedirectFields.put("broker_logout_url", UniLoginFlowTrace.sanitizeUrlForLog(logoutUrl));
+        logoutRedirectFields.put("has_id_token_hint", idTokenHint != null && !idTokenHint.isEmpty());
+        logoutRedirectFields.put("session_has_logout_token", UniLoginFlowTrace.hasLogoutTokenInSession(session));
+        logoutRedirectFields.put("cache_size", jwtCache.size());
+        logoutRedirectFields.put("instance", UniLoginFlowTrace.instanceId());
+        logoutRedirectFields.put("missing", UniLoginFlowTrace.missingCsv(missingBeforeRedirect));
+        UniLoginFlowTrace.log("jwt", UniLoginFlowTrace.Branch.logout_redirect, userId, session, logoutRedirectFields);
         return AuthenticationResult.redirect(logoutUrl);
     }
     
@@ -538,34 +553,49 @@ public class UniLoginProvider {
      * @return The JWT if found and not expired, null otherwise
      */
     public String retrieveJwtFromCache(String token) {
-        return retrieveJwtFromCache(token, null, null);
+        return retrieveJwtFromCacheWithReason(token, null, null).getJwt();
     }
 
     public String retrieveJwtFromCache(String token, String uniid, HttpSession session) {
+        return retrieveJwtFromCacheWithReason(token, uniid, session).getJwt();
+    }
+
+    public JwtCacheRetrieveResult retrieveJwtFromCacheWithReason(String token, String uniid, HttpSession session) {
         if (token == null || token.isEmpty()) {
-            return null;
+            return JwtCacheRetrieveResult.miss("empty_token");
         }
 
         String tokenPrefix = UniLoginFlowTrace.tokenPrefix(token);
+        String traceUniid = uniid != null ? uniid : UniLoginFlowTrace.uniidFromSession(session);
         CacheEntry entry = jwtCache.remove(token);
         if (entry == null) {
-            log.warn("One-time token not found or already used: {}", tokenPrefix + "...");
+            log.warn("One-time token not found or already used: {} (cache_size={}, instance={})",
+                tokenPrefix + "...", jwtCache.size(), UniLoginFlowTrace.instanceId());
             UniLoginFlowTrace.log("cache", UniLoginFlowTrace.Branch.logout_complete_cache_miss,
-                uniid != null ? uniid : UniLoginFlowTrace.uniidFromSession(session), session,
-                Map.of("cache_token_prefix", tokenPrefix, "reason", "not_found_or_used"));
-            return null;
+                traceUniid, session, cacheMissFields(tokenPrefix, "not_found_or_used"));
+            return JwtCacheRetrieveResult.miss("not_found_or_used");
         }
 
         if (entry.isExpired(System.currentTimeMillis())) {
-            log.warn("One-time token expired: {}", tokenPrefix + "...");
+            log.warn("One-time token expired: {} (cache_size={}, instance={})",
+                tokenPrefix + "...", jwtCache.size(), UniLoginFlowTrace.instanceId());
             UniLoginFlowTrace.log("cache", UniLoginFlowTrace.Branch.logout_complete_cache_miss,
-                uniid != null ? uniid : UniLoginFlowTrace.uniidFromSession(session), session,
-                Map.of("cache_token_prefix", tokenPrefix, "reason", "expired"));
-            return null;
+                traceUniid, session, cacheMissFields(tokenPrefix, "expired"));
+            return JwtCacheRetrieveResult.miss("expired");
         }
 
-        log.debug("Successfully retrieved JWT from cache using one-time token");
-        return entry.getJwt();
+        log.debug("Successfully retrieved JWT from cache using one-time token (cache_size={}, instance={})",
+            jwtCache.size(), UniLoginFlowTrace.instanceId());
+        return JwtCacheRetrieveResult.success(entry.getJwt());
+    }
+
+    private static Map<String, Object> cacheMissFields(String tokenPrefix, String reason) {
+        Map<String, Object> fields = new LinkedHashMap<>();
+        fields.put("cache_token_prefix", tokenPrefix);
+        fields.put("cache_reason", reason);
+        fields.put("cache_size", jwtCache.size());
+        fields.put("instance", UniLoginFlowTrace.instanceId());
+        return fields;
     }
 
     /**
